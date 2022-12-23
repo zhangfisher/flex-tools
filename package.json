@@ -1,5 +1,5 @@
 {
-  "name": "flex-utils",
+  "name": "flex-tools",
   "version": "1.0.0",
   "description": "modular utilities.",
   "main": "./dist/index.js",
