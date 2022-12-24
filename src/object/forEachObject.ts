@@ -7,7 +7,7 @@
 import { isPlainObject } from "../typecheck/isPlainObject"
 import type { IForEachCallback } from "./forEachUpdateObject"
 
-export const ABORT = Symbol('ABORT_FOREACH')
+export const ABORT = Symbol('ABORT_FOR_EACH')
 
 export interface ForEachObjectOptions{
     keys?:string[]                              // 限定只能指定的健执行callback

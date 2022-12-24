@@ -1,6 +1,10 @@
+import { isPlainObject } from "../typecheck/isPlainObject"
 
+ 
 /**
  * 简单进行对象深度合并
+ * 
+ * 返回合并后的新的对象
  * 
  * 对lodash的merge的最大差别在于对数据进行替换与合并或去重
  * 
@@ -15,7 +19,7 @@ export function deepMerge(toObj:any,formObj:any,options:DeepMergeOptions={array:
     let results:any = Object.assign({},toObj)
     Object.entries(formObj).forEach(([key,value])=>{
         if(key in results){
-            if(typeof value === "object" && value !== null){
+            if(isPlainObject(value) && value !== null){
                 if(Array.isArray(value)){
                     if(options.array === 0){
                         results[key] = value

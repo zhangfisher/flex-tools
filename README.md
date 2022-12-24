@@ -1,6 +1,6 @@
-# flex-utils
+# flex-tools
 
-[文档](https://zhangfisher.github.io/flex-utils/)
+[文档](https://zhangfisher.github.io/flex-tools/)
 
 - 基于`TypeScript`开发
 - 实用化 
