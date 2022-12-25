@@ -5,11 +5,10 @@
   "main": "./index.js",
   "module": "./index.mjs",
   "types": "./index.d.ts",
-  "repository": "https://gitee.com/zhangfisher/flexutils.git",
+  "repository": "https://gitee.com/zhangfisher/flex-tools.git",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsup",
-    "release":"tsup & cd dist && npm publish"
+    "build": "tsup"
   },
   "keywords": [],
   "author": "",

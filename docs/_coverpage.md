@@ -1,10 +1,10 @@
 <!-- ![logo](_media/icon.svg) -->
 
-# FlexDecorators
+# FlexTools
 
-> 提供功能与包装逻辑分离的动态装饰器开发实践
+>基于Typescript的实用工具函数库
 
-[GitHub](https://gitee.com/zhangfisher/flex-decorators)
+[GitHub](https://github.com/zhangfisher/flex-tools)
 [Get Started](./README.md)
 
 

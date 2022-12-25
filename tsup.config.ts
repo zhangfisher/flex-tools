@@ -2,19 +2,21 @@ import { defineConfig } from 'tsup'
 
 export default defineConfig({
     entry: [
-        'src/index.ts'
+        'src/**/*.ts'
     ],
     format: ['cjs', 'esm'],
     dts: true,
-    splitting: false,
+    splitting: true,
     sourcemap: true,
     clean: true,
-    treeshake:false,  
+    treeshake:true,  
+    publicDir:"./release",
+    // external:[/^\./],
     banner: {
         js: `/**
 *        
-*   ---=== FlexUtils ===---
-*   https://zhangfisher.github.com/flex-utils
+*   ---=== FlexTools ===---
+*   https://zhangfisher.github.com/flex-tools
 * 
 *   一些实用工具函数
 *

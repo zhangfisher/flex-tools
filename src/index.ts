@@ -1,6 +1,6 @@
 export * from "./async"
 export * from "./classs"
-export * from "./eventEmitter"
+export * from "./events/eventEmitter"
 export * from "./object"
 export * from "./func"
 export * from "./tree"
