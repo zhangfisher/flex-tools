@@ -7,15 +7,17 @@ export type TreeNodeId<IdKey extends string = 'id', IdType=number> = {
 }    
   
 export type TreeNode<
-    Node extends Record<string,any> = {id:any;[key: string]: any},          // 节点数据
+    Node extends Record<string,any> = {[key: string]: any},          // 节点数据
     IdKey extends string  = 'id',
     ChildrenKey extends string = 'children'
 > = { [key in IdKey]: Node[IdKey] }                         // 节点ID
     & TreeNodeChildren<Node,IdKey,ChildrenKey>              // 节点Children
     & Node      
-     
+    & TreeNodeId<IdKey,Node[IdKey]>  
   
 export type Tree = TreeNode
+
+export type TreeNodeBase = TreeNode<Record<string,any>,string>
 
 
 export interface TreeNodeOptions{

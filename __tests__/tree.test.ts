@@ -67,22 +67,26 @@ test("遍历树",()=>{
 
 
 test("映射树结构",()=>{ 
-    let ids = [],titles:string[] = []
-    type mapedBook = TreeNode<{ id: number; name: string; level: number; path: string}>
+    type mapedBook = TreeNode<{ key: string; name: string; level: number; path: string},'key','books'>
     let mapedTree = mapTree<Book,mapedBook >(
         Object.assign({}, books),
         ({ node, level, parent, path }) => {
             return {
-                id: node.id,
+                key:String(node.id),
                 name: node.title,
                 level: level,
                 path: path.join("/")
             }
-        }, { pathKey: "title" }) as mapedBook
+        }, { pathKey: "title",
+            to:{
+                idKey:'key',childrenKey:"books"
+            } 
+        }) as mapedBook
     expect(Object.keys(mapedTree).length).toBe(5)
-    expect(mapedTree.id).toBe(1)
+    expect(mapedTree.key).toBe(1)
     expect(mapedTree.name).toBe("A")
     expect(mapedTree.path).toBe("A")
+
 })
 
 
