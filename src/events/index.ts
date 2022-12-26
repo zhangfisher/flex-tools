@@ -1,2 +1,1 @@
-export * from "./eventEmitter"
-export * from "./eventProxy"
+export * from "./flexEvent" 
