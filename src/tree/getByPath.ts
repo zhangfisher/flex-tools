@@ -14,17 +14,17 @@ import { TreeNode, TreeNodeOptions } from "./types";
 
  
 export interface GetByPathOptions extends TreeNodeOptions{
-    separator?:string
+     
 }
 
 export function getByPath<Node extends TreeNode = TreeNode>(treeObj:Node | Node[],fullpath: string,options?:GetByPathOptions):Node | undefined {
     let result:Node | undefined;
-    let {separator='/'} = Object.assign({}, DefaultTreeOptions ,options || {}) as Required<GetByPathOptions>     
-    forEachTree<Node>(treeObj,({node,level,parent,path})=>{
-        if(path.map(p=>String(p)).join(separator) == fullpath){
+    let opts = Object.assign({}, DefaultTreeOptions ,options || {}) as Required<GetByPathOptions>     
+    forEachTree<Node>(treeObj,({node,path})=>{
+        if(path == fullpath){
             result = node
             return ABORT    
         }
-    },options) 
+    },opts) 
     return result
 }

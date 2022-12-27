@@ -27,9 +27,9 @@ export function serachTree<Node extends TreeNode=TreeNode,Returns=Node[]>(treeDa
     let result:Returns[] = []
     const pickerFunc = picker || (({node})=>node) as IForEachTreeCallback<Node>
     const opts = Object.assign({matchOne:true},options || {})   
-    forEachTree<Node>(treeData,({node,level,parent,path})=>{
-       if(matcher({node,level,parent,path})){
-           result.push(pickerFunc({node,level,parent,path}))
+    forEachTree<Node>(treeData,({node,level,parent,path,index})=>{
+       if(matcher({node,level,parent,path,index})){
+           result.push(pickerFunc({node,level,parent,path,index}))
            return opts.matchOne==false ? undefined : ABORT  
        }
     },opts)

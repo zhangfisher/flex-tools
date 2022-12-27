@@ -21,9 +21,10 @@ export interface RemoveTreeNodes extends TreeNodeOptions {
 }
 
 export function removeTreeNodes<Node extends TreeNode>(treeObj:Node | Node[],matcher:IForEachTreeCallback<Node>,options?:RemoveTreeNodes):void{
-    let {childrenKey='children', idKey='id'} = Object.assign({}, DefaultTreeOptions ,options || {}) as Required<RemoveTreeNodes>     
-    forEachTree<Node>(treeObj,({node,level,parent,path})=>{
-        if(matcher({node,level,parent,path})){
+    const opts= Object.assign({}, DefaultTreeOptions ,options || {}) as Required<RemoveTreeNodes>   
+    const {childrenKey='children', idKey='id'} = opts
+    forEachTree<Node>(treeObj,({node,level,parent,path,index})=>{
+        if(matcher({node,level,parent,path,index})){
             if(parent){
                 if(Array.isArray(parent[childrenKey])){
                     const children = parent[childrenKey]
@@ -36,6 +37,6 @@ export function removeTreeNodes<Node extends TreeNode>(treeObj:Node | Node[],mat
                 })
             }
         }
-    },options) 
+    },opts) 
 }
  

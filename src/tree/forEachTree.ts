@@ -1,8 +1,8 @@
 import { ABORT } from "../object/forEachObject"
 import { DefaultTreeOptions } from "./consts"
-import { TreeNode, TreeNodeOptions } from "./types"
+import { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types"
 
-export  type IForEachTreeCallback<Node> = ({node,level,parent,path}:{node:Node,level:number,parent:Node | null,path:any[]})=> any
+export  type IForEachTreeCallback<Node> = ({node,level,parent,path,index}:{node:Node,level:number,parent:Node | null,path:string,index:number})=> any
 
 export  interface ForEachTreeOptions extends TreeNodeOptions{
     startId?:string | number | null                 // 从哪一个节点id开始进行遍历
@@ -22,13 +22,14 @@ export  interface ForEachTreeOptions extends TreeNodeOptions{
  * @param childrenName  子节点集合的属性名称，一般是children
  * @idName 节点id的名称，默认为是id
  */
-export function forEachTree<Node extends TreeNode = TreeNode>(treeData:Node[] | Node,callback:IForEachTreeCallback<Node>,options?:ForEachTreeOptions){
-    let {startId,childrenKey,idKey,pathKey} = Object.assign({startId:null,pathKey:null},DefaultTreeOptions,options || {}) as Required<ForEachTreeOptions>    
+export function forEachTree<Node extends TreeNodeBase = TreeNode>(treeData:Node[] | Node,callback:IForEachTreeCallback<Node>,options?:ForEachTreeOptions){
+    let {startId,childrenKey,idKey,pathKey,pathDelimiter} = Object.assign(
+        {startId:null },DefaultTreeOptions,options || {}) as Required<ForEachTreeOptions>    
     // 当指定startId时用来标识是否开始调用callback
     let isStart= startId==null ? true : (typeof(treeData)=='object' ? String((treeData as Node)[idKey])===String(startId) : false)
     let isAbort = false
-    function forEachNode(node:Node,level=1,parent:Node | null,parentPath:any[]):boolean | undefined{
-        let curPath = [...parentPath,pathKey ? node[pathKey] : node] 
+    function forEachNode(node:Node,level=1,parent:Node | null,parentPath:any[],index:number):boolean | undefined{
+        let curPath = [...parentPath,String(pathKey in node ? node[pathKey] : node[idKey])] 
         if(isAbort) return
         let result:any=true
         if(isStart===false && startId!=null){
@@ -37,7 +38,7 @@ export function forEachTree<Node extends TreeNode = TreeNode>(treeData:Node[] | 
         // skip参数决定是否执行跳过节点而不执行callback
         if(isStart) {
             //如果在Callback中返回false则
-            result=callback({node,level,parent,path:curPath})
+            result=callback({node,level,parent,path:curPath.join(pathDelimiter),index})
             if(result===ABORT){
                 isAbort = true
                 return 
@@ -46,15 +47,15 @@ export function forEachTree<Node extends TreeNode = TreeNode>(treeData:Node[] | 
         let children=node[childrenKey]
         if(children && Array.isArray(children) && children.length>0){
             level+=1            
-            for(let subnode of children){
-                result = forEachNode(subnode,level,node,curPath)
+            for(let i=0;i<children.length;i++){
+                result = forEachNode(children[i],level,node,curPath,i)
                 if(result===ABORT) return false
             }
         }
     }
     if(Array.isArray(treeData)){
-        treeData.forEach(node=>forEachNode(node,1,null,[]))
+        treeData.forEach((node,index)=>forEachNode(node,1,null,[],index))
     }else{
-        forEachNode(treeData,1,null,[])
+        forEachNode(treeData,1,null,[],-1)
     }    
  }

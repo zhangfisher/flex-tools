@@ -65,8 +65,6 @@ test("只订阅一次",()=>{
     events.off(fn) 
     expect(events.getListeners("click").length).toBe(0) 
     expect(events.getListeners("change").length).toBe(0)  
-
-
 })
 
 

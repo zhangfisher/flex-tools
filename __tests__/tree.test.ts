@@ -1,5 +1,9 @@
 import { test,expect} from "vitest"
 import { forEachTree, mapTree } from "../src"
+import { getRelatedTreeNode, RelatedTreeNode } from "../src/tree/getRelateTreeNode"
+import { getTreeNodeRelation, TreeNodeRelation } from "../src/tree/getTreeNodeRelation"
+import { moveTreeNode, MoveTreeNodePosition } from "../src/tree/moveTreeNode"
+import { toPidTree } from "../src/tree/toPidTree"
 import { TreeNode } from "../src/tree/types"
 
 // 共30个节点的数据，不要变更，后续用户例依赖此数据
@@ -52,13 +56,14 @@ const books = {
     ]
 } as TreeNode<Book>
 
- 
+  
+
 test("遍历树",()=>{
     let ids = [],titles:string[] = [],paths:string[] = []
     forEachTree(books,({node,level,parent,path})=>{
         ids.push(node.id)
         titles.push(node.title)
-        paths.push(path.join("/"))
+        paths.push(path)
     },{pathKey:"title"})
     expect(ids.length).toBe(30)
     expect(titles.length).toBe(30)
@@ -83,11 +88,85 @@ test("映射树结构",()=>{
             } 
         }) as mapedBook
     expect(Object.keys(mapedTree).length).toBe(5)
-    expect(mapedTree.key).toBe(1)
+    expect(mapedTree.key).toBe("1")
     expect(mapedTree.name).toBe("A")
     expect(mapedTree.path).toBe("A")
 
 })
 
+test("获取树节点关系",()=>{ 
+    let R = getTreeNodeRelation<Book>(books,1,11)
+    expect(R).toBe(TreeNodeRelation.Parent)
+    R = getTreeNodeRelation<Book>(books,11,1)
+    expect(R).toBe(TreeNodeRelation.Child)
+    R = getTreeNodeRelation<Book>(books,1,2)
+    expect(R).toBe(TreeNodeRelation.Unknown)
+    R = getTreeNodeRelation<Book>(books,11,12)
+    expect(R).toBe(TreeNodeRelation.Sibling)
+    R = getTreeNodeRelation<Book>(books,12,11)
+    expect(R).toBe(TreeNodeRelation.Sibling)
+    R = getTreeNodeRelation<Book>(books,121,1)
+    expect(R).toBe(TreeNodeRelation.Descendants)
+    
+    R = getTreeNodeRelation<Book>(books,121,1)
+    expect(R).toBe(TreeNodeRelation.Descendants)
+
+    R = getTreeNodeRelation<Book>(books,1564,1)
+    expect(R).toBe(TreeNodeRelation.Descendants)
+
+    R = getTreeNodeRelation<Book>(books,1563,1564)
+    expect(R).toBe(TreeNodeRelation.Sibling)
+    //
+    R = getTreeNodeRelation<Book>(books,1241,1561)
+    expect(R).toBe(TreeNodeRelation.Unknown)
+ })
 
 
+ test("移动树节点",()=>{ 
+
+    // 121 -> 122.Children
+    moveTreeNode<Book>(books,121,122)
+       expect(getTreeNodeRelation(books,121,122)).toBe(TreeNodeRelation.Child)
+
+    // 122 -> 15.Children
+    moveTreeNode<Book>(books,122,15,MoveTreeNodePosition.FirstChild)
+    expect(getTreeNodeRelation(books,122,15)).toBe(TreeNodeRelation.Child)
+
+    //
+    moveTreeNode<Book>(books,152,153,MoveTreeNodePosition.Next)
+    expect(getTreeNodeRelation(books,152,153)).toBe(TreeNodeRelation.Sibling)
+
+    moveTreeNode<Book>(books,153,152,MoveTreeNodePosition.Next)
+    expect(getTreeNodeRelation(books,152,153)).toBe(TreeNodeRelation.Sibling)
+
+
+    moveTreeNode<Book>(books,1561,1563,MoveTreeNodePosition.Previous)
+    expect(getTreeNodeRelation(books,1561,1563)).toBe(TreeNodeRelation.Sibling)
+ })
+
+
+ test("转为pid树",()=>{ 
+
+    let nodes = toPidTree<Book>(books,{includePath:true})
+    expect(nodes.length).toBe(30)
+
+    type StoryBook = TreeNode<{
+        name: string,
+        publisher: string,
+    }>
+    let storyNodes = toPidTree<Book,StoryBook>(books,{
+        includePath:true,
+        mapper:({node,level})=>{
+            return {               
+                name:node.title,
+                publisher:`MEEYI ${level}` 
+            }
+        }
+    })
+    expect(storyNodes.length).toBe(30)
+    
+
+
+
+
+ })

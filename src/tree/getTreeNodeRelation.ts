@@ -25,10 +25,10 @@ export enum TreeNodeRelation{
 }
 
 export function getTreeNodeRelation<Node extends TreeNode = TreeNode,IdKey extends string = 'id'>(treeObj:Node | Node[],nodeId:Node[IdKey],refNodeId:Node[IdKey],options?:GetTreeNodeRelationOptions):TreeNodeRelation{
-    let result:TreeNodeRelation  = TreeNodeRelation.Unknown;
+    let relation:TreeNodeRelation = 9;
 
-    let { childrenKey,idKey } = Object.assign({}, DefaultTreeOptions ,options || {}) as Required<GetTreeNodeRelationOptions>     
-    
+    const opts= Object.assign({}, DefaultTreeOptions ,options || {}) as Required<GetTreeNodeRelationOptions>     
+    const { idKey } = opts
     if(nodeId == refNodeId) return TreeNodeRelation.Same
 
     let nodes: string | any[]=[] 
@@ -42,22 +42,24 @@ export function getTreeNodeRelation<Node extends TreeNode = TreeNode,IdKey exten
                 nodes = [[refNodeId,level,parent && parent[idKey],path],nodeId]
                 return
             } 
-
         }
+        if(nodes.length==0) return 
         if(curNode[idKey]==nodes[1]){
             const [id,level,parentId,basePath] = nodes[0]
-            let afterNode:Node = nodes[1]
             if(parent?.id == parentId){
-                result = TreeNodeRelation.Sibling
+                relation = TreeNodeRelation.Sibling
             }else if(parent?.id == id ){
-                result = TreeNodeRelation.Child
-            }else if(path.join("/").startsWith(basePath.join("/"))){
-                result = TreeNodeRelation.Descendants
+                relation = TreeNodeRelation.Child
+            }else if(path.startsWith(basePath)){
+                relation = TreeNodeRelation.Descendants
             }
-            return ABORT
+            return ABORT 
         }
+    },opts)  
 
-    },options)  
-
-    return result
+    if(nodes[0][0] == nodeId){
+        if(relation == TreeNodeRelation.Descendants) relation = TreeNodeRelation.Ancestors 
+        if(relation == TreeNodeRelation.Child) relation = TreeNodeRelation.Parent
+    }
+    return relation
 }
