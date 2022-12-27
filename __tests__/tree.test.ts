@@ -1,6 +1,6 @@
 import { test,expect} from "vitest"
 import { forEachTree, mapTree } from "../src"
-import { getRelatedTreeNode, RelatedTreeNode } from "../src/tree/getRelateTreeNode"
+import { getRelatedTreeNode, RelatedTreeNode } from "../src/tree/getRelatedTreeNode"
 import { getTreeNodeRelation, TreeNodeRelation } from "../src/tree/getTreeNodeRelation"
 import { moveTreeNode, MoveTreeNodePosition } from "../src/tree/moveTreeNode"
 import { toPidTree } from "../src/tree/toPidTree"
