@@ -369,6 +369,13 @@ const tree = [
 - 如果约定`id`、`children`字段名称不符合要求同，以下大部份的API均可以通过`options.idKey`和`options.childrenKey`来指定这两个核心字段的键名称。
 - `id`、`children`字段也支持通过泛型指定字段名称.
 
+## getById
+
+通过节点Id返回节点数据
+
+```typescript
+getById<Node extends TreeNode = TreeNode,IdKey extends string = "id">(treeObj:Node | Node[],nodeId:Node[IdKey],options?:GetByIdOptions):Node | null  
+```
 
 ## getByPath
 
