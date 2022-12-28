@@ -33,7 +33,6 @@ export interface NamedDictOptions{
     requires?          : string[]                                  // item项必选字段名称列表
     nameKey?           : string                                     // item名称键名,代表名称是从item[nameKey]提取,如果是class:name代表是由item.class字段的name提取，当然，此时item.class必须是一个对象或者是{}才行
     ignoreInvalidItems?: boolean                                       // 忽略无效项，如果=false则会触发错误，否则会直接无视
-    validator?         : (item:any) => boolean                                        // validator(item)校验回调函数，用来对
     // 正常情况下定义一个命名容器是[{name,...},{name:...},....{}]
     // 某些情况下允许采用缩写形式，如[AClass,BClass,....],这样存在命名容器没有名称的问题,这种情况下
     // 可以指定default="class"，代表缩写的是成员的class字段值
