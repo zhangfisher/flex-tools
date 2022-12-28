@@ -15,9 +15,16 @@ export type TreeNode<
     & Node      
     & TreeNodeId<IdKey,Node[IdKey]>  
   
-export type Tree = TreeNode
 
 export type TreeNodeBase = TreeNode<Record<string,any>,string>
+
+export type EmptyTree = {}              // 没有任何节点
+
+export type Tree<
+    Node extends Record<string,any> = {[key: string]: any},          // 节点数据
+    IdKey extends string  = 'id',
+    ChildrenKey extends string = 'children'
+> = EmptyTree | TreeNode<Node,IdKey,ChildrenKey> | TreeNode<Node,IdKey,ChildrenKey>[]
 
 
 export interface TreeNodeOptions{
