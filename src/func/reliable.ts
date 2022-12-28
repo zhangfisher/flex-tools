@@ -15,15 +15,13 @@ type reliableOptions={
     timeout         : number,                            // 执行失败超时,默认为1分钟
     retryCount      : number,                            // 重试次数
     retryInterval   : number,                            // 重试间隔
-    debounce        : number,                            // 去抖动
-    throttle        : number,                            // 节流
     noReentry       : boolean,                           // 不可重入
     memorize        :  ((args: any[]) => string) | 'length' | boolean
 }
 
 export function reliable(fn:AsyncFunction,options:reliableOptions):AsyncFunction{
     let opts = Object.assign({
-        timeout         : 0,                            // 执行失败超时,默认为1分钟
+        timeout         : 0,                            // 执行失败超时,默认为1秒
         retryCount      : 0,                            // 重试次数
         retryInterval   : 1000,                         // 重试间隔
         debounce        : 0,                            // 去抖动

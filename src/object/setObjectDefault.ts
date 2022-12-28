@@ -7,16 +7,16 @@ import { isPlainObject } from '../typecheck/isPlainObject';
  * 
  * 要求两个对象结构一致
  * 
- * @param targetObject 
- * @param srcObject 
+ * @param target 
+ * @param src 
  * @returns 
  */
-export function setObjectDefaultValue(targetObject:any,srcObject:any){
-    if(isPlainObject(srcObject)) return
-    if(isPlainObject(targetObject)) return
-    Object.entries(srcObject).forEach(([key,value])=>{
-        if(!(key in targetObject) || targetObject[key]==undefined){
-            targetObject[key] = value
+export function setObjectDefaultValue(target:any,src:any){
+    if(isPlainObject(src)) return
+    if(isPlainObject(target)) return
+    Object.entries(src).forEach(([key,value])=>{
+        if(!(key in target) || target[key]==undefined){
+            target[key] = value
         }
     })
 }

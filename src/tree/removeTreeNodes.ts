@@ -11,10 +11,10 @@
  * 
  */
 
-import type { Tree, TreeNode, TreeNodeOptions } from "./types";
-import { IForEachCallback } from "../object/forEachUpdateObject";
+import type { TreeNode, TreeNodeOptions } from "./types";
 import { DefaultTreeOptions } from "./consts";
 import { forEachTree, IForEachTreeCallback } from "./forEachTree";
+import { ABORT } from "../object";
 
 export interface RemoveTreeNodes extends TreeNodeOptions {
 
@@ -24,7 +24,8 @@ export function removeTreeNodes<Node extends TreeNode>(treeObj:Node | Node[],mat
     const opts= Object.assign({}, DefaultTreeOptions ,options || {}) as Required<RemoveTreeNodes>   
     const {childrenKey='children', idKey='id'} = opts
     forEachTree<Node>(treeObj,({node,level,parent,path,index})=>{
-        if(matcher({node,level,parent,path,index})){
+        const isMatched = matcher({node,level,parent,path,index})
+        if(isMatched){
             if(parent){
                 if(Array.isArray(parent[childrenKey])){
                     const children = parent[childrenKey]
@@ -36,6 +37,8 @@ export function removeTreeNodes<Node extends TreeNode>(treeObj:Node | Node[],mat
                     delete node[key]
                 })
             }
+        }else if(isMatched == ABORT){
+            return ABORT
         }
     },opts) 
 }

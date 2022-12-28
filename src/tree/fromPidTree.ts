@@ -8,9 +8,9 @@
  */
 
  import { DefaultTreeOptions } from "./consts";
- import { forEachTree } from "./forEachTree";
- import { TreeNode, TreeNodeBase, TreeNodeId, TreeNodeOptions } from "./types";
+ import { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types";
  import omit from "lodash/omit"; 
+import { PidTreeNode } from "./toPidTree";
   
  export interface FromPidTreeOptions<
     FromNode extends TreeNodeBase = TreeNode,
@@ -18,30 +18,40 @@
     IdKey extends string = 'id',
     ChildrenKey extends string = 'children'
 > extends TreeNodeOptions{ 
-     mapper?:({node,level,parent,path,index}:{node:FromNode,level:number,parent:FromNode | null,path:string,index:number}) => Omit<ToNode,ChildrenKey | IdKey>
+     mapper?:(node:FromNode) => ToNode
  }
   
-export type PidTreeNode< 
-    Node extends Record<string,any> = {[key: string]: any},IdKey extends string = 'id'
-> = Node      
-    & TreeNodeId<IdKey,Node[IdKey]>  
-    & {
-        pid:Node[IdKey] | null 
-    } 
-
 
  export function fromPidTree<
-    FromNode extends TreeNodeBase = TreeNode,
-    ToNode extends TreeNodeBase = FromNode,
+    FromNode extends PidTreeNode = PidTreeNode,
+    ToNode extends TreeNode = TreeNode<Omit<FromNode,'pid'>>,
     IdKey extends string = 'id',
     ChildrenKey extends string = 'children'
-    >(treeObj:PidTreeNode<FromNode>[],options?:FromPidTreeOptions<FromNode,ToNode,IdKey,ChildrenKey>):Omit<ToNode,ChildrenKey>[]{
+    >(pidNodes:FromNode[],options?:FromPidTreeOptions<FromNode,ToNode,IdKey,ChildrenKey>):ToNode[]{
+    const opts = Object.assign({}, DefaultTreeOptions ,options || {}) as Required<FromPidTreeOptions<FromNode,ToNode,IdKey,ChildrenKey>>     
+    const { idKey, childrenKey,mapper } = opts
+    let treeObj:ToNode[] = [];
 
-    let tree
-
-    
-
-
-
+    function getNode(node:FromNode):ToNode{
+        let toNode:ToNode 
+        if(typeof(mapper)=='function'){
+            toNode = mapper(node);
+            (toNode as any)[idKey] = node[idKey]
+        }else{
+            toNode = {            
+                ...omit(node,'pid'),
+                [idKey]: node[idKey],
+            } as ToNode
+        }        
+        let children = pidNodes.filter(pNode => pNode.pid==node[idKey])
+        if(children.length>0){
+            (toNode as any)[childrenKey] = children.map(subnode=>getNode(subnode))
+        }        
+        return toNode        
+    }
+    for(let pNode of pidNodes.filter(node=>node.pid==null)){
+        treeObj.push(getNode(pNode));
+    }
+    return treeObj
 }
 

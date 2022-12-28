@@ -7,7 +7,7 @@ export interface SerachTreeOptions extends TreeNodeOptions,ForEachTreeOptions {
 }
 
 /**
- *    遍历树的每一个节点，执行mather({node,level,parent,fullpath})，如果
+ *    遍历树的每一个节点，执行mather({node,level,parent,path,index})，如果
  *    返回true，则调用picker函数返回结果
  * 
  *   

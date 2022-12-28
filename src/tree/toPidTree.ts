@@ -25,7 +25,8 @@
  }
   
 export type PidTreeNode< 
-    Node extends Record<string,any> = {[key: string]: any},IdKey extends string = 'id'
+    Node extends Record<string,any> = {[key: string]: any},
+    IdKey extends string = 'id'
 > = Node      
     & TreeNodeId<IdKey,Node[IdKey]>  
     & {
@@ -39,11 +40,12 @@ export function toPidTree<
     ToNode extends TreeNodeBase = FromNode,
     IdKey extends string = 'id',
     ChildrenKey extends string = 'children'
->(treeObj:FromNode | FromNode[],options?:ToPidTreeOptions<FromNode,ToNode,IdKey,ChildrenKey>):Omit<ToNode,ChildrenKey>[]{
-     const opts = Object.assign({}, DefaultTreeOptions ,options || {}) as Required<ToPidTreeOptions<FromNode,ToNode,IdKey,ChildrenKey>>     
+>(treeObj:FromNode | FromNode[],options?:ToPidTreeOptions<FromNode,ToNode,IdKey,ChildrenKey>):PidTreeNode<Omit<ToNode,ChildrenKey>,IdKey>[]{
+    
+    const opts = Object.assign({}, DefaultTreeOptions ,options || {}) as Required<ToPidTreeOptions<FromNode,ToNode,IdKey,ChildrenKey>>     
     const { childrenKey,idKey,includeLevel=true, includePath=false,mapper } = opts
 
-    let nodes:PidTreeNode<ToNode,IdKey>[] = []
+    let nodes:PidTreeNode<Omit<ToNode,ChildrenKey>,IdKey>[] = []
     forEachTree<FromNode>(treeObj,({node,parent,level,path,index})=>{
         if(typeof(mapper)=='function'){
             let newNode = Object.assign({

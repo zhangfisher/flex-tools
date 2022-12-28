@@ -19,11 +19,12 @@ import { isPlainObject } from "../typecheck/isPlainObject"
 export type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:any[] | object | null,keyOrIndex?:string | number | null})=>any
     
 export function forEachUpdateObject<T=any>(obj:any[] | object,filter:IForEachCallback,updater:IForEachCallback):T{
+    let isAbort :boolean = false
     function forEachUpdateItem(parent:any[] | object | null,keyOrIndex:string | number | null,value:any){
         if(Array.isArray(value)){
-            value.forEach((v,i)=>{
-                value[i] = forEachUpdateItem(value,i,v)
-            })
+            for(let i=0;i<value.length;i++){
+                value[i] = forEachUpdateItem(value,i,value[i])
+            }
             return value
         }else if(isPlainObject(value)){
             for(let [k,v] of Object.entries(value)){

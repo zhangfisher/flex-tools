@@ -1,5 +1,4 @@
-import type { AsyncFunction } from "../types"
-
+ 
 /**
  *
  * 包装一个函数使之调用指定的参数

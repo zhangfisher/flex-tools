@@ -1,5 +1,6 @@
 import { test,expect} from "vitest"
 import { forEachTree, mapTree } from "../src"
+import { fromPidTree } from "../src/tree/fromPidTree"
 import { getRelatedTreeNode, RelatedTreeNode } from "../src/tree/getRelatedTreeNode"
 import { getTreeNodeRelation, TreeNodeRelation } from "../src/tree/getTreeNodeRelation"
 import { moveTreeNode, MoveTreeNodePosition } from "../src/tree/moveTreeNode"
@@ -164,9 +165,5 @@ test("获取树节点关系",()=>{
         }
     })
     expect(storyNodes.length).toBe(30)
-    
-
-
-
-
+    let books2 = fromPidTree(storyNodes)
  })
