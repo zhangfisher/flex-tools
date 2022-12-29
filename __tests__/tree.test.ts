@@ -206,3 +206,21 @@ test("删除节点",()=>{
     expect(tree.nodes.length).toBe(0)
 
 })
+
+test("遍历树节点",()=>{ 
+    let tree = new FlexTree<Book>(books)
+    let nodes =[]
+    for(let node of tree){
+        nodes.push(node)
+    }    
+    expect(nodes.length).toBe(30)
+})
+
+
+test("遍历删除所有节点",()=>{ 
+    let tree = new FlexTree<Book>(books)
+    for(let { node } of tree){
+        tree.removeNode(node.id)
+    }    
+    expect(tree.nodes.length).toBe(0)
+})

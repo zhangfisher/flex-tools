@@ -1,7 +1,6 @@
  
-import { isEmpty } from "lodash";
 import { isNothing } from "../typecheck/isNothing";
-import { IForEachTreeCallback } from "./forEachTree";
+import { forEachTree, IForEachTreeCallback } from "./forEachTree";
 import { getById } from "./getById";
 import { getTreeNodeInfo } from "./getTreeNodeInfo";
 import { moveTreeNode, MoveTreeNodePosition } from "./moveTreeNode";
@@ -25,7 +24,23 @@ export class FlexTree<Node extends TreeNode = TreeNode,IdKey extends string = "i
         return Array.isArray(this.#treeObj) ? undefined : this.#treeObj
     }
     get nodes(): Node[]{
-        return Array.isArray(this.#treeObj) ? this.#treeObj : (isEmpty(this.#treeObj) ? [] : [this.#treeObj])
+        return Array.isArray(this.#treeObj) ? this.#treeObj : (isNothing(this.#treeObj) ? [] : [this.#treeObj])
+    }
+    [Symbol.iterator](){        
+        type ParamsType = Parameters<IForEachTreeCallback<Node>>[0] 
+        let nodes:ParamsType[] = []
+        forEachTree<Node>(this.#treeObj,({node,parent,index,level,path})=>{
+            nodes.push({node,parent,index,level,path})
+        },this.#options)
+        let index = 0
+        return {
+            next: function ():{value: Parameters<IForEachTreeCallback<Node>>[0] ,done:boolean} {
+              return {
+                value: nodes[index++],
+                done: index > nodes.length
+              };
+            }
+          };        
     }
     /**
      * 返回指定id的节点

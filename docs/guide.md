@@ -740,6 +740,19 @@ class FlexTree{
     search(matcher:IForEachTreeCallback<Node>,picker?:IForEachTreeCallback<Node>,options?:SerachTreeOptions)
 }
 
+// 遍历节点
+let tree = new FlexTree({
+    id:1,
+    title:"a",
+    children: [
+        {id:2},
+        {id:3}
+    ]
+})
+for(let node of nodes){
+    console.log(node)
+}
+
 ```
 
 
