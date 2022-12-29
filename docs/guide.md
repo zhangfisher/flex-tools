@@ -1,5 +1,86 @@
 # 指南
 
+# 字符串
+
+字符串函数被直接添加在`String.prototype`，因些需要导入就可以直接使用。
+
+```typescript
+import "flex-tools/string"
+```
+
+## params
+
+对字符串进行插值。
+
+```typescript
+"this is {a}+{b}".params({a:1,b:2})         // == this is 1+2
+"this is {a}+{b}".params(1,2)               // ==  this is 1+2
+"this is {}+{}".params([1,2])               // == // this is 1+2
+```
+
+## firstUpper
+
+将首字母变为大写。
+```typescript
+    "abc".firstUpper() // ==Abc
+```
+## ljust
+
+输出`width`个字符，字符左对齐，不足部分用`fillChar`填充，默认使用空格填充。
+
+```typescript
+"abc".ljust(10) // "abc       "
+"abc".ljust(10,"-") // "abc-------"
+```
+
+## rjuest
+
+输出`width`个字符，字符右对齐，不足部分用`fillChar`填充，默认使用空格填充。
+
+```typescript
+"abc".rjust(10) // "       abc"
+"abc".rjust(10,"-") // "-------abc"
+```
+
+## center
+
+输出`width`个字符，字符串居中，不足部分用`fillChar`填充，默认使用空格填充。
+
+```typescript
+"abc".rjust(7) // "  abc  "
+"abc".rjust(7,"-") // "--abc--"
+```
+
+## trimBeginChars
+
+截断字符串前面的字符
+
+```typescript
+ "abc123xyz".trimBeginChars("abc") // == "123xyz"
+
+ // 从123开始向前截断
+"abc123xyz".trimBeginChars("123") // == "xyz"
+// 只截断最前的字符
+"abc123xyz".trimBeginChars("123",true) // == "abc123xyz"
+
+
+```
+
+## trimEndChars
+
+截断字符串未尾的字符
+
+```typescript
+"abc123xyz".trimEndChars("xyz") // == "abc123"
+// 从123开始向后截断
+"abc123xyz".trimEndChars("123") // == "abc"
+// 只截断最后的字符
+"abc123xyz".trimEndChars("123",true) // == "abc123xyz"
+
+
+```
+
+
 # 函数工具
 
 ## appleParams
@@ -105,6 +186,16 @@ function reliable(fn:AsyncFunction,options:reliableOptions):AsyncFunction
 ```
 
 # 对象工具
+
+## safeParseJson
+
+使用`JSON.parse`解决JSON字符串时，对格式的得严格的要求，比如`JSON.parse("{a:1}")`就会失败，因为JSON标准比较严格，要求键名和字符串必须使用`"..."`包起来。`safeParseJson`方法能可以更好地兼容一些非标JSON字符串。
+
+```typescript
+function safeParseJson(str:string)
+```
+
+
 
 ## deepMerge
 
@@ -631,6 +722,28 @@ enum RelatedTreeNode{
 function getRelatedTreeNode<Node extends TreeNode = TreeNode,IdKey extends string = 'id' 
 >(treeObj: Node | Node[],nodeId:Node[IdKey],pos:RelatedTreeNode , options?:GetRelatedTreeNodeOptions):Node | null   
 ```
+
+## FlexTree
+
+`FlexTree`是一个树结构类
+
+```typescript
+
+class FlexTree{
+    constructor(nodes:Node[] | Node,options:FlexTreeOptions<Node,IdKey>)
+    get root(): Node | undefined
+    get nodes(): Node[]
+    getNode(nodeId:Node[IdKey]):Node | null
+    addNode(nodeData: Partial<Node> ,refNodeId:Node[IdKey],pos:MoveTreeNodePosition = MoveTreeNodePosition.LastChild):Node 
+    removeNode(nodeId:Node[IdKey]):void 
+    moveNode(nodeId: Node[IdKey],refNodeId:Node[IdKey],pos:MoveTreeNodePosition)
+    search(matcher:IForEachTreeCallback<Node>,picker?:IForEachTreeCallback<Node>,options?:SerachTreeOptions)
+}
+
+```
+
+
+
 
 # 类工具
 

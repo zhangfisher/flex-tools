@@ -26,3 +26,19 @@ export type WithReturnFunction<T> = (...args: any)=>T
 export type ImplementOf<T> = new (...args: any) => T
 
 
+
+declare global {
+    interface String {
+        params(params: Record<string, any>): string;
+        params(...args: any[]): string;
+        params(args: any[]): string;
+        rjust(width:number,fillChar:string):string
+        ljust(width:number,fillChar:string):string
+        firstUpper(): string;
+        center(width: number, fillChar?: string): string;
+        trimBeginChars(chars: string): string
+        trimEndChars(chars: string): string
+        trimFromBeginChars(chars: string): string
+        trimFromEndChars(chars: string): string
+    }
+}

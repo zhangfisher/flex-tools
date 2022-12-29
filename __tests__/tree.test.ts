@@ -1,5 +1,5 @@
 import { test,expect} from "vitest"
-import { forEachTree, mapTree } from "../src"
+import { FlexTree, forEachTree, mapTree } from "../src"
 import { fromPidTree } from "../src/tree/fromPidTree"
 import { getRelatedTreeNode, RelatedTreeNode } from "../src/tree/getRelatedTreeNode"
 import { getTreeNodeRelation, TreeNodeRelation } from "../src/tree/getTreeNodeRelation"
@@ -127,7 +127,7 @@ test("获取树节点关系",()=>{
 
     // 121 -> 122.Children
     moveTreeNode<Book>(books,121,122)
-       expect(getTreeNodeRelation(books,121,122)).toBe(TreeNodeRelation.Child)
+    expect(getTreeNodeRelation(books,121,122)).toBe(TreeNodeRelation.Child)
 
     // 122 -> 15.Children
     moveTreeNode<Book>(books,122,15,MoveTreeNodePosition.FirstChild)
@@ -167,3 +167,42 @@ test("获取树节点关系",()=>{
     expect(storyNodes.length).toBe(30)
     let books2 = fromPidTree(storyNodes)
  })
+
+ test("增加节点树",()=>{ 
+    let tree = new FlexTree<Book>(books,{
+        idGenerator:()=>Math.random() * 1000
+    })
+
+    tree.addNode({
+        title:"RootNext"
+    },1,MoveTreeNodePosition.Next)
+
+    expect(Array.isArray(tree.nodes)).toBeTruthy()
+    expect(tree.nodes.length).toBe(2)
+
+    tree.addNode({
+        title:"RootPrevious"
+    },1,MoveTreeNodePosition.Previous)
+    expect(tree.nodes.length).toBe(3)
+
+    tree.addNode({
+        title:"RootChild1"
+    },1,MoveTreeNodePosition.LastChild)
+
+    tree.addNode({
+        title:"RootChild2"
+    },1,MoveTreeNodePosition.FirstChild)
+
+
+
+
+})
+
+test("删除节点",()=>{ 
+    let tree = new FlexTree<Book>(books)
+
+    tree.removeNode(1)
+
+    expect(tree.nodes.length).toBe(0)
+
+})

@@ -16,12 +16,12 @@ import { DefaultTreeOptions } from "./consts";
 import { forEachTree, IForEachTreeCallback } from "./forEachTree";
 import { ABORT } from "../object";
 
-export interface RemoveTreeNodes extends TreeNodeOptions {
-
+export interface RemoveTreeNodesOptions extends TreeNodeOptions {
+    onlyRemoveOne?: boolean;                    // 只删除一个
 }
 
-export function removeTreeNodes<Node extends TreeNode>(treeObj:Node | Node[],matcher:IForEachTreeCallback<Node>,options?:RemoveTreeNodes):void{
-    const opts= Object.assign({}, DefaultTreeOptions ,options || {}) as Required<RemoveTreeNodes>   
+export function removeTreeNodes<Node extends TreeNode>(treeObj:Node | Node[],matcher:IForEachTreeCallback<Node>,options?:RemoveTreeNodesOptions):void{
+    const opts= Object.assign({onlyRemoveOne:false}, DefaultTreeOptions ,options || {}) as Required<RemoveTreeNodesOptions>   
     const {childrenKey='children', idKey='id'} = opts
     forEachTree<Node>(treeObj,({node,level,parent,path,index})=>{
         const isMatched = matcher({node,level,parent,path,index})
@@ -37,6 +37,7 @@ export function removeTreeNodes<Node extends TreeNode>(treeObj:Node | Node[],mat
                     delete node[key]
                 })
             }
+            if(opts.onlyRemoveOne) return ABORT
         }else if(isMatched == ABORT){
             return ABORT
         }
