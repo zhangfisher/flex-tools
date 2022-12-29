@@ -120,6 +120,13 @@ deepMerge(toObj:any,formObj:any,options:DeepMergeOptions={array:'noDupMerge'})`
 - `array='merge'`:  合并数组数据项
 - `array='noDupMerge'`:  合并数组数据项，并且进行去重
 
+## getPropertyNames
+
+ 获取指定对象的所有包含原型链上的所有属性列表  
+
+ ```typescript
+function getPropertyNames(obj: any)
+```
 
 ## forEachObject
 
