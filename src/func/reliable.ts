@@ -1,7 +1,7 @@
-import noReentry from "./noReentry"
+import {noReentry} from "./noReentry"
 import {timeout} from "./timeout"
 import {retry} from "./retry"
-import memorize from './memorize';
+import {memorize} from './memorize';
 import type { AsyncFunction } from "../types"
 import { applyParams } from "./applyParams";
 
@@ -11,7 +11,7 @@ import { applyParams } from "./applyParams";
  *
  */
 
-type reliableOptions={
+export type reliableOptions={
     timeout         : number,                            // 执行失败超时,默认为1分钟
     retryCount      : number,                            // 重试次数
     retryInterval   : number,                            // 重试间隔

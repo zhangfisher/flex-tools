@@ -4,7 +4,7 @@
  * @param options 
  * @returns 
  */
-export default function (fn:Function,options?:{silence?:boolean}) {
+export function noReentry(fn:Function,options?:{silence?:boolean}) {
     let running = false
     return async function (this:any,...args:any[]) {
         if(running) {

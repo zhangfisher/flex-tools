@@ -5,7 +5,7 @@ import { isAsyncFunction } from "../typecheck/isAsyncFunction"
  * @param options 
  * @returns 
  */
- export default function (fn:Function,options:{hash?:((args: any[]) => string) | 'length' | boolean,expires?:number}={hash:false,expires:0}) {
+ export function memorize(fn:Function,options:{hash?:((args: any[]) => string) | 'length' | boolean,expires?:number}={hash:false,expires:0}) {
     let result:any
     let preHash:string | undefined
     let timestamp :number = 0
