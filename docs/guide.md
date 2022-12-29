@@ -611,7 +611,7 @@ enum MoveTreeNodePosition{
 function moveTreeNode<Node extends TreeNode = TreeNode,IdKey extends string = 'id'>(treeObj:Node | Node[],fromNodeId: Node[IdKey],toNodeId:Node[IdKey],pos:MoveTreeNodePosition=MoveTreeNodePosition.LastChild, options?:MoveTreeNodeOptions):void   
 ```
 
-# getRelatedTreeNode
+## getRelatedTreeNode
 
 获取指定节点的关联节点。
 

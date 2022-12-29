@@ -2,8 +2,18 @@
 
 [文档](https://zhangfisher.github.io/flex-tools/)
 
-- 基于`TypeScript`开发
-- 实用化 
+- 基于`TypeScript`开发 
+- 对象工具
+- 类型检查
+- 数组工具
+- 函数工具
+- 树结构工具
+- 异步函数工具
+- 类工具
+- 事件工具
+- 数据容器
+- TypeScript类型扩展 
+
 
 # **开源推荐：** 
 
