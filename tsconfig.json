@@ -23,14 +23,13 @@
     // "noLib": true,                                    /* Disable including any library files, including the default lib.d.ts. */
     // "useDefineForClassFields": true,                  /* Emit ECMAScript-standard-compliant class fields. */
     // "moduleDetection": "auto",                        /* Control what method is used to detect module-format JS files. */
-
+    "moduleResolution": "node16",
     /* Modules */
     "module": "commonjs",                                /* Specify what module code is generated. */
     // "baseUrl": ".",
     // "rootDir": "./src",
     // "outDir": "./dist",
-    // "paths": {
-    //     "./decorator":["./index.d.ts"]
+    // "paths": { 
     // },
     //"rootDir": "./src",                                  /* Specify the root folder within your source files. */
     // "moduleResolution": "node",                       /* Specify how TypeScript looks up a file from a given module specifier. */

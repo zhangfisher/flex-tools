@@ -4,14 +4,15 @@ export default defineConfig({
     entry: [
         'src/**/*.ts'
     ],
-    format: ['cjs', 'esm'],
+    format: ['esm','cjs'],
     dts: true,
     splitting: true,
     sourcemap: true,
     clean: true,
     treeshake:true,  
-    publicDir:"./release",
-    // external:[/^\./],
+    publicDir:"./release", 
+    minify:true,
+    keepNames:true,
     banner: {
         js: `/**
 *        

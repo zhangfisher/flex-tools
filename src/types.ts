@@ -36,9 +36,7 @@ declare global {
         ljust(width:number,fillChar:string):string
         firstUpper(): string;
         center(width: number, fillChar?: string): string;
-        trimBeginChars(chars: string): string
-        trimEndChars(chars: string): string
-        trimFromBeginChars(chars: string): string
-        trimFromEndChars(chars: string): string
+        trimBeginChars(chars: string,atBegin?:boolean): string
+        trimEndChars(chars: string,atEnd?:boolean): string 
     }
 }
