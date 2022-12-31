@@ -10,9 +10,6 @@ export default defineConfig({
     sourcemap: true,
     clean: true,
     treeshake:true,  
-    publicDir:"./release", 
-    minify:true,
-    keepNames:true,
     banner: {
         js: `/**
 *        
