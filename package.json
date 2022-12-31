@@ -1,12 +1,18 @@
 {
   "name": "flex-tools",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "modular utilities.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "homepage": "https://github.com/zhangfisher/flex-tools",
   "repository": "https://github.com/zhangfisher/flex-tools",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup",
+    "release":"tsup && npm version patch && npm publish",
+    "doc":"docsify serve docs"
+  },
   "exports":{
     ".": {
         "types":"./dist/index.d.ts",
@@ -103,12 +109,6 @@
         "require":"./dist/string/*.js",
         "import": "./dist/string/*.mjs"
     }
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsup",
-    "release":"tsup & cd dist && npm publish",
-    "doc":"docsify serve docs"
   },
   "keywords": [],
   "author": "",

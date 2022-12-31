@@ -1,4 +1,4 @@
-import getByPath from "lodash/get"
+import getByPath from "lodash/get" 
 import setByPath from "lodash/set"
 import { isNothing } from "../typecheck/isNothing"
 import { isPlainObject } from "../typecheck/isPlainObject"
