@@ -1076,3 +1076,108 @@ let dict = NamedDict([
 }
 
 ```
+
+# TypeScript类型
+
+## Class
+
+类类型
+
+```typescript
+    export type Class = new (...args: any[]) => any
+```
+
+## ArrayMember
+
+返回数组成员类型
+
+```typescript
+// 提取数组成员的类型
+export type ArrayMember<T> = T extends (infer T)[] ? T : never
+```
+
+## AsyncFunction
+
+异步函数
+
+```typescript
+export type AsyncFunction = (...args: any[]) => Awaited<Promise<any>>;
+```
+ 
+## ReturnValueType
+
+提取函数的返回值类型
+
+```typescript
+export type ReturnValueType<T> = T extends (...args: any) => any ? ReturnType<T> : any;
+```
+
+## AllowEmpty
+
+允许为空
+
+```typescript
+export type AllowEmpty<T> = T | null | undefined
+```
+## Constructor
+
+构造类
+
+```typescript
+export type Constructor = { new (...args: any[]): any };
+```
+## TypedClassDecorator
+
+ 装饰器
+```typescript
+export type TypedClassDecorator<T> = <T extends Constructor>(target: T) => T | void; 
+```
+
+## WithReturnFunction
+
+返回指定类型的函数
+
+```typescript
+export type WithReturnFunction<T> = (...args: any)=>T
+```
+
+## ImplementOf
+实现某个指定的类接口
+
+```typescript
+export type ImplementOf<T> = new (...args: any) => T
+```
+
+## Rename
+
+ 用来更名接口中的的类型
+
+```typescript
+export type Rename<T,NameMaps extends Partial<Record<keyof T,any>>> = {
+    [K in keyof NameMaps as NameMaps[K] ]:K extends keyof T ? T[K] : never
+} & Omit<T,keyof NameMaps>
+
+// 示例：
+
+
+
+ interface X{
+  a:number
+  b:boolean
+  c:()=>boolean
+ }
+
+// 将a更名为A
+type R1 = Rename<X,{'a':'A'}>  
+// {  A:number, 
+//    b:boolean
+//    c:()=>boolean
+// }
+type R2 = Rename<X,{'a':'A','b':'B'}>  
+// {  A:number, 
+//    B:boolean
+//    c:()=>boolean
+// }
+
+```
+ 
