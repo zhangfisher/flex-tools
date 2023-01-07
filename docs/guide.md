@@ -1181,3 +1181,33 @@ type R2 = Rename<X,{'a':'A','b':'B'}>
 
 ```
  
+# 杂项
+
+## timer
+
+计时器，用来返回两次调用之间的耗时
+
+```typescript
+import { timer } from "flex-tools"
+
+
+timer.begin()
+await doing()
+timer.end()  // time consuming: 12ms
+
+timer.end("耗时：")  // 耗时：12ms
+timer.end("耗时：",{unit:'s'})  // 耗时：1200s
+```
+
+**说明** 
+
+- `timer.begin`和`timer.end`必须成对出现
+- 允许嵌套使用`timer.begin`和`timer.end`
+    ```typescript
+        timer.begin() -------------| 
+        await doing()              |
+            timer.begin() ---      |
+            await doing()    |     |
+            timer.end()   ---      |
+        timer.end()  --------------|
+    ```
