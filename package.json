@@ -1,6 +1,6 @@
 {
   "name": "flex-tools",
-  "version": "1.0.22",
+  "version": "1.0.24",
   "description": "modular utilities.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -13,6 +13,11 @@
     "release": "tsup && npm version patch && npm publish",
     "doc": "docsify serve docs"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
