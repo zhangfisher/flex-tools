@@ -60,8 +60,9 @@ import "flex-tools/string"
 
  // 从123开始向前截断
 "abc123xyz".trimBeginChars("123") // == "xyz"
-// 只截断最前的字符
+// 只截断最前的字符==123
 "abc123xyz".trimBeginChars("123",true) // == "abc123xyz"
+"123abc123xyz".trimBeginChars("123",true) // == "abc123xyz"
 
 
 ```
@@ -76,6 +77,7 @@ import "flex-tools/string"
 "abc123xyz".trimEndChars("123") // == "abc"
 // 只截断最后的字符
 "abc123xyz".trimEndChars("123",true) // == "abc123xyz"
+"abc123xyz123".trimEndChars("123",true) // == "abc123xyz"
 
 
 ```

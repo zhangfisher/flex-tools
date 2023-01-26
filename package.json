@@ -15,6 +15,7 @@
   },
   "files": [
     "dist",
+    "package.json",
     "README.md",
     "LICENSE"
   ],
@@ -28,91 +29,59 @@
       "types": "./dist/async/index.d.ts",
       "require": "./dist/async/index.js",
       "import": "./dist/async/index.mjs"
-    },
-    "./async/*": {
-      "types": "./dist/async/*.d.ts",
-      "require": "./dist/async/*.js",
-      "import": "./dist/async/*.mjs"
-    },
+    }, 
     "./class": {
       "types": "./dist/class/index.d.ts",
       "require": "./dist/class/index.js",
       "import": "./dist/class/index.mjs"
-    },
-    "./class/*": {
-      "types": "./dist/class/*.d.ts",
-      "require": "./dist/class/*.js",
-      "import": "./dist/class/*.mjs"
-    },
+    }, 
     "./collection": {
       "types": "./dist/collection/index.d.ts",
       "require": "./dist/collection/index.js",
       "import": "./dist/collection/index.mjs"
-    },
-    "./collection/*": {
-      "types": "./dist/collection/*.d.ts",
-      "require": "./dist/collection/*.js",
-      "import": "./dist/collection/*.mjs"
-    },
+    }, 
     "./events": {
       "types": "./dist/events/index.d.ts",
       "require": "./dist/events/index.js",
       "import": "./dist/events/index.mjs"
-    },
-    "./events/*": {
-      "types": "./dist/events/*.d.ts",
-      "require": "./dist/events/*.js",
-      "import": "./dist/events/*.mjs"
-    },
+    }, 
     "./func": {
       "types": "./dist/func/index.d.ts",
       "require": "./dist/func/index.js",
       "import": "./dist/func/index.mjs"
-    },
-    "./func/*": {
-      "types": "./dist/func/*.d.ts",
-      "require": "./dist/func/*.js",
-      "import": "./dist/func/*.mjs"
-    },
+    }, 
     "./object": {
       "types": "./dist/object/index.d.ts",
       "require": "./dist/object/index.js",
       "import": "./dist/object/index.mjs"
-    },
-    "./object/*": {
-      "types": "./dist/object/*.d.ts",
-      "require": "./dist/object/*.js",
-      "import": "./dist/object/*.mjs"
-    },
+    }, 
     "./tree": {
       "types": "./dist/tree/index.d.ts",
       "require": "./dist/tree/index.js",
       "import": "./dist/tree/index.mjs"
-    },
-    "./tree/*": {
-      "types": "./dist/tree/*.d.ts",
-      "require": "./dist/tree/*.js",
-      "import": "./dist/tree/*.mjs"
-    },
+    }, 
     "./typecheck": {
       "types": "./dist/typecheck/index.d.ts",
       "require": "./dist/typecheck/index.js",
       "import": "./dist/typecheck/index.mjs"
-    },
-    "./typecheck/*": {
-      "types": "./dist/typecheck/*.d.ts",
-      "require": "./dist/typecheck/*.js",
-      "import": "./dist/typecheck/*.mjs"
-    },
+    }, 
     "./string": {
       "types": "./dist/string/index.d.ts",
       "require": "./dist/string/index.js",
       "import": "./dist/string/index.mjs"
-    },
-    "./string/*": {
-      "types": "./dist/string/*.d.ts",
-      "require": "./dist/string/*.js",
-      "import": "./dist/string/*.mjs"
+    } 
+  },
+  "typesVersions": {
+    "*":{
+        "string":["./dist/string/index.d.ts"],
+        "typecheck":["./dist/typecheck/index.d.ts"],
+        "tree":["./dist/tree/index.d.ts"],
+        "object":["./dist/object/index.d.ts"],
+        "func":["./dist/func/index.d.ts"],
+        "events":["./dist/events/index.d.ts"],
+        "collection":["./dist/collection/index.d.ts"],
+        "async":["./dist/async/index.d.ts"],
+        "classs":["./dist/classs/index.d.ts"]
     }
   },
   "keywords": [],

@@ -1,3 +1,20 @@
+
+export type StringInterpolationVars = string | number| number | boolean | Date | Error | null | undefined | Function
+
+declare global {
+    interface String {
+        params(params: Record<string, any>): string;
+        params(...args: any[]): string;
+        params(args: any[]): string;
+        rjust(width:number,fillChar:string):string
+        ljust(width:number,fillChar:string):string
+        firstUpper(): string;
+        center(width: number, fillChar?: string): string;
+        trimBeginChars(chars: string,atBegin?:boolean): string
+        trimEndChars(chars: string,atEnd?:boolean): string 
+    }
+}
+  
 /**
  * 首字母大写
  * @constructor
@@ -60,8 +77,6 @@ String.prototype.trimEndChars=function(chars:string,atEnd:boolean=false){
 
 const ParamRegExp=/\{\s*\w*\s*\}/g
 
- 
-
 
 //添加一个params参数，使字符串可以进行变量插值替换，
 // "this is {a}+{b}".params({a:1,b:2}) --> this is 1+2
@@ -85,4 +100,6 @@ String.prototype.params=function (params) {
     return result
 }
 
-export * from "./types"
+
+
+export {}
