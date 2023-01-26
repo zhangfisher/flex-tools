@@ -1,4 +1,3 @@
-import "./types"
 /**
  * 首字母大写
  * @constructor
@@ -86,3 +85,4 @@ String.prototype.params=function (params) {
     return result
 }
 
+export * from "./types"
