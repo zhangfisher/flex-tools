@@ -33,4 +33,8 @@ export type Rename<T,NameMaps extends Partial<Record<keyof T,any>>> = {
 } & Omit<T,keyof NameMaps>
 
  
+// 除了string外的迭代器，指
+export type IterableCollection<T=any> = Set<T> | Array<T> | Map<any,T> 
+
+
 
