@@ -1,6 +1,6 @@
 import { test,expect} from "vitest"
 
-import {  replaceVars } from "../src/string/replaceVars"
+import {  replaceVars } from "../src/string"
 
 
 test("replaceVars", ()=>{
@@ -38,6 +38,15 @@ test("replaceVars", ()=>{
     expect(replaceVars("{a}+{b}={<c>}",[1,1],{empty:''})).toBe("1+1=<>")
     expect(replaceVars("{a}+{b}={c}",[1,1,null],{empty:'空'})).toBe("1+1=空")
     expect(replaceVars("{,a}+{,b}={,c}",[undefined,null])).toBe("+=")
+
+    expect("{a}+{b}={c}".params(1,1,2)).toBe("1+1=2")
+    expect("{#a}+{b%}={<c>}".params(1,1,2)).toBe("#1+1%=<2>")
+    expect("{# a}+{b %}={< c >}".params(1,1,2)).toBe("# 1+1 %=< 2 >")
+    expect("{a}+{b}={c}".params(()=>1,()=>1,()=>2)).toBe("1+1=2")
+    expect("{a}+{b}={c}".params(1,1)).toBe("1+1=")
+    expect("{a}+{b}={<c>}".params(1,1)).toBe("1+1=")
+    expect("{a}+{b}={c}".params(1,1,null)).toBe("1+1=")
+    expect("{,a}+{,b}={,c}".params(undefined,null)).toBe("+=")
 
 
     expect(replaceVars("It is {a}",1)).toBe("It is 1")

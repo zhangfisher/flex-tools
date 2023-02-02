@@ -10,13 +10,37 @@ import "flex-tools/string"
 
 ## params
 
-对字符串进行插值。
+对字符串进行常量插值。
+
+- **字典插值**
 
 ```typescript
-"this is {a}+{b}".params({a:1,b:2})         // == this is 1+2
-"this is {a}+{b}".params(1,2)               // ==  this is 1+2
-"this is {}+{}".params([1,2])               // == // this is 1+2
+"this is {a}+{b}".params({a:1,b:2})                 // == "this is 1+2"
+"{a}+{b}={c}".params({a:1,b:1,c:2})                 // == "1+1=2"
+"{#a}+{b%}={<c>}".params({a:1,b:1,c:2})             // == "#1+1%=<2>"
+"{# a}+{b %}={< c >}".params({a:1,b:1,c:2})         // == "# 1+1 %=< 2 >"
+"{a}+{b}={c}".params({a:()=>1,b:()=>1,c:()=>2})     // == "1+1=2"
+"{a}+{b}={c}".params({a:1,b:1})                     // == "1+1="
+"{a}+{b}={<c>}".params({a:1,b:1})                   // == "1+1="
+"{a}+{b}={<c>}".params({a:1,b:1})                   // == "1+1=<>"
+"{a}+{b}={c}".params({a:1,b:1,c:null})              // == "1+1=空"
+"{,a}+{,b}={,c}".params({a:undefined,b:null})       // == "+="
 ```
+
+- **位置插值**
+
+```typescript
+"{a}+{b}={c}".params([1,1,2])                       // =="1+1=2"
+"{#a}+{b%}={<c>}".params([1,1,2])                   // =="#1+1%=<2>"
+"{# a}+{b %}={< c >}".params([1,1,2])               // =="# 1+1 %=< 2 >"
+"{a}+{b}={c}".params([()=>1,()=>1,()=>2])           // =="1+1=2"
+"{a}+{b}={c}".params([1,1])                         // =="1+1="
+"{a}+{b}={<c>}".params([1,1])                       // =="1+1="
+"{a}+{b}={<c>}".params([1,1],{empty:''})            // =="1+1=<>"
+"{a}+{b}={c}".params([1,1,null],{empty:'空'})       // =="1+1=空"
+"{,a}+{,b}={,c}".params([undefined,null])           // =="+="
+```
+ 
 
 ## firstUpper
 
