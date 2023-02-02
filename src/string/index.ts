@@ -1,3 +1,4 @@
+import { replaceVars } from "./replaceVars";
 
 export type StringInterpolationVars = string | number| number | boolean | Date | Error | null | undefined | Function
 
@@ -75,31 +76,58 @@ String.prototype.trimEndChars=function(chars:string,atEnd:boolean=false){
 }
 
 
-const ParamRegExp=/\{\s*\w*\s*\}/g
 
+/**
+ * 
+    添加一个params参数，使字符串可以进行变量插值替换，
 
-//添加一个params参数，使字符串可以进行变量插值替换，
-// "this is {a}+{b}".params({a:1,b:2}) --> this is 1+2
-// "this is {a}+{b}".params(1,2) --> this is 1+2
-// "this is {}+{}".params([1,2]) --> this is 1+2
-String.prototype.params=function (params) {
-    let result=this.valueOf()
-    if(typeof params === "object"){
-        for(let name in params){
-            result=result.replaceAll(new RegExp("\{\\s*"+ name +"\\s*\}","g"),params[name])
-        }
-    }else{
-        let i=0
-        for(let match of result.match(ParamRegExp) || []){
-            if(i<arguments.length){
-                result=result.replace(match,arguments[i])
-                i+=1
-            }
-        }
-    }
-    return result
+    基本用法：
+
+    "this is {a}+{b}".params({a:1,b:2}) --> this is 1+2
+    "this is {a}+{b}".params(1,2) --> this is 1+2
+    "this is {}+{}".params([1,2]) --> this is 1+2
+
+    
+    字符
+    
+    当插值中包含非字符时会原样保留原始字符，例如：
+
+    "this is {(a)}{[b]}".params({a:1,b:2}) --> this is (1)[2]
+    "this is {a}{,b}".params({a:1,b:2}) --> this is 1,2
+    
+    处理undefined与null
+
+    如果插件变量=undefined或null，则不输出插值占位
+    "this is {(a)}{[b]}".params()  --> this is  
+
+    如果插件变量是一个函数，则会执行
+
+ * 
+ */
+
+export interface ParamsArgs{
+    (this:string,...vars:any[]):string
+    (this:string,vars:Record<string,any> | any[] | Set<any>):string
 }
 
 
 
-export {}
+
+String.prototype.params = function (this:string,vars:Record<string,any> | any[] | Set<any>):string{
+    let result=this.valueOf()
+    let finalVars
+    try{        
+        if(arguments.length==1){
+            finalVars = typeof arguments[0]=="object" ? arguments[0] : [arguments[0]]
+        }else{
+            finalVars = arguments
+        }
+        return replaceVars(this,vars)
+        
+    }catch{
+        return result
+    }
+    
+} as ParamsArgs
+
+export * from "./replaceVars"
