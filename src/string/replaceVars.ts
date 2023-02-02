@@ -5,7 +5,7 @@
  * @param {Boolean} replaceAll   是否替换所有插值变量，当使用命名插值时应置为true，当使用位置插值时应置为false
  * @returns  返回替换后的字符串
  */
-import { isPlainObject } from "../typecheck/isPlainObject";  
+import { isPlainObject } from "../typecheck/isPlainObject";   
 
 function getInterpVar(this:string,value:any,empty:string | null):string{
     let r  = value
@@ -19,7 +19,8 @@ function getInterpVar(this:string,value:any,empty:string | null):string{
 }
 
 
-const VAR_MATCHER = /\{(?<prefix>[\s\W]*)(?<name>\w*)(?<suffix>[\s\W]*)}/g
+const VAR_MATCHER = /\{(?<prefix>[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*)(?<name>[\u4E00-\u9FA5A\w]*)(?<suffix>[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*?)\}/g
+
 export type VarReplacer = (name:string,prefix:string,suffix:string,matched:string) => string
 /**
  *   empty:  当插值变量为空(undefined|null)时的替代值，默认''，如果empty=null则整个变量均不显示包括前后缀字符

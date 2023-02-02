@@ -4,9 +4,8 @@ export type StringInterpolationVars = string | number| number | boolean | Date |
 
 declare global {
     interface String {
-        params(params: Record<string, any>): string;
-        params(...args: any[]): string;
-        params(args: any[]): string;
+        params(vars:Record<string,any> | any[] | Set<any> | Map<string,any>): string;
+        params(...vars: any[]): string; 
         rjust(width:number,fillChar:string):string
         ljust(width:number,fillChar:string):string
         firstUpper(): string;
@@ -105,29 +104,21 @@ String.prototype.trimEndChars=function(chars:string,atEnd:boolean=false){
  * 
  */
 
-export interface ParamsArgs{
-    (this:string,...vars:any[]):string
-    (this:string,vars:Record<string,any> | any[] | Set<any>):string
-}
-
-
-
-
-String.prototype.params = function (this:string,vars:Record<string,any> | any[] | Set<any>):string{
+ 
+String.prototype.params = function ():string{
     let result=this.valueOf()
-    let finalVars
     try{        
         if(arguments.length==1){
-            finalVars = typeof arguments[0]=="object" ? arguments[0] : [arguments[0]]
+            return replaceVars(result,arguments[0])        
         }else{
-            finalVars = arguments
-        }
-        return replaceVars(this,vars)
-        
+            return replaceVars(result,[...arguments])        
+        }        
     }catch{
         return result
     }
     
-} as ParamsArgs
+}  
 
 export * from "./replaceVars"
+ 
+ 
