@@ -10,37 +10,90 @@ import "flex-tools/string"
 
 ## params
 
-对字符串进行常量插值。
+对字符串进行变量插值。
+ 
+- **插值占位符**
+
+在对字符串进行变量插值时，与一般的变量插值不同，我们还支持**指定额外的前缀和后缀修饰**，插值占位的完整格式如下：
+
+!> `{`<前缀>变量名称<后缀>`}`
+
+- **前缀**: 可选，使用`<前缀内容>`形式，前缀内容会原样输出
+- **变量**: 可选的，普通变量字面量，如果省略，则只能使用位置插值方式进行
+- **后缀**: 可选，使用`<后缀内容>`形式，前缀内容会原样输出
+
 
 - **字典插值**
 
 ```typescript
 "this is {a}+{b}".params({a:1,b:2})                 // == "this is 1+2"
 "{a}+{b}={c}".params({a:1,b:1,c:2})                 // == "1+1=2"
-"{#a}+{b%}={<c>}".params({a:1,b:1,c:2})             // == "#1+1%=<2>"
-"{# a}+{b %}={< c >}".params({a:1,b:1,c:2})         // == "# 1+1 %=< 2 >"
+"{<#>a}+{b<%>}={<<>c<>>}".params({a:1,b:1,c:2})     // == "#1+1%=<2>"
 "{a}+{b}={c}".params({a:()=>1,b:()=>1,c:()=>2})     // == "1+1=2"
-"{a}+{b}={c}".params({a:1,b:1})                     // == "1+1="
-"{a}+{b}={<c>}".params({a:1,b:1})                   // == "1+1="
-"{a}+{b}={<c>}".params({a:1,b:1})                   // == "1+1=<>"
-"{a}+{b}={c}".params({a:1,b:1,c:null})              // == "1+1=空"
-"{,a}+{,b}={,c}".params({a:undefined,b:null})       // == "+="
+"{a}+{b}={c}".params({a:1,b:1,c:null},{empty:"空"}) // == "1+1=空"
+"{a}+{b}={c}".params({a:undefined,b:null})          // == "+="
 ```
 
 - **位置插值**
 
 ```typescript
-"{a}+{b}={c}".params([1,1,2])                       // =="1+1=2"
-"{#a}+{b%}={<c>}".params([1,1,2])                   // =="#1+1%=<2>"
-"{# a}+{b %}={< c >}".params([1,1,2])               // =="# 1+1 %=< 2 >"
-"{a}+{b}={c}".params([()=>1,()=>1,()=>2])           // =="1+1=2"
-"{a}+{b}={c}".params([1,1])                         // =="1+1="
-"{a}+{b}={<c>}".params([1,1])                       // =="1+1="
-"{a}+{b}={<c>}".params([1,1],{empty:''})            // =="1+1=<>"
-"{a}+{b}={c}".params([1,1,null],{empty:'空'})       // =="1+1=空"
-"{,a}+{,b}={,c}".params([undefined,null])           // =="+="
+"this is {a}+{b}".params([1,2])                 // == "this is 1+2"
+"{a}+{b}={c}".params([1,1,2])                 // == "1+1=2"
+"{<#>a}+{b<%>}={<<>c<>>}".params([1,1,2])     // == "#1+1%=<2>"
+"{a}+{b}={c}".params([()=>1,()=>1,()=>2])     // == "1+1=2"
+"{a}+{b}={c}".params([1,1,null],{empty:"空"}) // == "1+1=空"
+"{a}+{b}={c}".params([undefined,null])          // == "+="
+"{<Line:>name}".params(12)    // =="Line:12"    
+"{<file size:>size<MB>}".params(12)    // =="file size:12MB"    
 ```
- 
+位置插值内容除了使用`[]`形式外，还支持位置参数：
+
+```typescript
+"this is {a}+{b}".params(1,2)                 // == "this is 1+2"
+"{a}+{b}={c}".params(1,1,2)                 // == "1+1=2"
+"{<#>a}+{b<%>}={<<>c<>>}".params(1,1,2)     // == "#1+1%=<2>"
+"{a}+{b}={c}".params(()=>1,()=>1,()=>2)     // == "1+1=2"
+"{a}+{b}={c}".params(1,1,null,{empty:"空"}) // == "1+1=空"
+"{a}+{b}={c}".params(undefined,null)          // == "+="
+"{<Line:>name}".params(12)    // =="Line:12"    
+"{<file size:>size<MB>}".params(12)    // =="file size:12MB"    
+```
+
+- **处理空值**
+
+当插值变量为`undefined`和`null`时，默认整个插值内容均不输出。
+
+```typescript
+"My name is {name}".params()        //=="My name is "         
+"My name is {<[> name <]>}".params(null)      // =="My name is "
+"My name is {<[>name<]>}".params("tom")        //=="My name is [tom]"         
+```
+
+根据这个特性，就可以在进行日志输出时更加灵活地处理空值。比如:
+
+```typescript
+// 变量未定义:module=control
+"{error}:{<Module=>module}{<,Line=>line}".params({error:'变量未定义',module:'control'})
+// Line前的,只有有提供line变量时才会输出
+// 变量未定义:module=control,Line=12
+"{error}:{<Module=>module}{<,Line>=line}".params({error:'变量未定义',module:'control',line:12})
+```
+
+也可以在`params`的最后一个参数中指定`{empty:"无"}`来配置当插值变量为`undefined`和`null`时，如何处理空值。
+
+```typescript
+"My name is {name}".params({$$empty:"未知"})        //=="My name is 未知"         
+"My name is {<[> name <]>}".params(null,{$$empty:"未知"})      // =="My name is [未知]"
+```
+当`params`的最后一个参数是`{$$empty:any}`时代表配置参数。
+
+## replaceVars
+
+`replaceVars`是`String.prototype.params`的内部实现，功能一样。
+
+```typescript
+console.log(replaceVars("{a}+{b}={c}",{a:1,b:1,c:2})) // Output: "1+1=2"       
+```
 
 ## firstUpper
 
@@ -104,6 +157,91 @@ import "flex-tools/string"
 "abc123xyz123".trimEndChars("123",true) // == "abc123xyz"
 
 
+```
+# 类型检查
+
+## inheritedOf
+
+判断cls是否继承自baseClass
+
+```typescript
+inheritedOf(cls: Class, baseClass:Class):boolean 
+```
+
+## isAsyncFunction
+
+判断一个函数是否是异步函数。
+
+```typescript
+isAsyncFunction(fn:any):boolean
+```
+## isClass
+
+判断一个对象是否是一个类
+
+```typescript
+isClass(cls:any):boolean
+```
+## isGeneratorFunction
+
+判断是否是一个生成器函数
+
+```typescript
+isGeneratorFunction(fn:any):boolean
+```
+## isInteger
+
+判断一个字符串是否是一个整形数。isNumber无法判断字符串的形式。
+
+```typescript
+isInteger(value:any):boolean
+```
+
+
+## isPlainObject
+
+判断一个对象是否是原始的对象`{}`
+
+```typescript
+isPlainObject(obj:any):boolean
+```
+
+## isNothing
+
+判断变量是否是为空
+
+```typescript
+isNothing(value:any):boolean
+
+isNothing("") == true
+isNothing(null) == true
+isNothing(undefined) == true
+isNothing({}) == true
+isNothing([]) == true
+isNothing(new Set()) == true
+isNothing(new Map()) == true
+```
+
+## isNumber
+
+判断是否是数字，可以判断字符串内容是否是数字。
+
+```typescript
+isNumber(value:any):boolean
+```
+
+## isSerializable
+
+判断对象是否可以被序列化
+```typescript
+isSerializable(value:any):boolean
+```
+
+## canIterable
+判断指定对象是否可以迭代
+
+```typescript
+canIterable(obj:any):boolean
 ```
 
 

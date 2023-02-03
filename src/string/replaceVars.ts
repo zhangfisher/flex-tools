@@ -17,19 +17,26 @@ function getInterpVar(this:string,value:any,empty:string | null):string{
         return String(r)
     }
 }
+ 
+// const VAR_MATCHER = /\{(?<prefix>[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*)(?<name>[\u4E00-\u9FA5A\w]*)(?<suffix>[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*?)\}/g
 
+// V1 const VAR_MATCHER=/\{(?<prefix>[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*[\u4E00-\u9FA5A\w]*?[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*)(?<name>[\u4E00-\u9FA5A\w]*)(?<suffix>[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*?[\u4E00-\u9FA5A\w]*?[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*)\}/gm
 
-const VAR_MATCHER = /\{(?<prefix>[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*)(?<name>[\u4E00-\u9FA5A\w]*)(?<suffix>[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*?)\}/g
+// V2 const VAR_MATCHER = /\{(?<prefix>[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*?[\u4E00-\u9FA5A\w]*?[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]+)?(?<name>[\u4E00-\u9FA5A\w]*?)(?<suffix>[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]+[\u4E00-\u9FA5A\w]*?[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*?)?\}/gm
+
+// 使用<>包装前后缀
+const VAR_MATCHER = /\{(\<(?<prefix>.*?)\>)?\s*(?<name>[\u4E00-\u9FA5A\w]*)\s*(\<(?<suffix>.*?)\>)?\}/gm
 
 export type VarReplacer = (name:string,prefix:string,suffix:string,matched:string) => string
 /**
  *   empty:  当插值变量为空(undefined|null)时的替代值，默认''，如果empty=null则整个变量均不显示包括前后缀字符
- *   lose: 当插值变量未定义时显示值，默认''
+ *   keepSpace: 是否保留空格
  */
-export function replaceVars(text:string,vars:any,options?:{empty?:string | null}):string {
+export function replaceVars(text:string,vars:any,options?:{empty?:string | null,keepSpace?:boolean}):string {
     let finalVars:any[] | Map<string,any> | Record<string,any>
     const opts = Object.assign({
-        empty:null 
+        empty:null,
+        keepSpace:false
     },options) 
     
     if(typeof(vars)=='function') finalVars = vars.call(text)
@@ -47,7 +54,8 @@ export function replaceVars(text:string,vars:any,options?:{empty?:string | null}
     if(Array.isArray(finalVars)){
         let i:number = 0
         const useVars = finalVars as any[]
-        return text.replaceAll(VAR_MATCHER, (matched:string,prefix:string='',name:string='',suffix:string=''):string=>{
+        return text.replaceAll(VAR_MATCHER, function():string{
+            const {prefix='',name='',suffix=''} = arguments[arguments.length-1] 
             if(i<useVars.length){
                 // 如果empty==null,且变量值为空，则不显示
                 if(opts.empty==null && useVars[i]==undefined){
@@ -63,7 +71,8 @@ export function replaceVars(text:string,vars:any,options?:{empty?:string | null}
         }) 
     }else if(typeof(finalVars)=='object'){
         const useVars = finalVars as Record<string,any>
-        return text.replaceAll(VAR_MATCHER, (matched,prefix,name,suffix)=>{
+        return text.replaceAll(VAR_MATCHER, function():string{
+            const {prefix='',name='',suffix=''} = arguments[arguments.length-1] 
             if(name in finalVars){
                 let replaced =  getInterpVar.call(text,useVars[name],opts.empty)
                 if(opts.empty==null && useVars[name]==undefined){
