@@ -32,10 +32,6 @@ import "flex-tools/string"
 "{a}+{b}={c}".params({a:()=>1,b:()=>1,c:()=>2})     // == "1+1=2"
 "{a}+{b}={c}".params({a:1,b:1,c:null},{empty:"空"}) // == "1+1=空"
 "{a}+{b}={c}".params({a:undefined,b:null})          // == "+="
-// 如果变量值是[],则自动使用,分割
-"this is {a}+{b}".params({a:1,b:[1,2]})                 // == "this is 1+1,2"
-// 如果变量值是{},则自动使用,分割
-"this is {a}".params({a:{x:1,y:2}})                 // == "this is x=1,y=2"
 ```
 
 - **位置插值**

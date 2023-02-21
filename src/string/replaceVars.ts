@@ -7,12 +7,21 @@
  */
 import { isPlainObject } from "../typecheck/isPlainObject";   
 
-function getInterpVar(this:string,value:any,empty:string | null):string{
+function getInterpVar(this:string,value:any,{empty,delimiter=","}:{empty:string | null,delimiter:string}):string{
     let r  = value
     try{
         if(typeof(r)=="function") r = r.call(this,r)
         if(r==undefined) r = empty || ''
-        return String(r)
+        if(Array.isArray(r)){
+            return r.join(delimiter)
+        }else if(isPlainObject(r)){             
+            return Object.entries(r as Record<string,any>).reduce((result:any[],[k,v]:[string,any]) =>{
+                result.push(`${k}=${String(v)}`)
+                return result
+            },[] ).join(delimiter)
+        }else{
+            return String(r)
+        }        
     }catch{
         return String(r)
     }
@@ -36,7 +45,8 @@ export function replaceVars(text:string,vars:any,options?:{empty?:string | null,
     let finalVars:any[] | Map<string,any> | Record<string,any>
     const opts = Object.assign({
         empty:null,
-        keepSpace:false
+        keepSpace:false,
+        delimiter:","               // 当变量是数组或对象是转换成字符串时的分割符号
     },options) 
     
     if(typeof(vars)=='function') finalVars = vars.call(text)
@@ -61,7 +71,7 @@ export function replaceVars(text:string,vars:any,options?:{empty?:string | null,
                 if(opts.empty==null && useVars[i]==undefined){
                     return ''
                 }else{
-                    let replaced =  getInterpVar.call(text,useVars[i++],opts.empty)
+                    let replaced =  getInterpVar.call(text,useVars[i++],opts)
                     return `${prefix}${replaced}${suffix}`
                     
                 }                
@@ -74,7 +84,7 @@ export function replaceVars(text:string,vars:any,options?:{empty?:string | null,
         return text.replaceAll(VAR_MATCHER, function():string{
             const {prefix='',name='',suffix=''} = arguments[arguments.length-1] 
             if(name in finalVars){
-                let replaced =  getInterpVar.call(text,useVars[name],opts.empty)
+                let replaced =  getInterpVar.call(text,useVars[name],opts)
                 if(opts.empty==null && useVars[name]==undefined){
                     return ''
                 }else{
