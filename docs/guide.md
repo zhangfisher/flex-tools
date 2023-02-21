@@ -180,6 +180,16 @@ console.log(replaceVars("{a}+{b}={c}",{a:1,b:1,c:2})) // Output: "1+1=2"
 
 
 ```
+
+
+## reverse
+
+反转字符串
+```typescript
+"123".reverse() // == "321" 
+
+```
+
 # 类型检查
 
 ## inheritedOf
@@ -1424,3 +1434,10 @@ timer.end("耗时：",{unit:'s'})  // 耗时：1200s
             timer.end()   ---      |
         timer.end()  --------------|
     ```
+
+
+# 升级日志
+
+## 2023/2/21
+
+- 增加`String.prototype.reverse`函数，用来反转字符串

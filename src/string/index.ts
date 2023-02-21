@@ -13,6 +13,7 @@ declare global {
         center(width: number, fillChar?: string): string;
         trimBeginChars(chars: string,atBegin?:boolean): string
         trimEndChars(chars: string,atEnd?:boolean): string 
+        reverse():string
     }
 }
   
@@ -39,6 +40,17 @@ String.prototype.center=function (width:number,fillChar=" ") {
     let llength=Math.floor((width-s.length)/2)
     return new Array(llength).join(fillChar)+s+new Array(width-s.length-llength).join(fillChar)
 }
+
+// 反转字符串
+String.prototype.reverse = function () {
+    let result =[]
+    for(let i=this.length-1;i>=0;i--) {
+        result.push(this.charAt(i))
+    }
+    return result.join("")
+} 
+
+
 /**
  * 截断字符串前面的字符
  *
