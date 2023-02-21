@@ -381,6 +381,18 @@ function reliable(fn:AsyncFunction,options:reliableOptions):AsyncFunction
 function safeParseJson(str:string)
 ```
 
+### assignObject
+
+与`Object.assign`一样的功能，唯一的差别在于对值为`undefined`的处理方式不同。
+此功能在处理函数的对象参数时有用。
+
+```typescript
+
+Object.assign({a:1},{a:undefined}) // == {a:undefined})
+assignObject({a:1},{a:undefined}) // == {a:1})
+
+```
+
 
 
 ## deepMerge
@@ -388,14 +400,29 @@ function safeParseJson(str:string)
 深度合并两个对象。
 
 ```typescript
-deepMerge(toObj:any,formObj:any,options:DeepMergeOptions={array:'noDupMerge'})`
+deepMerge(toObj:any,formObj:any,options:DeepMergeOptions)
+
+interface DeepMergeOptions{
+    // 数组合并策略，0-替换，1-合并，2-去重合并
+    array?:'replace' | 'merge' | 'uniqueMerge',    
+    // 忽略undefined项不进行合并
+    ignoreUndefined?: boolean     
+    // 是否返回新对象或者合并
+    newObject?:boolean            
+}
 ```
 
-与`lodash/merge`的区别在于对数组成员的合并处理机制不同,`array`参数可以指定如何对数据进行合并。
+deepMerge支持以下参数:
 
-- `array='replace'`: 替换原始数据项
-- `array='merge'`:  合并数组数据项
-- `array='noDupMerge'`:  合并数组数据项，并且进行去重
+- `array`
+决定如何合并数组,与`lodash/merge`的区别在于对数组成员的合并处理机制不同,`array`参数可以指定如何对数据进行合并。
+    - `array='replace'`: 替换原始数据项
+    - `array='merge'`:  合并数组数据项
+    - `array='noDupMerge'`:  合并数组数据项，并且进行去重
+- `ignoreUndefined`
+忽略掉`fromObj`中的`undefined`项。
+- `newObject`
+默认情况下，`deepMerge`不会改变原始值，而是生成一个新的对象。如果需要直接修改`toObj`值，则应该设置`newObject=false`。
 
 ## getPropertyNames
 
