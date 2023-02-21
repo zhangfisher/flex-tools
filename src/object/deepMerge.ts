@@ -1,4 +1,3 @@
-import { canIterable } from "../typecheck/c"
 import { isPlainObject } from "../typecheck/isPlainObject"
 
  
