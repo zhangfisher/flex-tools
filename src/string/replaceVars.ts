@@ -5,10 +5,11 @@
  * @param {Boolean} replaceAll   是否替换所有插值变量，当使用命名插值时应置为true，当使用位置插值时应置为false
  * @returns  返回替换后的字符串
  */
+import { assignObject } from "../object/assignObject";
 import { isNothing } from "../typecheck/isNothing";
 import { isPlainObject } from "../typecheck/isPlainObject";   
 
-function getInterpVar(this:string,value:any,{empty,delimiter=","}:{empty:string | null,delimiter:string}):string{
+function getInterpVar(this:string,value:any,{empty,delimiter=","}:ReplaceVarsOptions):string{
     let r  = value
     try{
         if(typeof(r)=="function") r = r.call(this,r)
@@ -42,12 +43,20 @@ export type VarReplacer = (name:string,prefix:string,suffix:string,matched:strin
  *   empty:  当插值变量为空(undefined|null)时的替代值，默认''，如果empty=null则整个变量均不显示包括前后缀字符
  *   delimiter: 当变量是数组或对象时使用delimiter进行连接
  */
-export function replaceVars(text:string,vars:any,options?:{empty?:string | null,delimiter?:string}):string {
+export interface ReplaceVarsOptions{
+    empty?:string | null
+    delimiter?:string
+    // 当发现并替换变量时的回调，可以在回调中对变量进行处理
+    // 必须返回[prefix,value,suffix]
+    callback?:(name:string,value:string,prefix:string,suffix:string)=>[string,string,string ]
+}
+export function replaceVars(text:string,vars:any,options?:ReplaceVarsOptions):string {
     let finalVars:any[] | Map<string,any> | Record<string,any>
-    const opts = Object.assign({
+    const opts =assignObject({
         empty:null,
-        delimiter:","               // 当变量是数组或对象是转换成字符串时的分割符号
-    },options) 
+        delimiter:",",               // 当变量是数组或对象是转换成字符串时的分割符号
+        callback:null
+    },options)  as ReplaceVarsOptions
     
     if(typeof(vars)=='function') finalVars = vars.call(text)
     if(["boolean","string","number"].includes(typeof(vars))){
@@ -65,13 +74,23 @@ export function replaceVars(text:string,vars:any,options?:{empty?:string | null,
         let i:number = 0
         const useVars = finalVars as any[]
         return text.replaceAll(VAR_MATCHER, function():string{
-            const {prefix='',name='',suffix=''} = arguments[arguments.length-1] 
+            let {prefix='',name='',suffix=''} = arguments[arguments.length-1] 
+
             if(i<useVars.length){
                 // 如果empty==null,且变量值为空，则不显示
                 if(opts.empty==null && isNothing(useVars[i])){
                     return ''
                 }else{
                     let replaced =  getInterpVar.call(text,useVars[i++],opts)
+                    // 如果指定了callback则调用
+                    if(typeof(opts.callback)=='function'){
+                        const r = opts.callback(name,replaced,prefix,suffix)
+                        if(Array.isArray(r) && r.length==3){                            
+                            prefix=r[0]
+                            replaced = r[1]
+                            suffix=r[2]
+                        }
+                    }
                     return `${prefix}${replaced}${suffix}`
                     
                 }                
@@ -82,12 +101,21 @@ export function replaceVars(text:string,vars:any,options?:{empty?:string | null,
     }else if(typeof(finalVars)=='object'){
         const useVars = finalVars as Record<string,any>
         return text.replaceAll(VAR_MATCHER, function():string{
-            const {prefix='',name='',suffix=''} = arguments[arguments.length-1] 
+            let {prefix='',name='',suffix=''} = arguments[arguments.length-1] 
             if(name in finalVars){
                 let replaced =  getInterpVar.call(text,useVars[name],opts)
                 if(opts.empty==null && isNothing(useVars[name])){
                     return ''
                 }else{
+                    // 如果指定了callback则调用
+                    if(typeof(opts.callback)=='function'){
+                        const r = opts.callback(name,replaced,prefix,suffix)
+                        if(Array.isArray(r) && r.length==3){                            
+                            prefix=r[0]
+                            replaced = r[1]
+                            suffix=r[2]
+                        }
+                    }
                     return `${prefix}${replaced}${suffix}`
                 }                
             }else{
