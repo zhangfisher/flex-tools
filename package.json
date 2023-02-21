@@ -1,6 +1,6 @@
 {
   "name": "flex-tools",
-  "version": "1.0.37",
+  "version": "1.0.38",
   "description": "modular utilities.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
