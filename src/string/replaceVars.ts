@@ -5,13 +5,14 @@
  * @param {Boolean} replaceAll   是否替换所有插值变量，当使用命名插值时应置为true，当使用位置插值时应置为false
  * @returns  返回替换后的字符串
  */
+import { isNothing } from "../typecheck/isNothing";
 import { isPlainObject } from "../typecheck/isPlainObject";   
 
 function getInterpVar(this:string,value:any,{empty,delimiter=","}:{empty:string | null,delimiter:string}):string{
     let r  = value
     try{
         if(typeof(r)=="function") r = r.call(this,r)
-        if(r==undefined) r = empty || ''
+        if(isNothing(r)) r = empty || ''
         if(Array.isArray(r)){
             return r.join(delimiter)
         }else if(isPlainObject(r)){             
@@ -39,13 +40,12 @@ const VAR_MATCHER = /\{(\<(?<prefix>.*?)\>)?\s*(?<name>[\u4E00-\u9FA5A\w]*)\s*(\
 export type VarReplacer = (name:string,prefix:string,suffix:string,matched:string) => string
 /**
  *   empty:  当插值变量为空(undefined|null)时的替代值，默认''，如果empty=null则整个变量均不显示包括前后缀字符
- *   keepSpace: 是否保留空格
+ *   delimiter: 当变量是数组或对象时使用delimiter进行连接
  */
-export function replaceVars(text:string,vars:any,options?:{empty?:string | null,keepSpace?:boolean}):string {
+export function replaceVars(text:string,vars:any,options?:{empty?:string | null,delimiter?:string}):string {
     let finalVars:any[] | Map<string,any> | Record<string,any>
     const opts = Object.assign({
         empty:null,
-        keepSpace:false,
         delimiter:","               // 当变量是数组或对象是转换成字符串时的分割符号
     },options) 
     
@@ -68,7 +68,7 @@ export function replaceVars(text:string,vars:any,options?:{empty?:string | null,
             const {prefix='',name='',suffix=''} = arguments[arguments.length-1] 
             if(i<useVars.length){
                 // 如果empty==null,且变量值为空，则不显示
-                if(opts.empty==null && useVars[i]==undefined){
+                if(opts.empty==null && isNothing(useVars[i])){
                     return ''
                 }else{
                     let replaced =  getInterpVar.call(text,useVars[i++],opts)
@@ -85,7 +85,7 @@ export function replaceVars(text:string,vars:any,options?:{empty?:string | null,
             const {prefix='',name='',suffix=''} = arguments[arguments.length-1] 
             if(name in finalVars){
                 let replaced =  getInterpVar.call(text,useVars[name],opts)
-                if(opts.empty==null && useVars[name]==undefined){
+                if(opts.empty==null && isNothing(useVars[name])){
                     return ''
                 }else{
                     return `${prefix}${replaced}${suffix}`

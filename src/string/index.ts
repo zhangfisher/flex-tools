@@ -1,3 +1,4 @@
+import { isPlainObject } from "../typecheck";
 import { replaceVars } from "./replaceVars";
 
 export type StringInterpolationVars = string | number| number | boolean | Date | Error | null | undefined | Function
@@ -107,11 +108,21 @@ String.prototype.trimEndChars=function(chars:string,atEnd:boolean=false){
  
 String.prototype.params = function ():string{
     let result=this.valueOf()
+    let opts:Record<string,any> = {} , vars = [...arguments]
+    // 当最后一个参数是对象并且包括$$delimiter和$$empty时代表是配置参数
+    if(arguments.length>0 && isPlainObject(arguments[arguments.length-1])){
+        let lastArg = arguments[arguments.length-1]
+        if("$$delimiter" in lastArg || "$$empty" in lastArg){
+            if("$$delimiter" in lastArg) opts.delimiter = lastArg.$$delimiter
+            if("$$empty" in lastArg) opts.empty = lastArg.$$empty
+            vars.pop()
+        }
+    }
     try{        
         if(arguments.length==1){
-            return replaceVars(result,arguments[0])        
+            return replaceVars(result,arguments[0],opts)        
         }else{
-            return replaceVars(result,[...arguments])        
+            return replaceVars(result,[...arguments],opts)        
         }        
     }catch{
         return result

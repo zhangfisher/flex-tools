@@ -89,11 +89,29 @@ import "flex-tools/string"
 "My name is {name}".params({$$empty:"未知"})        //=="My name is 未知"         
 "My name is {<[> name <]>}".params(null,{$$empty:"未知"})      // =="My name is [未知]"
 ```
-当`params`的最后一个参数是`{$$empty:any}`时代表配置参数。
+
+
+## 控制参数
+
+`params`方法支持传入一些控制参数：
+
+- `$$empty:string | null`: 当变量值为空时(undefined,null,[],{})显示的内容，如果为null则不显示.
+- `$$delimiter:string`: 当变量值是`[]`或`{}`时，使用该分割来连接内容，默认值是`,`。如:
+    ```typescript
+        "{a}".params({a:[1,2]})   //=="1,2"
+        "{a}".params({a:[1,2]},{$$delimiter:"_"})   //=="1_2"
+        "{a}".params({a:{x:1,y:2}})   // =="x=1,y=2"
+        "{a}".params({a:{x:1,y:2}},{$$delimiter:"#"})   // =="x=1#y=2"
+    ```
+
+**特别注意:**为了避免参数与插值变量冲突，约定当`params`的最后一个参数是`{$$empty,$$delimiter}`时代表配置参数。
 
 ## replaceVars
 
-`replaceVars`是`String.prototype.params`的内部实现，功能一样。
+`replaceVars`是`String.prototype.params`的内部实现，功能一样。其函数签名如下：
+
+> function replaceVars(text:string,vars:any,options?:{empty?:string | null,delimiter?:string}):string 
+
 
 ```typescript
 console.log(replaceVars("{a}+{b}={c}",{a:1,b:1,c:2})) // Output: "1+1=2"       
