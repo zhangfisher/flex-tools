@@ -124,9 +124,10 @@ String.prototype.params = function ():string{
     // 当最后一个参数是对象并且包括$$delimiter和$$empty时代表是配置参数
     if(arguments.length>0 && isPlainObject(arguments[arguments.length-1])){
         let lastArg = arguments[arguments.length-1]
-        if("$$delimiter" in lastArg || "$$empty" in lastArg){
+        if("$$delimiter" in lastArg || "$$empty" in lastArg || "$$callback" in lastArg){
             if("$$delimiter" in lastArg) opts.delimiter = lastArg.$$delimiter
             if("$$empty" in lastArg) opts.empty = lastArg.$$empty
+            if("$$callback" in lastArg) opts.callback = lastArg.$$callback
             vars.pop()
         }
     }
