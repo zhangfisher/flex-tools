@@ -70,12 +70,76 @@
       "types": "./dist/string/index.d.ts",
       "require": "./dist/string/index.js",
       "import": "./dist/string/index.mjs"
+    },
+    "./string/params": {
+      "types": "./dist/string/params.d.ts",
+      "require": "./dist/string/params.js",
+      "import": "./dist/string/params.mjs"
+    },
+    "./string/firstUpper": {
+      "types": "./dist/string/firstUpper.d.ts",
+      "require": "./dist/string/firstUpper.js",
+      "import": "./dist/string/firstUpper.mjs"
+    },
+    "./string/center": {
+      "types": "./dist/string/center.d.ts",
+      "require": "./dist/string/center.js",
+      "import": "./dist/string/center.mjs"
+    },
+    "./string/reverse": {
+      "types": "./dist/string/reverse.d.ts",
+      "require": "./dist/string/reverse.js",
+      "import": "./dist/string/reverse.mjs"
+    },
+    "./string/ljust": {
+      "types": "./dist/string/ljust.d.ts",
+      "require": "./dist/string/ljust.js",
+      "import": "./dist/string/ljust.mjs"
+    },
+    "./string/rjust": {
+      "types": "./dist/string/rjust.d.ts",
+      "require": "./dist/string/rjust.js",
+      "import": "./dist/string/rjust.mjs"
+    },
+    "./string/trimBeginChars": {
+      "types": "./dist/string/trimBeginChars.d.ts",
+      "require": "./dist/string/trimBeginChars.js",
+      "import": "./dist/string/trimBeginChars.mjs"
+    },
+    "./string/trimEndChars": {
+      "types": "./dist/string/trimEndChars.d.ts",
+      "require": "./dist/string/trimEndChars.js",
+      "import": "./dist/string/trimEndChars.mjs"
     }
   },
   "typesVersions": {
     "*": {
       "string": [
         "./dist/string/index.d.ts"
+      ],
+      "string/params": [
+        "./dist/string/params.d.ts"
+      ],
+      "string/firstUpper": [
+        "./dist/string/firstUpper.d.ts"
+      ],
+      "string/center": [
+        "./dist/string/center.d.ts"
+      ],
+      "string/reverse": [
+        "./dist/string/reverse.d.ts"
+      ],
+      "string/ljust": [
+        "./dist/string/ljust.d.ts"
+      ],
+      "string/rjust": [
+        "./dist/string/rjust.d.ts"
+      ],
+      "string/trimBeginChars": [
+        "./dist/string/trimBeginChars.d.ts"
+      ],
+      "string/trimEndChars": [
+        "./dist/string/trimEndChars.d.ts"
       ],
       "typecheck": [
         "./dist/typecheck/index.d.ts"
@@ -113,7 +177,7 @@
     "@types/lodash": "^4.14.191",
     "docsify": "^4.13.0",
     "husky": "^8.0.3",
-    "tsup": "^6.5.0",
+    "tsup": "^6.6.3",
     "typescript": "^4.9.4",
     "vitest": "^0.26.2"
   },

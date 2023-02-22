@@ -2,15 +2,56 @@
 
 # 字符串
 
-字符串函数被直接添加在`String.prototype`，因些需要导入就可以直接使用。
+字符串增强函数均支持两个版本：
+
+- **原型版本**：
+
+函数被直接添加在`String.prototype`，因些需要导入就可以直接使用不需要额外导入。
 
 ```typescript
-import "flex-tools/string"
+// 导入所有字符串的原型方法
+import "flex-tools/string"              
+// 只导入部份方法原型方法
+import "flex-tools/string/params"
+import "flex-tools/string/center"
+import "flex-tools/string/firstUpper"
+import "flex-tools/string/ljust"
+import "flex-tools/string/rjust"
+import "flex-tools/string/reverse"
+import "flex-tools/string/trimBeginChars"
+import "flex-tools/string/trimEndChars"
+
+```
+- **函数版本**
+
+如果您不希望污染`String.prototype`,可以使用单独导入函数。
+
+```typescript
+// 导入所有字符串的原型方法
+import {
+    params,
+    center,
+    firstUpper,
+    ljust,
+    rjust,
+    reverse,
+    trimBeginChars,
+    trimEndChars
+} from "flex-tools/string"              
+// 只导入部份方法原型方法
+import { params } from "flex-tools/string/params"
+import { center } from "flex-tools/string/center"
+import { firstUpper } from "flex-tools/string/firstUpper"
+import { ljust } from "flex-tools/string/ljust"
+import { rjust } from "flex-tools/string/rjust"
+import { reverse } from "flex-tools/string/reverse"
+import { trimBeginChars } from "flex-tools/string/trimBeginChars"
+import { trimEndChars } from "flex-tools/string/trimEndChars"
 ```
 
 ## params
 
-对字符串进行变量插值。
+非常强大的对字符串进行变量插值。
  
 - **插值占位符**
 
@@ -103,8 +144,39 @@ import "flex-tools/string"
         "{a}".params({a:{x:1,y:2}})   // =="x=1,y=2"
         "{a}".params({a:{x:1,y:2}},{$$delimiter:"#"})   // =="x=1#y=2"
     ```
+- `$$forEach:(name:string,value:string,prefix:string,suffix:string)=>[string,string,string ]`: 提供一个函数对插值变量进行遍历
+    ```typescript
+        "{a}{b}{<#>c<#>}".params(
+           {a:1,b:2,c:3}, 
+           {
+                $$forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,string ]=>{
+                    console.log(name,value,prefix,suffix)
+                    return [prefix,value,suffix]            // 分别返回前缀，变量值，后缀
+                }
+           }
+        ) 
+        // 控制台输出： 
+        // a 1 
+        // b 2 
+        // c 3 # # 
+    ```
+    利用`$$forEach`的机制，可以实现一些比较好玩的特性，比如：
+    ```typescript
+        import logsets from "logsets"
+        const result = "{a}{b}{<#>c<#>}".params(
+           {a:1,b:2,c:3}, 
+           {
+                $$forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,string ]=>{
+                    let colorizer = logsets.getColorizer("red")
+                    return [prefix,colorizer(value),suffix]            // 分别返回前缀，变量值，后缀
+                }
+           }
+        )  
+        console.log(result) // 可以将插值内容输出为红色
+    ```
 
-**特别注意:**为了避免参数与插值变量冲突，约定当`params`的最后一个参数是`{$$empty,$$delimiter}`时代表配置参数。
+
+**特别注意:**为了避免参数与插值变量冲突，约定当`params`的最后一个参数是`{$$empty,$$delimiter,$$forFach}`时代表配置参数。
 
 ## replaceVars
 
@@ -1081,20 +1153,21 @@ setTimeout(() =>{
 > asyncSignal(constraint?:Function,options?:{timeout:number}={timeout:0})
 
 
-    - 每个异步信号均具一个唯一的ID，即`signal.id`
-    - `asyncSignal`可以在被`resolve`或`reject`后，再次`await signal()`反复使用。
-    - 创建`asyncSignal`可以指定一个`约束条件函数`，当调用`signal.reject()`或`signal.resolve()`时，需要**同时满足约束条件函数返回true**，signal才会被`resolve/reject`。如:
+- 每个异步信号均具一个唯一的ID，即`signal.id`
+- `asyncSignal`可以在被`resolve`或`reject`后，再次`await signal()`反复使用。
+- 创建`asyncSignal`可以指定一个`约束条件函数`，当调用`signal.reject()`或`signal.resolve()`时，需要**同时满足约束条件函数返回true**，signal才会被`resolve/reject`。如:
+
+```typescript
+    // 
     
-    ```typescript
-        // 
-        
-        let signal = asyncSignal(()=>{
-            return true
-        })
-    ```
-    - 创建`asyncSignal`可以指定一个`timeout`参数，如果当`await signal()`超时会自动`rejected`。
-    - `signal.destroy()`可以销毁信号
-    - 在调用`await signal(timeout)`可以指定额外的超时。
+    let signal = asyncSignal(()=>{
+        return true
+    })
+```
+
+- 创建`asyncSignal`可以指定一个`timeout`参数，如果当`await signal()`超时会自动`rejected`。
+- `signal.destroy()`可以销毁信号
+- 在调用`await signal(timeout)`可以指定额外的超时。
 
 
 - **API**
