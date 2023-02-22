@@ -28,7 +28,7 @@ export const timer:TimerOptions = {
         const now = Date.now()
         const value = now - (times.pop() || now)
         const result = unit=="s" ? value / 1000  : value
-        if(log) console.log(tips, `${result}${unit}`)
+        if(log) console.log(tips || 'time consuming:', `${result}${unit}`)
         return value
      } 
  } 

@@ -391,10 +391,9 @@ function reliable(fn:AsyncFunction,options:reliableOptions):AsyncFunction
 function safeParseJson(str:string)
 ```
 
-### assignObject
+## assignObject
 
 与`Object.assign`一样的功能，唯一的差别在于对值为`undefined`的处理方式不同。
-此功能在处理函数的对象参数时有用。
 
 ```typescript
 
@@ -402,7 +401,25 @@ Object.assign({a:1},{a:undefined}) // == {a:undefined})
 assignObject({a:1},{a:undefined}) // == {a:1})
 
 ```
+此功能在处理函数的对象参数时有用，例：
 
+```typescript
+
+function test(x:number,options:{a:string,b:number}){
+    // 为配置参数提供默认值
+    let opts = Object.assign({
+        a:"x",b:1
+    },options)  
+    // 以上方法有个问题，如果传入的options中包含{a:undefined}，则会导致a没有默认值
+    // 此时，可以就可以使用assignObject
+    let opts = assignObject({
+        a:"x",b:1
+    },options)  
+
+
+}
+
+```
 
 
 ## deepMerge
