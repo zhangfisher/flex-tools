@@ -1358,7 +1358,7 @@ function NamedDict<T>(items: any[], defaultItem?:T, options?:NamedDictOptions):R
 
 - 容器的数据项均具有一个唯一的名称，一般是具有一个`name`的字段
 - 数据项里面有些字段是必须的，不能为空：即不能是`null`,`undefined`
-- 支持两种构造方法，即NamedDict([{name,...},{name,...}...])和NamedDict({name:{...},name:{...}})
+- 支持两种构造方法，即`NamedDict([{name,...},{name,...}...])`和`NamedDict({name:{...},name:{...}})`
 - 支持为每一项指定默认值
 - 提供一个函数`normalize(item)`用来对成员项进行规范化处理
 - `default`和`nameKey`两个参数配合用来指定如何提取成员名称。
@@ -1379,7 +1379,7 @@ let dict = NamedDict([
     nameKey:'name'          // 代表name是成员名称
 })
 
-// 以上代成员名称
+// 以上代表成员名称
 
 {
     A:{name:"A",class:"A"},
@@ -1472,13 +1472,11 @@ export type Rename<T,NameMaps extends Partial<Record<keyof T,any>>> = {
 
 // 示例：
 
-
-
- interface X{
+interface X{
   a:number
   b:boolean
   c:()=>boolean
- }
+}
 
 // 将a更名为A
 type R1 = Rename<X,{'a':'A'}>  
@@ -1527,7 +1525,12 @@ timer.end("耗时：",{unit:'s'})  // 耗时：1200s
 
 
 # 升级日志
+## 2023/2/22
+
+- `string`函数支持按需导入
 
 ## 2023/2/21
 
 - 增加`String.prototype.reverse`函数，用来反转字符串
+
+
