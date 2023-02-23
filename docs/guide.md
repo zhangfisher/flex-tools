@@ -1123,9 +1123,7 @@ function isPropertyMethod(inst:object, name:string)
 ```typescript
  async function delayRejected(ms: number,rejectValue?:any)
 ```
-
-## delayRejected
-
+ 
 ## asyncSignal
 
 开发中经常碰到需要在某些异步任务完成后做点什么的场景，`asyncSignal`用来生成一个异步控制信号，可以侦听该异步信号的`resolve/reject`，其本质上是对`Promise`的简单封装。
