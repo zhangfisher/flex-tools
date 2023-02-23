@@ -1,24 +1,29 @@
 import { assignObject } from "../object/assignObject";
+import { canIterable } from "../typecheck";
 import { isNothing } from "../typecheck/isNothing";
 import { isPlainObject } from "../typecheck/isPlainObject";   
 
 function getInterpVar(this:string,value:any,{empty,delimiter=","}:ReplaceVarsOptions):string{
-    let r  = value
+    let finalValue  = value
     try{
-        if(typeof(r)=="function") r = r.call(this,r)
-        if(isNothing(r)) r = empty || ''
-        if(Array.isArray(r)){
-            return r.join(delimiter)
-        }else if(isPlainObject(r)){             
-            return Object.entries(r as Record<string,any>).reduce((result:any[],[k,v]:[string,any]) =>{
+        if(typeof(finalValue)=="function") finalValue = finalValue.call(this,finalValue)
+        if(isNothing(finalValue)) finalValue = empty || ''
+        if(Array.isArray(finalValue)){
+            return finalValue.map(v=>String(v)).join(delimiter)
+        }else if(isPlainObject(finalValue)){             
+            return Object.entries(finalValue as Record<string,any>).reduce((result:any[],[k,v]:[string,any]) =>{
                 result.push(`${k}=${String(v)}`)
                 return result
             },[] ).join(delimiter)
+        }else if(canIterable(finalValue)){
+            return [...finalValue].map(v=>String(v)).join(delimiter)
+        }else if(finalValue instanceof Error){
+            return `Error:${finalValue.message}`
         }else{
-            return String(r)
+            return String(finalValue)
         }        
     }catch{
-        return String(r)
+        return String(finalValue)
     }
 }
  
@@ -61,7 +66,7 @@ export function replaceVars(text:string,vars:any,options?:ReplaceVarsOptions):st
     }else if(isPlainObject(vars)){
         finalVars =vars
     }else{
-        throw new TypeError("invalid vars")
+        finalVars =[ vars ]
     }
     if(Array.isArray(finalVars)){
         let i:number = 0

@@ -12,6 +12,7 @@ import { isNumber } from "./isNumber";
 export function isNothing(value:any):boolean{
     if(isNumber(value) || isBoolean(value)) return false
     if(typeof(value)==="function") return false
+    if(value instanceof Error) return false
     if(isEmpty(value)) return true 
     return false
 }
