@@ -1,5 +1,5 @@
-import { test,expect} from "vitest"
-import {  deepMerge } from "../src/object"
+import { test,expect, assert} from "vitest"
+import {  assignObject, deepMerge } from "../src/object"
 
 
 test("深度合并",() => {
@@ -15,4 +15,21 @@ test("深度合并",() => {
     
 
 
+})
+
+test("assignObject",() => {
+    expect(assignObject({a:1,b:2},{a:undefined,b:3})).toEqual({a:1,b:3})
+    expect(assignObject({
+        enabled: true,
+        bufferSize:10,
+        flushInterval:10 * 1000, 
+    },{format:"xxx"})).toEqual({
+        enabled: true,
+        bufferSize:10,
+        flushInterval:10 * 1000, 
+        format: "xxx"
+    })
+
+
+    
 })

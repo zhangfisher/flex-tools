@@ -10,11 +10,15 @@
  * 
  */
 
+import { isPlainObject } from "../typecheck/isPlainObject";
+
 
 
 
 export function assignObject(target: object, ...sources: any[]): any{
+    
     let mapSources = sources.map(source =>{
+        if(!isPlainObject(source)) return source;
         const sourceEntries = Object.entries(source)
         if(sourceEntries.some(([k,v]) =>v ===undefined)){
             return sourceEntries.reduce((result:any,[k,v])=>{
