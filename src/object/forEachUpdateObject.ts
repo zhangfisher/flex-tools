@@ -4,10 +4,10 @@ import { isPlainObject } from "../typecheck/isPlainObject"
  * 深度遍历对象成员,当值满足条件时,调用updater函数的返回值来更新值
  
  * let data ={a:1,b:2,l:[1,2,3],c:"xx"}
- * forEachUpdateObject(data,(value,parent,keyOrIndex)=>{
- *      return value.toUpperCase
- * },(value,parent,keyOrIndex)=>{
+ * forEachUpdateObject(data,({value,parent,keyOrIndex})=>{
  *     return typeof(value)=="string"
+ * },({value,parent,keyOrIndex})=>{
+ *      return value.toUpperCase
  * })
  * 
  * @param {*} obj 

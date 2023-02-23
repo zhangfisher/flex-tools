@@ -132,7 +132,7 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
 ```
 
 
-## 控制参数
+- **控制参数**
 
 `params`方法支持传入一些控制参数：
 
@@ -565,10 +565,10 @@ function forEachUpdateObject<T=any>(obj:any[] | object,filter:IForEachCallback,u
 ```typescript
 // 将所有字符串转换为大写
  let data ={a:1,b:2,l:[1,2,3],c:"xx"}
- forEachUpdateObject(data,(value,parent,keyOrIndex)=>{
-       return value.toUpperCase()
- },(value,parent,keyOrIndex)=>{
-      return typeof(value)=="string"
+ forEachUpdateObject(data,({value,parent,keyOrIndex})=>{     
+      return typeof(value)=="string"    // 只处理字符串值
+ },({value,parent,keyOrIndex})=>{         
+       return value.toUpperCase()       // 将值更新为大写
  })
 ```
 ## mapObject
@@ -614,7 +614,7 @@ export function searchObject<T=any>(obj:any[] | object,matcher:IForEachCallback,
   })
 ```
 
-## serializeObject
+## serializableObject
 
 处理对象成为可序列化的数据，基本原理是将对象里面所有不可序列化的项（如函数）删了。
 
@@ -813,7 +813,7 @@ getByPath(treeData,"1/2",{pathKey:"id"})           // == {id:2,name:"b"
 
 ## forEachTree
 
-遍历树节点。
+采用深度优先的方法遍历树节点。
 
 ```typescript
 function forEachTree<Node extends TreeNodeBase = TreeNode>(treeData:Node[] | Node,callback:IForEachTreeCallback<Node>,options?:ForEachTreeOptions)
