@@ -131,7 +131,7 @@ export function asyncSignal(constraint?:Function,options:{timeout:number}={timeo
          clearTimeout(timeoutId)
          if(!isPending) return 
          if (isResolved || isRejected) return
-         rejectSignal(typeof(e)==='string' ? new Error(e) : e) 
+         rejectSignal(typeof(e)==='string' ? new Error(e) : ((e instanceof Error) ? e : new Error()))
          isRejected = true
      }
  
