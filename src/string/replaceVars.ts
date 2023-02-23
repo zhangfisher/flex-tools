@@ -18,7 +18,7 @@ function getInterpVar(this:string,value:any,{empty,delimiter=","}:ReplaceVarsOpt
         }else if(canIterable(finalValue)){
             return [...finalValue].map(v=>String(v)).join(delimiter)
         }else if(finalValue instanceof Error){
-            return `Error:${finalValue.message}`
+            return finalValue.message
         }else{
             return String(finalValue)
         }        
