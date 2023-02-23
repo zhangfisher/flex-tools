@@ -1307,7 +1307,8 @@ events.emit("a/b/c/d/e/x")          // 匹配触发
 
 ## dictArray
  
- 构建一个成员是`{...}`的数组。
+ 构建一个成员是`{...}`的数组，数组中的成员均是具有相同结构的对象。如：`[{a:1},{a:2},...]`
+
 
  
 ```typescript
@@ -1320,11 +1321,11 @@ interface  DictArrayOptions{
 
 **说明**
 
-- 每一项均是一个`{}`
+- 每一项均是一个`{}`,且具有相同的结构
 - 数组成员可以指定默认字段，比如`defaultField='name`，则
   [{name:"xx“，...},{name:"",},"tom",{name:"",...}]，在进行处理后将变成[{name:"xx“，...},{name:"",},{name:"tom",..默认项.},{name:"",...}]
 - 如果输入的是`{}`，则转换成[{..}]
-- 如果是其他非`{}`和Array，则按省略项进行处理，如dictArray("tom")==> [{name:"tom",..默认项.}]
+- 如果是其他非`{}`和Array，则按省略项进行处理，如`dictArray("tom")==> [{name:"tom",..默认项.}]`
 - 可以指定其中的一个为`default=true`
 - 可以指定默认成员值
 
@@ -1439,7 +1440,8 @@ export type Constructor = { new (...args: any[]): any };
 ```
 ## TypedClassDecorator
 
- 装饰器
+装饰器
+
 ```typescript
 export type TypedClassDecorator<T> = <T extends Constructor>(target: T) => T | void; 
 ```
