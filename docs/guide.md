@@ -264,6 +264,11 @@ console.log(replaceVars("{a}+{b}={c}",{a:1,b:1,c:2})) // Output: "1+1=2"
 
 # 类型检查
 
+```typescript
+import { <函数名称> } from "flex-tools"
+import { <函数名称> } from "flex-tools/typecheck"
+```
+
 ## inheritedOf
 
 判断cls是否继承自baseClass
@@ -350,6 +355,12 @@ canIterable(obj:any):boolean
 
 
 # 函数工具
+
+```typescript
+import { <函数名称> } from "flex-tools"
+import { <函数名称> } from "flex-tools/func"
+```
+
 
 ## appleParams
 
@@ -454,6 +465,12 @@ function reliable(fn:AsyncFunction,options:reliableOptions):AsyncFunction
 ```
 
 # 对象工具
+
+```typescript
+import { <函数名称> } from "flex-tools"
+import { <函数名称> } from "flex-tools/object"
+```
+
 
 ## safeParseJson
 
@@ -807,6 +824,12 @@ type ConflictStrategy ='ignore' | 'replace' | 'merge' | 'error' | ((key:string, 
 树数据结构是非常常见的，比较常见的有两种数据结构来表示树。
 
 ```typescript
+import { <函数名称> } from "flex-tools"
+import { <函数名称> } from "flex-tools/tree"
+```
+
+
+```typescript
 // 嵌套树结构
 const tree = {
     id:1,
@@ -1126,6 +1149,12 @@ for(let node of nodes){
 
 # 类工具
 
+```typescript
+import { <函数名称> } from "flex-tools"
+import { <函数名称> } from "flex-tools/classs"
+```
+
+
 ## getClassStaticValue
 
 获取当前实例或类的静态变量值.
@@ -1162,6 +1191,14 @@ function isPropertyMethod(inst:object, name:string)
 ```
 
 # 异步工具
+
+```typescript
+import { <函数名称> } from "flex-tools"
+import { <函数名称> } from "flex-tools/async"
+```
+
+
+
 ## delay
 
 延迟一段时间。
@@ -1301,6 +1338,12 @@ signals.reset()      //reset所有异步信号
 
 # 事件工具
 
+```typescript
+import { <函数名称> } from "flex-tools"
+import { <函数名称> } from "flex-tools/events"
+```
+
+
 ## FlexEvent
 
 一个简单的事件发生器，可以用来替代`eventemitter2`。
@@ -1358,6 +1401,12 @@ events.emit("a/b/c/d/e/x")          // 匹配触发
 
 
 # 数据容器
+
+```typescript
+import { <函数名称> } from "flex-tools"
+import { <函数名称> } from "flex-tools/collection"
+```
+
 
 ## dictArray
  
@@ -1444,6 +1493,11 @@ let dict = NamedDict([
 ```
 
 # TypeScript类型
+
+```typescript
+import type { <函数名称> } from "flex-tools"
+import type { <函数名称> } from "flex-tools/types"
+```
 
 ## Class
 
@@ -1579,6 +1633,12 @@ timer.end("耗时：",{unit:'s'})  // 耗时：1200s
 
 
 # 升级日志
+
+## 2023/2/24
+
+- 修复`string.params`处理字符串时的错误迭代
+- 增加`object/pick`和`object/omit`函数
+
 ## 2023/2/22
 
 - `string`函数支持按需导入

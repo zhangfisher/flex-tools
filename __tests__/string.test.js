@@ -69,3 +69,18 @@ test("replaceVars", ()=>{
 
 
 })
+
+
+
+test("params",() => {
+    
+    let result = "[{levelName}] - {datetime} : {message}{<,module=>module}{<,tags=>tags}".params({
+        level: 4,
+        message: "程序出错数据类型出错",
+        levelName: "ERROR",
+        datetime: "2023-02-24 14:56:20 428",
+        date: "2023-02-24",
+        time: "14:56:20",
+      })
+      expect(result).toBe("[ERROR] - 2023-02-24 14:56:20 428 : 程序出错数据类型出错")
+})

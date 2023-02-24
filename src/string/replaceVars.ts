@@ -15,7 +15,7 @@ function getInterpVar(this:string,value:any,{empty,delimiter=","}:ReplaceVarsOpt
                 result.push(`${k}=${String(v)}`)
                 return result
             },[] ).join(delimiter)
-        }else if(canIterable(finalValue)){
+        }else if(canIterable(finalValue) && typeof(finalValue) != 'string'){
             return [...finalValue].map(v=>String(v)).join(delimiter)
         }else if(finalValue instanceof Error){
             return finalValue.message
@@ -96,7 +96,7 @@ export function replaceVars(text:string,vars:any,options?:ReplaceVarsOptions):st
                 return opts.empty==null ? '': `${prefix}${opts.empty}${suffix}`
             }            
         }) 
-    }else if(typeof(finalVars)=='object'){
+    }else if(isPlainObject(finalVars)){
         const useVars = finalVars as Record<string,any>
         return text.replaceAll(VAR_MATCHER, function():string{
             let {prefix='',name='',suffix=''} = arguments[arguments.length-1] 
