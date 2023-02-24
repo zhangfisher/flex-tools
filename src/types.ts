@@ -33,4 +33,7 @@ export type Rename<T,NameMaps extends Partial<Record<keyof T,any>>> = {
 } & Omit<T,keyof NameMaps>
 
   
+// 文件大小
+export type FileSize = number | `${number}${'B' | 'Byte' | 'K' | 'KB' | 'M' | 'MB' | 'G' | 'GB' | 'T' | 'TB' | 'P' | 'PB' | 'E' | 'EB'}`
+
 

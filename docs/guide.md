@@ -1599,6 +1599,15 @@ type R2 = Rename<X,{'a':'A','b':'B'}>
 // }
 
 ```
+
+## FileSize
+
+文件尺寸
+
+```typescript
+type FileSize = number | `${number}${'B' | 'Byte' | 'K' | 'KB' | 'M' | 'MB' | 'G' | 'GB' | 'T' | 'TB' | 'P' | 'PB' | 'E' | 'EB'}`
+```
+
  
 # 杂项
 
