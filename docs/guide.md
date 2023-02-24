@@ -182,7 +182,7 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
 
 `replaceVars`是`String.prototype.params`的内部实现，功能一样。其函数签名如下：
 
-> function replaceVars(text:string,vars:any,options?:{empty?:string | null,delimiter?:string}):string 
+> `function replaceVars(text:string,vars:any,options?:{empty?:string | null,delimiter?:string}):string` 
 
 
 ```typescript
@@ -757,6 +757,46 @@ type ConflictStrategy ='ignore' | 'replace' | 'merge' | 'error' | ((key:string, 
     - `merge`: 如果有目标是数组或{}则进行深度合并。
     - `error`: 触发错误
     - 指定`(key:string, target:object, source:object)=>'ignore' | 'replace' | 'merge' | 'error' | undefined`函数来动态指定冲突处理策略。
+
+## pick
+
+提取对象中的指定键并返回新的对象。功能等效于`lodash/pick`+`lodash/pickBy`
+
+> `pick(source:Record<any,any>,keys:ItemPicker,defaultValues?:Record<any,any>) `
+
+```typescript
+  pick({a:1,b:2,c:3},"a")  // == {a:1}
+  pick({a:1,b:2,c:3},["a","b"])  // == {a:1,b:2} 
+  pick({a:1,b:2,c:3},(k,v)=>{
+       return k =='a'           // 只提取k=a的项
+  } )  // == {a:1}
+```
+
+- `defaultValues`：提供一个默认值，当所输入的键不存在时使用。
+
+## omit
+
+排除对象中的指定键，功能等效于`lodash/omit`+`lodash/omitBy`。
+
+> `omit(source:Record<string | symbol,any>,keys:ItemPicker,returnNewObject?:boolean)`
+
+```typescript
+
+    let obj = {a:1,b:2,c:3,d:4}
+    omit(obj,"a")                   // == {b:2,c:3,d:4}
+    omit(obj,["a","b"])             // == {c:3,d:4}
+    omit(obj,(k,v)=>{
+          return k =='a'
+    })                  // == {b:2,c:3,d:4} 
+    console.log(obj)// {a:1,b:2,c:3,d:4}
+    omit(obj,"a",false)// {b:2,c:3,d:4}
+    // 原始对象改变了
+    console.log(obj)// {b:2,c:3,d:4}
+
+```
+
+- `returnNewObject`： 控制是否返回一个新的对象,默认为`true`
+
 
 ## hasCircularRef
 

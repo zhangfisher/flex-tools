@@ -19,9 +19,9 @@
 import { isPlainObject } from "../typecheck/isPlainObject";
 
 // 排除字段列表
-export const exclude = Symbol("exclude");
+export const EXCLUDE = Symbol("EXCLUDE");
 // 只包括的字段
-export const include = Symbol("include");
+export const INCLUDE = Symbol("INCLUDE");
 
 export function assignObject(target: object, ...sources: any[]): any{    
     let mapSources = sources.map(source =>{
@@ -37,17 +37,17 @@ export function assignObject(target: object, ...sources: any[]): any{
         }
     })
     let results = Object.assign(target,...mapSources);
-    if(include in results){
-        const includeFields =typeof(results[include]) === "string" ? results[include].split(",") : (Array.isArray(results[include]) ? results[include] : [results[include]])
+    if(INCLUDE in results){
+        const includeFields =typeof(results[INCLUDE]) === "string" ? results[INCLUDE].split(",") : (Array.isArray(results[INCLUDE]) ? results[INCLUDE] : [results[INCLUDE]])
         Object.keys(results).forEach((key:string) =>{
             if(!includeFields.includes(key)) delete results[key]
         })
-        delete results[include]
+        delete results[INCLUDE]
     }
-    if(exclude in results) {
-        const excludeFields =typeof(results[exclude]) === "string" ? results[exclude].split(",") : (Array.isArray(results[exclude]) ? results[exclude] : [results[exclude]])
+    if(EXCLUDE in results) {
+        const excludeFields =typeof(results[EXCLUDE]) === "string" ? results[EXCLUDE].split(",") : (Array.isArray(results[EXCLUDE]) ? results[EXCLUDE] : [results[EXCLUDE]])
         excludeFields.forEach((name:string) =>delete results[name])
-        delete results[exclude]
+        delete results[EXCLUDE]
     }
     return results
 }

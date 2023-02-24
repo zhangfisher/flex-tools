@@ -1,5 +1,7 @@
 import { test,expect, assert} from "vitest"
-import { exclude, include,assignObject, deepMerge } from "../src/object"
+import { EXCLUDE, INCLUDE,assignObject, deepMerge } from "../src/object"
+import { omit } from "../src/object/omit"
+import { pick } from "../src/object/pick"
  
 
 
@@ -31,10 +33,34 @@ test("assignObject",() => {
         format: "xxx"
     })
 
-    expect(assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[exclude]:["a", "b", "c"]})).toEqual({d:4,e:5,f:6,x:1})
-    expect(assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[exclude]:["a", "b", "c"]},{a:1})).toEqual({d:4,e:5,f:6,x:1})
+    expect(assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[EXCLUDE]:["a", "b", "c"]})).toEqual({d:4,e:5,f:6,x:1})
+    expect(assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[EXCLUDE]:["a", "b", "c"]},{a:1})).toEqual({d:4,e:5,f:6,x:1})
 
-    expect(assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[include]:["a", "b", "c"]},{a:1})).toEqual({a:1,b:2,c:3})
+    expect(assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[INCLUDE]:["a", "b", "c"]},{a:1})).toEqual({a:1,b:2,c:3})
 
+
+})
+
+test("pick",() => {
+     
+    expect(pick({a:1,b:2,c:3},"a")).toEqual({a:1})
+    expect(pick({a:1,b:2,c:3},["a","b"])).toEqual({a:1,b:2})
+    expect(pick({a:1,b:2,c:3},(k,v)=>{
+          return k =='a'
+    })).toEqual({a:1})
+    expect(pick({a:1,b:2,c:3},["a","b"],{d:100})).toEqual({a:1,b:2,d:100})
+
+})
+
+test("omit",() => {
+    let obj = {a:1,b:2,c:3,d:4}
+    expect(omit(obj,"a")).toEqual({b:2,c:3,d:4})
+    expect(omit(obj,["a","b"])).toEqual({c:3,d:4})
+    expect(omit(obj,(k,v)=>{
+          return k =='a'
+    })).toEqual({b:2,c:3,d:4}) 
+    expect(obj).toEqual({a:1,b:2,c:3,d:4})
+    expect(omit(obj,"a",false)).toEqual({b:2,c:3,d:4})
+    expect(obj).toEqual({b:2,c:3,d:4})
 
 })

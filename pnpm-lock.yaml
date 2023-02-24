@@ -9,6 +9,7 @@ specifiers:
   husky: ^8.0.3
   lodash: ^4.17.21
   tsup: ^6.6.3
+  type-fest: ^3.6.0
   typescript: ^4.9.4
   vitest: ^0.26.2
 
@@ -23,6 +24,7 @@ devDependencies:
   docsify: 4.13.0
   husky: 8.0.3
   tsup: 6.6.3_q7u3722li5p3s3hvjnne4zfcwq
+  type-fest: 3.6.0
   typescript: 4.9.4
   vitest: 0.26.2
 
@@ -2451,6 +2453,11 @@ packages:
   /type-fest/0.8.1:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
+    dev: true
+
+  /type-fest/3.6.0:
+    resolution: {integrity: sha512-RqTRtKTzvPpNdDUp1dVkKQRunlPITk4mXeqFlAZoJsS+fLRn8AdPK0TcQDumGayhU7fjlBfiBjsq3pe3rIfXZQ==}
+    engines: {node: '>=14.16'}
     dev: true
 
   /typescript/4.9.4:
