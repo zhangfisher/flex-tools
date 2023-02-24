@@ -465,14 +465,30 @@ function safeParseJson(str:string)
 
 ## assignObject
 
-与`Object.assign`一样的功能，唯一的差别在于对值为`undefined`的处理方式不同。
+与`Object.assign`一样的功能，主要差别在于：
+
+- 对值为`undefined`的处理方式不同。
+- 排除掉一些字段,`assignObject({...},{...},{[exclude]:[字段列表]})`等效于`lodash/omit`
+- 只包括某些字段,`assignObject({...},{...},{[include]:[字段列表]})`等效于`lodash/pick`
 
 ```typescript
 
 Object.assign({a:1},{a:undefined}) // == {a:undefined})
+// 由于a==undefined所有不会被合并，这样就保留了a的值
 assignObject({a:1},{a:undefined}) // == {a:1})
 
+
+import { exclude,include } from "flex-tools/object"
+// 排除a,b,c字段
+assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[exclude]:["a", "b", "c"]}) 
+// == {e:5,f:6}
+
+// 只包含a,b,c字段
+assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[include]:["a", "b", "c"]},{a:1}) 
+// == {a:1,b:2,c:3}
+
 ```
+
 此功能在处理函数的对象参数时有用，例：
 
 ```typescript
@@ -487,8 +503,6 @@ function test(x:number,options:{a:string,b:number}){
     let opts = assignObject({
         a:"x",b:1
     },options)  
-
-
 }
 
 ```

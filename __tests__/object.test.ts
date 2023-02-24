@@ -1,5 +1,6 @@
 import { test,expect, assert} from "vitest"
-import {  assignObject, deepMerge } from "../src/object"
+import { exclude, include,assignObject, deepMerge } from "../src/object"
+ 
 
 
 test("深度合并",() => {
@@ -30,6 +31,10 @@ test("assignObject",() => {
         format: "xxx"
     })
 
+    expect(assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[exclude]:["a", "b", "c"]})).toEqual({d:4,e:5,f:6,x:1})
+    expect(assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[exclude]:["a", "b", "c"]},{a:1})).toEqual({d:4,e:5,f:6,x:1})
 
-    
+    expect(assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[include]:["a", "b", "c"]},{a:1})).toEqual({a:1,b:2,c:3})
+
+
 })
