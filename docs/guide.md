@@ -1602,7 +1602,7 @@ type R2 = Rename<X,{'a':'A','b':'B'}>
 
 ## FileSize
 
-文件尺寸
+文件尺寸，可以调用`getFileSize`函数获取返回字节值。
 
 ```typescript
 type FileSize = number | `${number}${'B' | 'Byte' | 'K' | 'KB' | 'M' | 'MB' | 'G' | 'GB' | 'T' | 'TB' | 'P' | 'PB' | 'E' | 'EB'}`
@@ -1618,7 +1618,42 @@ let x7:FileSize = "333B"
 let x8:FileSize = "333B"
 let x9:FileSize = "333B"
 
+getFileSize(x1) // == 
+getFileSize(x2) // == 
+getFileSize(x3) // == 
+getFileSize(x4) // == 
+getFileSize(x5) // == 
+getFileSize(x6) // == 
+getFileSize(x7) // == 
+getFileSize(x8) // == 
+getFileSize(x9) // == 
+
+
 ```
+
+## TimeInterval
+
+时间间隔，可以使用`getTimeInterval`函数返回毫秒数
+
+```typescript
+type TimeInterval = number | `${number}${'ms' |  's' | 'm' | 'h' | 'D' | 'W' | 'M' | 'Y'}`
+
+let n:TimeInterval = "1ms"  // 1毫秒
+let n:TimeInterval = "5s"  // 5秒
+let n:TimeInterval = "3m"  // 3分钟
+let n:TimeInterval = "1D"  // 一天
+let n:TimeInterval = "1D"  // 一天
+let n:TimeInterval = "1D"  // 一天
+let n:TimeInterval = "1D"  // 一天
+let n:TimeInterval = "1D"  // 一天
+let n:TimeInterval = "1D"  // 一天
+
+
+getTimeInterval("")
+
+```
+
+
 
  
 # 杂项
