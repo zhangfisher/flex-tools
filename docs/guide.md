@@ -1606,6 +1606,18 @@ type R2 = Rename<X,{'a':'A','b':'B'}>
 
 ```typescript
 type FileSize = number | `${number}${'B' | 'Byte' | 'K' | 'KB' | 'M' | 'MB' | 'G' | 'GB' | 'T' | 'TB' | 'P' | 'PB' | 'E' | 'EB'}`
+
+
+let x1:FileSize = "333M"
+let x2:FileSize = "333B"
+let x3:FileSize = "333Byte"
+let x4:FileSize = "333MB"
+let x5:FileSize = "333GB"
+let x6:FileSize = "333G"
+let x7:FileSize = "333B"
+let x8:FileSize = "333B"
+let x9:FileSize = "333B"
+
 ```
 
  
