@@ -1726,7 +1726,7 @@ timer.end("耗时：",{unit:'s'})  // 耗时：1200s
 
 
 ```typescript
-    parseFileSize(1)                //1
+    parseFileSize(1)                //1,无单位代表是字节
     parseFileSize("33b")            //33
     parseFileSize("33B")            //33
     parseFileSize("33Byte")         //33
@@ -1768,7 +1768,9 @@ timer.end("耗时：",{unit:'s'})  // 耗时：1200s
 
 
 # 升级日志
+## 2023/2/25
 
+- 增加`parseFileSize`和`parseTimeDuration`
 ## 2023/2/24
 
 - 修复`string.params`处理字符串时的错误迭代

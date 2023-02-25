@@ -8,7 +8,9 @@ import { TimeDuration } from "../types";
 const sizes={ms:1,s:1000,m:60000,h:3600000,D:86400000,W:604800000,M:2592000000,Y:31104000000} as Record<string, number>
 
 export function parseTimeDuration(n:TimeDuration):number {
-    if(typeof n === "string"){
+    if(typeof n === "number"){
+        return n
+    }else if(typeof n === "string"){
         let [integer=0,decimal=0] = String(parseFloat(n)).split(".")       
         let unit = n.trim().replace(/\d?\.*\d?/,"") 
                             .replace("Milliseconds","ms")
