@@ -1,6 +1,7 @@
 module.exports = {
     ignores: [(commit) => commit.includes("init")],
     extends: ["@commitlint/config-conventional"],
+    formatter: '@commitlint/format',
     rules: {
       // @see: https://commitlint.js.org/#/reference-rules
       "body-leading-blank": [2, "always"],
