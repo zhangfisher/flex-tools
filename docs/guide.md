@@ -1602,59 +1602,37 @@ type R2 = Rename<X,{'a':'A','b':'B'}>
 
 ## FileSize
 
-文件尺寸，可以调用`getFileSize`函数获取返回字节值。
+文件尺寸表示，可以调用`parseFileSize`函数解析。
+
+**例：**:  `1kb`、`23MB`、`123GB`、`1MB`、`32E`、`41TB`、`13Bytes`
 
 ```typescript
-type FileSize = number | `${number}${'B' | 'Byte' | 'K' | 'KB' | 'M' | 'MB' | 'G' | 'GB' | 'T' | 'TB' | 'P' | 'PB' | 'E' | 'EB'}`
-
-
-let x1:FileSize = "333M"
-let x2:FileSize = "333B"
-let x3:FileSize = "333Byte"
-let x4:FileSize = "333MB"
-let x5:FileSize = "333GB"
-let x6:FileSize = "333G"
-let x7:FileSize = "333B"
-let x8:FileSize = "333B"
-let x9:FileSize = "333B"
-
-getFileSize(x1) // == 
-getFileSize(x2) // == 
-getFileSize(x3) // == 
-getFileSize(x4) // == 
-getFileSize(x5) // == 
-getFileSize(x6) // == 
-getFileSize(x7) // == 
-getFileSize(x8) // == 
-getFileSize(x9) // == 
-
-
+type FileSize = number | `${number}${
+    'B' | 'Byte' | 'b' | 'Bytes' 
+    | 'K' | 'KB' | 'k' | 'kb' 
+    | 'M' | 'MB' | 'm' | 'mb'
+    | 'G' | 'GB' | 'g' | 'gb'
+    | 'T' | 'TB' | 't' | 'tb' 
+    | 'P' | 'PB' | 'p' | 'pb' 
+    | 'E' | 'EB' | 'e' | 'eb'
+}`
 ```
 
-## TimeInterval
+## TimeDuration
 
-时间间隔，可以使用`getTimeInterval`函数返回毫秒数
+时间表示，可以使用`parseTimeDuration`函数返回毫秒数。
+
+**例：**:  `1ms`, `12s` , `98m`, `100h`,`12Hours`,`8Days`, `6Weeks`, `8Years`, `1Minute`
 
 ```typescript
-type TimeInterval = number | `${number}${'ms' |  's' | 'm' | 'h' | 'D' | 'W' | 'M' | 'Y'}`
-
-let n:TimeInterval = "1ms"  // 1毫秒
-let n:TimeInterval = "5s"  // 5秒
-let n:TimeInterval = "3m"  // 3分钟
-let n:TimeInterval = "1D"  // 一天
-let n:TimeInterval = "1D"  // 一天
-let n:TimeInterval = "1D"  // 一天
-let n:TimeInterval = "1D"  // 一天
-let n:TimeInterval = "1D"  // 一天
-let n:TimeInterval = "1D"  // 一天
-
-
-getTimeInterval("")
-
-```
-
-
-
+type TimeInterval = number | `${number}` | `${number}${
+    'ms' | 's' | 'm' | 'h'              // 毫秒/秒/分钟/小时/
+    | 'Milliseconds' | 'Seconds' | 'Minutes' |'Hours' 
+    | 'd' | 'D' | 'W' | 'w' | 'M' | 'Y' | 'y'                // 天/周/月/年
+    | 'Days' | 'Weeks' |'Months' | 'Years'
+}` 
+ 
+``` 
  
 # 杂项
 
@@ -1686,6 +1664,107 @@ timer.end("耗时：",{unit:'s'})  // 耗时：1200s
             timer.end()   ---      |
         timer.end()  --------------|
     ```
+
+
+## parseTimeDuration
+
+解析如`1ms`, `12s` , `98m`, `100h`,`12Hours`,`8Days`, `6Weeks`, `8Years`, `1Minute`的字符串为毫秒数。
+
+```typescript
+    // ms
+    parseTimeDuration("1")              // =1
+    parseTimeDuration("1ms")            // =1
+    parseTimeDuration("1Milliseconds")  // =1
+    //s
+    parseTimeDuration("1s")             // =1000
+    parseTimeDuration("1Seconds")       // =1000
+    parseTimeDuration("1.5s")           // =1500
+    parseTimeDuration("1.5Seconds")     // =1500
+    
+    // m
+    parseTimeDuration("1m")             // =60000
+    parseTimeDuration("1Minutes")       // =60000
+    parseTimeDuration("1.5m")           // =60000+60000*0.5
+    parseTimeDuration("1.5Minutes")     // =60000+60000*0.5
+    // h
+    parseTimeDuration("1h")             // =3600000
+    parseTimeDuration("1Hours")         // =3600000
+    parseTimeDuration("1.5h")           // =3600000+3600000*0.5
+    parseTimeDuration("1.5Hours")       // =3600000+3600000*0.5
+
+    // D
+    parseTimeDuration("1D")             // =86400000
+    parseTimeDuration("1d")             // =86400000
+    parseTimeDuration("1Days")          // =86400000
+    parseTimeDuration("1.5d")           // =86400000+86400000*0.5
+    parseTimeDuration("1.5Days")        // =86400000+86400000*0.5
+
+    // W 
+    parseTimeDuration("1w")             // =604800000
+    parseTimeDuration("1W")             // =604800000
+    parseTimeDuration("1Weeks")         // =604800000
+    parseTimeDuration("1.5w")           // =604800000+604800000*0.5
+    parseTimeDuration("1.5Weeks")       // =604800000+604800000*0.5
+
+    // M
+    parseTimeDuration("1M")             // =2592000000
+    parseTimeDuration("1Months")        // =2592000000
+    parseTimeDuration("1.5M")           // =2592000000+2592000000*0.5
+    parseTimeDuration("1.5Months")      // =2592000000+2592000000*0.5
+
+    // Y
+    parseTimeDuration("1Y")             // =31104000000
+    parseTimeDuration("1y")             // =31104000000
+    parseTimeDuration("1Years")         // =31104000000
+    parseTimeDuration("1.5Y")           // =31104000000+31104000000*0.5
+    parseTimeDuration("1.5Years")       // =31104000000+31104000000*0.5
+```
+
+## parseFileSize
+
+解析如`1ms`, `12s` , `98m`, `100h`,`12Hours`,`8Days`, `6Weeks`, `8Years`, `1Minute`的字符串为字节数。
+
+
+```typescript
+    parseFileSize(1)                //1
+    parseFileSize("33b")            //33
+    parseFileSize("33B")            //33
+    parseFileSize("33Byte")         //33
+    //kb
+    parseFileSize("1k")             //1024
+    parseFileSize("1K")             //1024
+    parseFileSize("1kb")            //1024
+    parseFileSize("1KB")            //1024
+
+    parseFileSize(".5k")            //512
+    parseFileSize("0.5k")           //512)   
+    parseFileSize("1.5k")           //1536
+    parseFileSize("1.5K")           //1536
+    parseFileSize("1.5kb")          //1536
+    parseFileSize("1.5KB")          //1536
+
+    //mb
+    parseFileSize("1m")             //1048576
+    parseFileSize("1M")             //1048576
+    parseFileSize("1mb")            //1048576
+    parseFileSize("1MB")            //1048576
+    
+    parseFileSize("1.5m")           //1572864
+    parseFileSize("1.5M")           //1572864
+    parseFileSize("1.5mb")          //1572864
+    parseFileSize("1.5MB")          //1572864
+
+    //gb
+    parseFileSize("1g")             //1073741824
+    parseFileSize("1g")             //1073741824
+    parseFileSize("1gb")            //1073741824
+    parseFileSize("1GB")            //1073741824
+
+    parseFileSize("1.5g")           //1610612736
+    parseFileSize("1.5G")           //1610612736
+    parseFileSize("1.5gb")          //1610612736
+    parseFileSize("1.5GB")          //1610612736
+```
 
 
 # 升级日志

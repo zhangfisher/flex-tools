@@ -34,6 +34,20 @@ export type Rename<T,NameMaps extends Partial<Record<keyof T,any>>> = {
 
   
 // 文件大小
-export type FileSize = number | `${number}${'B' | 'Byte' | 'K' | 'KB' | 'M' | 'MB' | 'G' | 'GB' | 'T' | 'TB' | 'P' | 'PB' | 'E' | 'EB'}`
+export type FileSize = number | `${number}${
+    'B' | 'Byte' | 'b' | 'Bytes' 
+    | 'K' | 'KB' | 'k' | 'kb' 
+    | 'M' | 'MB' | 'm' | 'mb'
+    | 'G' | 'GB' | 'g' | 'gb'
+    | 'T' | 'TB' | 't' | 'tb' 
+    | 'P' | 'PB' | 'p' | 'pb' 
+    | 'E' | 'EB' | 'e' | 'eb'
+}`
 
-
+// 时间间隔
+export type TimeDuration = number | `${number}` | `${number}${
+    'ms' | 's' | 'm' | 'h'              // 毫秒/秒/分钟/小时/
+    | 'Milliseconds' | 'Seconds' | 'Minutes' |'Hours' 
+    | 'd' | 'D' | 'W' | 'w' | 'M' | 'Y' | 'y'                // 天/周/月/年
+    | 'Days' | 'Weeks' |'Months' | 'Years'
+}`
