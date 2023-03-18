@@ -1546,32 +1546,43 @@ export type AllowEmpty<T> = T | null | undefined
 ```typescript
 export type Constructor = { new (...args: any[]): any };
 ```
+
 ## TypedClassDecorator
 
-装饰器
+用来声明类的装饰器函数
 
 ```typescript
 export type TypedClassDecorator<T> = <T extends Constructor>(target: T) => T | void; 
+
+
 ```
 
 ## WithReturnFunction
 
-返回指定类型的函数
+用来声明一个函数，该函数必须返回指定类型
 
 ```typescript
 export type WithReturnFunction<T> = (...args: any)=>T
+
+type MyFunc = WithReturnFunction<number>
+
+const f1:MyFunc =getCount():number=>1  // OK
+const f2:MyFunc =getCount():string=>""  // ERROR
+
 ```
 
 ## ImplementOf
+
 实现某个指定的类接口
 
 ```typescript
 export type ImplementOf<T> = new (...args: any) => T
+
 ```
 
 ## Rename
 
- 用来更名接口中的的类型
+用来更名接口中的类型名称
 
 ```typescript
 export type Rename<T,NameMaps extends Partial<Record<keyof T,any>>> = {
@@ -1634,6 +1645,88 @@ type TimeInterval = number | `${number}` | `${number}${
  
 ``` 
  
+## MutableRecord
+
+可变记录类型,其类型是由记录上的`type`字段推断出来的。
+
+```typescript
+
+type Animal = MutableRecord<{
+    dog:{bark:boolean,wagging:boolean},
+    cat:{mew:number},
+    chicken:{egg:number}      
+}>
+// {type:'dog',bark:boolean,wagging:boolean } 
+// | {type: 'cat', mew:number}
+// | {type: 'chicken', egg:number}
+
+let animals:Animal = {
+    type:"dog",
+    bark:true,
+    wagging:true
+}
+let animals:Animal = {
+    type:"cat",
+    mew:23
+}
+
+```
+
+也可以通过第二个泛型参数来指定，类型字段。如下：
+
+```typescript
+
+type Animal = MutableRecord<{
+    dog:{bark:boolean,wagging:boolean},
+    cat:{mew:number},
+    chicken:{egg:number}      
+},'kind'>
+// {kind:'dog',bark:boolean,wagging:boolean } 
+// | {kind: 'cat', mew:number}
+// | {kind: 'chicken', egg:number}
+```
+
+## MutableRecordList
+
+可变记录数组,其数组成员中`Record`类型，并且类型是根据`Record`的`type`字段值来推断的。
+
+```typescript
+
+type Animals = MutableRecordList<{
+    dog:{bark:boolean,wagging:boolean},
+    cat:{mew:number},
+    chicken:{egg:number}      
+}>
+// (
+//     {type:'dog',bark:boolean,wagging:boolean } 
+//     | {type: 'cat', mew:number}
+//     | {type: 'chicken', egg:number}
+// )[]
+
+let animals:Animal = [
+    { type:"dog", bark:true,wagging:true},
+    { type:"cat", mew:23 }
+]
+
+```
+
+也可以通过第二个泛型参数来指定`type`类型字段。如下：
+
+```typescript
+
+type Animals = MutableRecordList<{
+    dog:{bark:boolean,wagging:boolean},
+    cat:{mew:number},
+    chicken:{egg:number}      
+},'kind'>
+// (
+//     {kind:'dog',bark:boolean,wagging:boolean } 
+//     | {kind: 'cat', mew:number}
+//     | {kind: 'chicken', egg:number}
+// )[]
+```
+
+
 # 杂项
 
 ## timer
