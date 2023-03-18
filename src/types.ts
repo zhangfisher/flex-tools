@@ -74,7 +74,7 @@ export type TimeDuration = number | `${number}` | `${number}${
  * }
  * 
  */
-type MutableRecord<Items,KindKey extends string='type'> = {
+export type MutableRecord<Items,KindKey extends string='type'> = {
     [ Kind in keyof Items]: {
         [type in KindKey]: Kind;
     } & Items[Kind]
@@ -103,7 +103,7 @@ type MutableRecord<Items,KindKey extends string='type'> = {
  * ]
  * 
  */
-type MutableRecordList<Items,KindKey extends string='type'> = {
+export type MutableRecordList<Items,KindKey extends string='type'> = {
     [ Kind in keyof Items]: {
         [type in KindKey]: Kind;
     } & Items[Kind]
