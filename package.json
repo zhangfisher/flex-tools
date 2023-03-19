@@ -1,6 +1,6 @@
 {
   "name": "flex-tools",
-  "version": "1.0.62",
+  "version": "1.0.63",
   "description": "modular utilities.",
   "main": "src/index.js",
   "module": "src/index.mjs",
@@ -41,8 +41,8 @@
     "shelljs": "^0.8.5"
   },
   "config": {
-        "commitizen": {
-        "path": "@commitlint/cz-commitlint"
-        }
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
     }
+  }
 }
