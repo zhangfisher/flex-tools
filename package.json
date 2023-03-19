@@ -10,7 +10,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsup && cd dist && npm pkg set main=index.js && npm pkg set module=index.mjs && npm pkg set types=index.d.ts",
-    "release": "npm version patch && npm run build && cd dist && npm publish",
+    "release": "npm version patch  --commit-hooks=false && npm run build && cd dist && npm publish",
     "doc": "docsify serve docs",
     "prepare": "husky install",
     "commit": "git add . && git cz"
