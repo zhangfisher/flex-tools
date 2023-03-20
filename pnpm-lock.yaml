@@ -9,8 +9,10 @@ specifiers:
   '@types/shelljs': ^0.8.11
   commitizen: ^4.3.0
   docsify: ^4.13.0
+  esbuild-copy-files-plugin: ^1.1.0
   fs-extra: ^11.1.0
   husky: ^8.0.0
+  inquirer: '8'
   lodash: ^4.17.21
   shelljs: ^0.8.5
   tsup: ^6.6.3
@@ -25,14 +27,16 @@ dependencies:
 
 devDependencies:
   '@commitlint/config-conventional': 17.4.4
-  '@commitlint/cz-commitlint': 17.4.4_dmehpw2kb3ulfeyqzhkinja3ny
+  '@commitlint/cz-commitlint': 17.4.4_z35aupwl3rroy6medco3zapccu
   '@swc/core': 1.3.24
   '@types/fs-extra': 11.0.1
   '@types/lodash': 4.14.191
   '@types/shelljs': 0.8.11
   commitizen: 4.3.0_@swc+core@1.3.24
   docsify: 4.13.0
+  esbuild-copy-files-plugin: 1.1.0
   husky: 8.0.3
+  inquirer: 8.2.5
   tsup: 6.6.3_q7u3722li5p3s3hvjnne4zfcwq
   type-fest: 3.6.0
   typescript: 4.9.4
@@ -76,7 +80,7 @@ packages:
       ajv: 8.12.0
     dev: true
 
-  /@commitlint/cz-commitlint/17.4.4_dmehpw2kb3ulfeyqzhkinja3ny:
+  /@commitlint/cz-commitlint/17.4.4_z35aupwl3rroy6medco3zapccu:
     resolution: {integrity: sha512-UNUx5mCVLKNg81PEX4cNFjG22MG7nbZayTea2lvqtQrUobvGWY+35jvYVU7qpYPYUUs17wDbltkVkC+Qf3eBqg==}
     engines: {node: '>=v14'}
     peerDependencies:
@@ -88,6 +92,7 @@ packages:
       '@commitlint/types': 17.4.4
       chalk: 4.1.2
       commitizen: 4.3.0_@swc+core@1.3.24
+      inquirer: 8.2.5
       lodash.isplainobject: 4.0.6
       word-wrap: 1.2.3
     transitivePeerDependencies:
@@ -1206,6 +1211,10 @@ packages:
     resolution: {integrity: sha512-7dFHNmqeFSEt2ZBsCriorKnn3Z2pj+fd9kmI6QoWw4//DL+icEBfc0U7qJCisqrTsKTjw4fNFy2pW9OqStD84g==}
     dependencies:
       is-arrayish: 0.2.1
+    dev: true
+
+  /esbuild-copy-files-plugin/1.1.0:
+    resolution: {integrity: sha512-8aRiwJ0owGuyUXzCJIcbwoTDRWpn/g7cfrGKRBrIUNpR3n8eqh12Yj5PmToHmgTUe23xng5oyIoMgX/gRYbdJw==}
     dev: true
 
   /esbuild/0.16.17:
