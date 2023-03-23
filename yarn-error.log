@@ -1,0 +1,73 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add -D @rspack/cli
+
+PATH: 
+  C:\Python39\Scripts\;C:\Python39\;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Python310\Scripts\;C:\Python310\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;D:\Program Files\Java\OpenJDK11\bin;D:\Program Files\Android\android-sdk\platform-tools;D:\Program Files\Android\android-sdk\emulator;D:\Program Files\Android\android-sdk\tools;D:\Program Files\Android\android-sdk\tools\bin;C:\Windows\System32\OpenSSH;C:\Users\Administrator\AppData\Local\Yarn\bin;D:\Program Files\lua\bin;D:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;D:\Program Files\apache-maven-3.6.2\bin;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\dotnet\;D:\Program Files\netcat;C:\Program Files (x86)\Yarn\bin\;D:\Program Files\go\bin;D:\Program Files\Gradle\gradle-6.8.3\bin;C:\ProgramData\chocolatey\bin;d:\Program Files\Git\cmd;D:\Program Files\Java\jdk-11.0.15.1\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\nodejs\;D:\Program Files\TortoiseGit\bin;C:\Users\Administrator\.cargo\bin;C:\Users\Administrator\AppData\Local\pnpm;C:\Users\Administrator\.windows-build-tools\python27\;C:\Users\Administrator\AppData\Local\Microsoft\WindowsApps;D:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;D:\Program Files\emqx\bin;d:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2019.2\bin;C:\Users\Administrator\.dotnet\tools;d:\Program Files\JetBrains\WebStorm 2020.3.2\bin;C:\Users\Administrator\AppData\Local\Yarn\bin;C:\Users\Administrator\go\bin;C:\Users\Administrator\AppData\Local\Programs\Microsoft VS Code Insiders\bin;D:\Softwares;d:\Program Files\JetBrains\IntelliJ IDEA 2020.3.2\bin;C:\Users\Administrator\AppData\Local\Programs\Fiddler;D:\Program Files\Java\jdk-11.0.15.1\bin;C:\Users\Administrator\AppData\Local\Microsoft\WindowsApps;C:\Users\Administrator\AppData\Roaming\npm;C:\Users\Administrator\AppData\Local\nvs\;C:\Users\Administrator\.cargo\bin;C:\Users\Administrator\AppData\Local\Programs\Microsoft VS Code\bin
+
+Yarn version: 
+  1.22.4
+
+Node version: 
+  18.8.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: ENOENT: no such file or directory, copyfile 'C:\Users\Administrator\AppData\Local\Yarn\Cache\v6\npm-ms-2.1.2-d09d1f357b443f493382a8eb3ccd183872ae6009-integrity\node_modules\ms\index.js' -> 'E:\Work\Code\sources\flex-tools\node_modules\tsup\node_modules\ms\index.js'
+
+npm manifest: 
+  {
+    "name": "flex-tools",
+    "version": "1.0.63",
+    "description": "modular utilities.",
+    "main": "src/index.js",
+    "module": "src/index.mjs",
+    "types": "src/index.d.ts",
+    "homepage": "https://github.com/zhangfisher/flex-tools",
+    "repository": "https://github.com/zhangfisher/flex-tools",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "build": "tsup && cd dist && npm pkg set main=index.js && npm pkg set module=index.mjs && npm pkg set types=index.d.ts",
+      "release": "npm version patch  --commit-hooks=false && npm run build && cd dist && npm publish",
+      "doc": "docsify serve docs",
+      "prepare": "husky install",
+      "commit": "git add . && git cz"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+      "@commitlint/config-conventional": "^17.4.4",
+      "@commitlint/cz-commitlint": "^17.4.4",
+      "@swc/core": "^1.3.24",
+      "@types/fs-extra": "^11.0.1",
+      "@types/lodash": "^4.14.191",
+      "@types/shelljs": "^0.8.11",
+      "commitizen": "^4.3.0",
+      "docsify": "^4.13.0",
+      "esbuild-copy-files-plugin": "^1.1.0",
+      "husky": "^8.0.0",
+      "inquirer": "8",
+      "tsup": "^6.6.3",
+      "type-fest": "^3.6.0",
+      "typescript": "^4.9.4",
+      "vitest": "^0.26.2"
+    },
+    "dependencies": {
+      "fs-extra": "^11.1.0",
+      "lodash": "^4.17.21",
+      "shelljs": "^0.8.5"
+    },
+    "config": {
+      "commitizen": {
+        "path": "@commitlint/cz-commitlint"
+      }
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
