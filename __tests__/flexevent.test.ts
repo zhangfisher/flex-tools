@@ -1,4 +1,4 @@
-import { test,expect,vi,describe} from "vitest"
+import { test,expect,vi,describe, afterEach, beforeEach} from "vitest"
 import { FlexEvent, FlexEventBus, FlexEventBusMessage, FlexEventBusNode, FlexEventListener} from "../src"
  
 
@@ -137,16 +137,20 @@ describe("事件触发器",()=>{
 describe("测试事件总线",async ()=>{
     const eventbus = new FlexEventBus()
     const count = 10
-    
-    const nodes = new Array(count).fill(0).map((value,index)=>{
-        const node = new FlexEventBusNode({id:`node${index}`})
-        node.join(eventbus)
-        node.onMessage = vi.fn((message:FlexEventBusMessage)=>{
-            return message.payload
-        }) 
-        return node
+    let nodes:FlexEventBusNode[] = []
+    beforeEach(()=>{
+        nodes = new Array(count).fill(0).map((value,index)=>{
+            const node = new FlexEventBusNode({id:`node${index}`})
+            node.join(eventbus)
+            node.onMessage = vi.fn((message:FlexEventBusMessage)=>{
+                return message.payload
+            }) 
+            return node
+        })
     })
-    
+    afterEach(()=>{
+        eventbus.offAll()
+    })
 
     test("测试节点广播消息",()=>{
         return new Promise<void>((resolve)=>{
@@ -159,4 +163,61 @@ describe("测试事件总线",async ()=>{
             resolve()
         })        
     })
+
+    test("测试给A节点发送数据",()=>{
+        return new Promise<void>((resolve)=>{
+            const A = new FlexEventBusNode({id:"A"})
+            A.join(eventbus)
+            const B = new FlexEventBusNode({id:"B"})
+            B.join(eventbus)
+            A.onMessage = vi.fn((message:FlexEventBusMessage)=>{
+                expect(message.payload).toBe(100)
+                expect(message.meta?.from).toBe("B")
+                resolve()
+            })            
+            B.send("A",100)
+        })
+    })
+    test("测试给所有节点发送数据",()=>{
+        return new Promise<void>((resolve)=>{
+            const A = new FlexEventBusNode({id:"A"})
+            A.join(eventbus)
+            let rec = 0
+            nodes.forEach(node=>{
+                node.onMessage = vi.fn((message:FlexEventBusMessage)=>{
+                    expect(message.payload).toBe(100)
+                    expect(message.meta?.from).toBe("A")
+                    rec++
+                    if(rec == count) resolve()
+                })
+            })       
+            nodes.forEach(node=>{     
+                A.send(node.id,100)
+            })
+        })
+    })
+
+    test("测试给节点异步发送数据",()=>{
+        return new Promise<void>((resolve)=>{
+            const A = new FlexEventBusNode({id:"A"})
+            A.join(eventbus)
+            const B = new FlexEventBusNode({id:"B"})
+            B.join(eventbus)
+            let results:any[] = []
+            B.on("A/x",(message?:FlexEventBusMessage)=>{
+                results.push(message?.payload)
+            })
+            B.on("A/y")     // 无回调函数时由下面接收
+            B.onMessage = vi.fn((message:FlexEventBusMessage)=>{
+                expect(message.payload).toBe(200)
+                expect(message.from).toBe("A/y")
+                results.push(message?.payload)
+            })
+            A.emit("x",100)
+            A.emit("y",200)
+            expect(results).toStrictEqual([100,200])
+            resolve()
+        })
+    }) 
+
 })

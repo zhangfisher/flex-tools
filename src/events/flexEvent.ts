@@ -20,7 +20,7 @@ export interface OmitOptions{
 }
 
 export interface FlexEventListener<Message=any>{
-    (message?:Message):void 
+    (message:Message | undefined):void 
 }
 
 

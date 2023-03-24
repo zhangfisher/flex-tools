@@ -49,7 +49,6 @@ export function buildFlexEventBusMessage(payload:any,meta?:FlexEventBusMessageMe
 
 export interface FlexEventBusMessageMeta{
     timestamp?:number                    // 消息产生的时间戳
-    from?:string                         // 消息发送节点的id
     [key:string]:any                     // 额外的元数据
 }
 
@@ -57,7 +56,7 @@ export interface FlexEventBusMessageMeta{
  * 为总线中的消息指定类型
  */
  export interface FlexEventBusMessage{
-    type?:string                                 // 消息类型== 事件名称
+    from?:string                                // 消息来源=<节点的id>/<事件名称>
     id?:number                                  // 消息唯一标识用来跟踪消息时有用
     meta?:FlexEventBusMessageMeta
     error?:FlexEventLikeError | Error           // 错误信息
@@ -71,8 +70,8 @@ export interface FlexEventBusNodeOptions{
     onMessage?:FlexEventListener<FlexEventBusMessage>
 }
 
-const THIS_NODE_EVENT =  `{}/This`          // 用来接收本节点消息的事件名称
-const ALL_NODE_EVENT =  `__ALL__`           // 用来发送给所有节点广播消息的事件名称
+const THIS_NODE_EVENT =  "{}/$data"          // 用来接收本节点消息的事件名称
+const ALL_NODE_EVENT =  "$ALL"           // 用来发送给所有节点广播消息的事件名称
 
 export class FlexEventBusNode{
     #options:Required<FlexEventBusNodeOptions>
@@ -138,14 +137,14 @@ export class FlexEventBusNode{
      */
     emit(event:string,payload:any,meta?:FlexEventBusMessageMeta){
         let message = buildFlexEventBusMessage(payload,meta)        
-        message.meta!.from = this.id
-        this.#eventbus?.emit(`${this.id}/${event}`,message)
+        message.from = `${this.id}${this.#eventbus?.delimiter}${event}`
+        this.#eventbus?.emit(message.from,message)
     }      
     async emitAsync(event:string,payload:any,meta?:FlexEventBusMessageMeta){
         let message = buildFlexEventBusMessage(payload,meta)        
         message.meta!.from = this.id
-        message.type = event        
-        return this.#eventbus?.emitAsync(`${this.id}/${event}`,message)
+        message.from = `${this.id}${this.#eventbus?.delimiter}${event}`     
+        return this.#eventbus?.emitAsync(message.from,message)
     }
 
     /**
@@ -155,12 +154,12 @@ export class FlexEventBusNode{
      */
     send(nodeId:string,payload:any,meta?:FlexEventBusMessageMeta){
         let message = buildFlexEventBusMessage(payload,meta)        
-        message.meta!.from = this.id
-        this.#eventbus?.emit(THIS_NODE_EVENT.params(nodeId),message)
+        message.from = this.id
+        return this.#eventbus?.emit(THIS_NODE_EVENT.params(nodeId),message)
     }
     sendAsync(nodeId:string,payload:any,meta?:FlexEventBusMessageMeta){
         let message = buildFlexEventBusMessage(payload,meta)        
-        message.meta!.from = this.id
+        message.from = this.id
         return this.#eventbus?.emitAsync(THIS_NODE_EVENT.params(nodeId),message)
     }  
     /**
@@ -169,10 +168,10 @@ export class FlexEventBusNode{
      * @param listener 
      * @returns 
      */
-    once(event:string,listener:FlexEventListener<FlexEventBusMessage>){
+    once(event:string,listener?:FlexEventListener<FlexEventBusMessage>){
         const delimiter = this.#eventbus?.delimiter!
         if(!event.includes(delimiter)) event = `${this.id}${delimiter}${event}`
-        return this.#eventbus?.once(event,listener as FlexEventListener)
+        return this.#eventbus?.once(event,(listener ? listener : this._onMessage.bind(this)) as FlexEventListener )
     }
     /**
      * 订阅事件
@@ -180,10 +179,10 @@ export class FlexEventBusNode{
      * @param listener 
      * @returns 
      */
-    on(event:string,listener:FlexEventListener<FlexEventBusMessage>){
+    on(event:string,listener?:FlexEventListener<FlexEventBusMessage>){
         const delimiter = this.#eventbus?.delimiter!
         if(!event.includes(delimiter)) event = `${this.id}${delimiter}${event}`
-        return this.#eventbus?.on(event,listener as FlexEventListener)
+        return this.#eventbus?.on(event,(listener ? listener : this._onMessage.bind(this)) as FlexEventListener )
     }
     /**
      * 等待某个事件发生
@@ -202,6 +201,7 @@ export class FlexEventBusNode{
      * @param useAsync
      */
     boradcast(message:FlexEventBusMessage,useAsync:boolean=false){
+        message.from = this.id
         if(useAsync){
             return this.#eventbus?.emitAsync(ALL_NODE_EVENT,message)
         }else{
@@ -245,9 +245,10 @@ export class FlexEventBus extends FlexEvent<FlexEventBusMessage>{
      * @param nodeId 
      * @param message 
      */
-    send(nodeId:string,message:FlexEventBusMessage){
+    send(nodeId:string,payload:any,meta?:FlexEventBusMessageMeta){
+        let message = buildFlexEventBusMessage(payload,meta)
         this.emit(THIS_NODE_EVENT.params(nodeId),message)
-    }
+    } 
 }
 
  
