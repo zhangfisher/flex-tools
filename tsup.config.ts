@@ -18,8 +18,7 @@ export default defineConfig({
             source:['package.json','README.md','LICENSE'],
             target:"dist/"
         })
-    ],
-    noExternal:["lodash"],
+    ], 
     banner: {
         js: `/**
 *        

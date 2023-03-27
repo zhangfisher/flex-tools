@@ -1,9 +1,7 @@
-import isFunction from "lodash/isFunction";
 import { isNothing } from "../typecheck/isNothing"
 import { isPlainObject } from "../typecheck/isPlainObject"
-import getByPath from "lodash/get"
-import merge from "lodash/merge"
-
+import { get as getByPath} from "../object/get"
+import { deepMerge } from "../object/deepMerge"
 /**
  * 从item中提取名称值，确保一定会有一个name,如果没有名称，则会自动生成一个随机名称
  *
@@ -12,7 +10,10 @@ function getNamedItemName(item={},defaultItem:any={},opts:Required<NamedDictOpti
     let name = getByPath(item,opts.nameKey)  
     // 如果没有找到，且默认从default指定的字段提取
     if(isNothing(name) && opts.default && (opts.default in item)) {
-        name = getByPath(getByPath(item,opts.default),"name",`${Date.now()}${Math.random()*1000}`) 
+        name = getByPath(getByPath(item,opts.default),"name",
+        {
+            defaultValue:`${Date.now()}${Math.random()*1000}`
+        }) 
     }
     return name
 }
@@ -20,7 +21,7 @@ function getNamedItemName(item={},defaultItem:any={},opts:Required<NamedDictOpti
 function normalizeNamedItem(item:any,defaultItem:any,opts:Required<NamedDictOptions>){
     let finalItem:Record<string,any> = Object.assign({},defaultItem || {})
     if(isPlainObject(item)){
-        merge(finalItem,item)
+        finalItem = deepMerge(finalItem,item)
     }else{  // 如果item不是一个{}，则代表启用的缩写模式。当启用缩写模式时，必须指定缩写的是item的哪一个成员
         if(!isNothing(opts.default)){
             finalItem[opts.default] = item
@@ -71,14 +72,14 @@ export function NamedDict<T>(items: any[], defaultItem?:T, options?:NamedDictOpt
     },options) as Required<NamedDictOptions>
 
     if( isNothing(items))  return {}
-    let defaultItemValue = isFunction(defaultItem) ? defaultItem()  : defaultItem
+    let defaultItemValue = typeof(defaultItem)=="function" ? defaultItem()  : defaultItem
     if(!isPlainObject(defaultItemValue)) defaultItemValue = {}   // 如果函数返回了无效值，则需要设置为{}以免后续合并时出错
 
     let results:Record<string,T> = {}
     if(Array.isArray(items)){
         for(let item of items){
             let defaultItemValue = defaultItem
-            if(isFunction(defaultItem)){
+            if(typeof(defaultItem)=="function"){
                 defaultItemValue = defaultItem(item)
             }
             let finalItem = normalizeNamedItem(item,defaultItemValue,opts)
@@ -90,7 +91,7 @@ export function NamedDict<T>(items: any[], defaultItem?:T, options?:NamedDictOpt
                 finalItem.name = itemName
             }
             // 对成员进行规范化处理
-            if(isFunction(opts.normalize)) finalItem = opts.normalize(finalItem);
+            if(typeof(opts.normalize)=="function") finalItem = opts.normalize(finalItem);
             (results as any)[itemName] = finalItem
         }
     }else{
@@ -101,7 +102,7 @@ export function NamedDict<T>(items: any[], defaultItem?:T, options?:NamedDictOpt
                 finalItem.name = name
             }
             // 对成员进行规范化处理
-            if(isFunction(opts.normalize)) opts.normalize(finalItem);
+            if(typeof(opts.normalize)=="function") opts.normalize(finalItem);
             (results as any)[name] = finalItem
         }
     }

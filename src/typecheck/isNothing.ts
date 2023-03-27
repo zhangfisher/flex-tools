@@ -1,6 +1,6 @@
-import isEmpty from "lodash/isEmpty" 
-import isBoolean from "lodash/isBoolean";
+import { canIterable } from "./canIterable";
 import { isNumber } from "./isNumber";
+import { isPlainObject } from "./isPlainObject";
 /**
  * 当
  * value= null || undefined || "" || [] || {} 时返回true
@@ -10,9 +10,15 @@ import { isNumber } from "./isNumber";
  */
 
 export function isNothing(value:any):boolean{
-    if(isNumber(value) || isBoolean(value)) return false
+    if(isNumber(value) || typeof(value)=='boolean') return false
     if(typeof(value)==="function") return false
     if(value instanceof Error) return false
-    if(isEmpty(value)) return true 
+    if(value==undefined || value==null) return true 
+    if(Array.isArray(value) && value.length==0) return true 
+    if(isPlainObject(value) && Object.keys(value).length==0) return true 
+    if(typeof(value)=="string" && value.trim()=="") return true
+    try{
+        if(canIterable(value) && value.size==0) return true
+    }catch{}
     return false
 }

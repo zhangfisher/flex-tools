@@ -1,4 +1,4 @@
-import merge from "lodash/merge"
+import { deepMerge } from "../object"
 import { isNothing } from "../typecheck/isNothing"
 import { isPlainObject } from "../typecheck/isPlainObject"
 
@@ -44,7 +44,7 @@ export interface  DictArrayOptions{
     }
     let result = Array.isArray(items) ? items : [items]
     result.forEach((value,index)=>{
-        result[index] =merge({},defaultItem,isPlainObject(value) ? value : {[opts.defaultField]:value})
+        result[index] =deepMerge(defaultItem,isPlainObject(value) ? value : {[opts.defaultField]:value})
     })
     //  确保至少有一项default=true
     if(opts.includeDefaultField && (result.reduce((preValue,curItem)=>curItem.default ? preValue+1 : preValue,0)===0) && result.length>0){

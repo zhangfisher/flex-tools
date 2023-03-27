@@ -1,5 +1,5 @@
-import getByPath from "lodash/get" 
-import setByPath from "lodash/set"
+import {get as getByPath} from "./get" 
+import {set as setByPath} from "./set"
 import { isNothing } from "../typecheck/isNothing"
 import { isPlainObject } from "../typecheck/isPlainObject"
 

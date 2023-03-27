@@ -7,11 +7,11 @@
  * 
  */
 
- import { DefaultTreeOptions } from "./consts";
- import { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types";
- import omit from "lodash/omit"; 
+import { DefaultTreeOptions } from "./consts";
+import { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types";
 import { PidTreeNode } from "./toPidTree";
-  
+import { omit } from "../object/omit"
+
  export interface FromPidTreeOptions<
     FromNode extends TreeNodeBase = TreeNode,
     ToNode extends TreeNodeBase = FromNode,

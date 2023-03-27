@@ -524,6 +524,93 @@ function test(x:number,options:{a:string,b:number}){
 
 ```
 
+## get
+
+类似`lodash/get`,根据路径来返回对象成员值。
+
+
+```typescript
+ 
+
+export interface getByPathOptions{
+    defaultValue?:any                       // 默认值
+    ignoreInvalidPath?:boolean              // 忽略无效路径,返回undefine或者defaultValue，否则触发错误
+    matched?:  ({value,parent,indexOrKey}:{value?:any,parent?:object | any[],indexOrKey?:string | symbol | number})=>void        // 当匹配到路径时的回调
+}
+
+
+  const obj = {
+        a:{
+            b1:{b11:1,b12:2},
+            b2:{b21:1,b22:2},
+            b3:[
+                {b31:1,b32:2},
+                {b31:1,b32:2}
+            ]            
+        },
+        x:1,
+        y:[1,2,3,4,5,{m:1,n:2}],
+        z:[1,2,3,new Set([1,2,3,4,5]),[1,[2,3,4,],2,4]]
+    }    
+   get(obj,"a.b1.b11")              // == 1
+   get(obj,"a.b3[0].b31")           // == 1
+   get(obj,"a.b3[1].b31")           // == 1
+   get(obj,"a.b3[1].b32")           // == 2
+   get(obj,"a.b3.[1].b31")          // == 1
+   get(obj,"a.b3.[1].b32")          // == 2
+   get(obj,"x")                     // == 1
+   get(obj,"y[0]")                  // == 1
+   get(obj,"y[1]")                  // == 2
+   get(obj,"y[5].m")                // == 1
+   get(obj,"y[5].n")                // == 2
+   get(obj,"z[3].[0]")              // == 1
+   get(obj,"z[3][0]")               // == 1
+   get(obj,"z[4][1][1]")            // == 3
+```
+
+- `defaultValue`参数可以用来指定一个默认值，当输入一个无效的路径时返回该默认值
+- 如果`ignoreInvalidPath=false`，则当输入一个无效的路径时会触发错误`InvalidPathError`，而不是返回默认值。
+- 当输入路径成功匹配到时会调用`matched`函数。 以下`set`函数就是利用此回调来实现的。
+
+## set
+
+类似`lodash/set`,根据路径来更新对象成员值。
+
+```typescript
+
+interface setByPathOptions{
+    onlyUpdateUndefined?:boolean
+}
+function set(obj:object,path:string,value:any,options?:setByPathOptions):object;
+
+    const obj = {
+        a:{
+            b1:{b11:1,b12:2},
+            b2:{b21:1,b22:2},
+            b3:[
+                {b31:1,b32:2},
+                {b31:1,b32:2}
+            ]            
+        },
+        x:1,
+        y:[1,2,3,4,5,{m:1,n:2}],
+        z:[1,2,3,new Set([1,2,3,4,5]),[1,[2,2,2,],2,4]]
+    }        
+    get(set(obj,"a.b1.b11",2),"a.b1.b11")               // == 2
+    get(set(obj,"a.b3[0].b31",22),"a.b3[0].b31")        // == 22
+    get(set(obj,"a.b3[1].b31",33),"a.b3[1].b31")        // == 33
+    get(set(obj,"a.b3[1].b32",44),"a.b3[1].b32")        // == 44
+    get(set(obj,"a.b3.[1].b31",55),"a.b3.[1].b31")      // == 55
+    get(set(obj,"a.b3.[1].b32",55),"a.b3.[1].b32")      // == 55
+    get(set(obj,"x",2),"x")                             // == 2
+    get(set(obj,"y[0]",3),"y[0]")                       // == 3
+    get(set(obj,"y[1]",4),"y[1]")                       // == 4
+    get(set(obj,"y[5].m",5),"y[5].m")                   // == 5
+    get(set(obj,"y[5].n",6),"y[5].n")                   // == 6
+
+```
+
+- 当`onlyUpdateUndefined=true`时，则仅当原始值是`undefined`时才会更新。默认值为`false`。
 
 ## deepMerge
 
