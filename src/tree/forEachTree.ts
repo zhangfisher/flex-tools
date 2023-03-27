@@ -4,7 +4,7 @@ import { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types"
 import { isPlainObject } from '../typecheck/isPlainObject';
 import { assignObject } from "../object/assignObject";
 
-export type IForEachTreeCallback<Node> = ({ node, level, parent, path, index }: { node: Node, level: number, parent: Node | null, path: string, index: number }) => any
+export type IForEachTreeCallback<Node> = ({ node, level, parent, path, index }: { node: Node, level: number, parent: Node | undefined | null, path: string, index: number }) => any
 
 export interface ForEachTreeOptions extends TreeNodeOptions {
     startId?: string | number | null                 // 从哪一个节点id开始进行遍历
@@ -79,22 +79,23 @@ export function bfsForEachTree<Node extends TreeNodeBase = TreeNode>(treeData: N
 
     const queue = (isPlainObject(treeData) ? [treeData] : treeData as Node[]) as Node[]
     const result: any[] = [];
-
-    let parentNode: Node | null = null
-    const levels: number[] = [1];
+    const levels: number[] = [];
     const paths:any[] = []
-
-    let parentPath: any[] = []
+    const parents:Node[] = []
 
     while (queue.length > 0) {
         const node = queue.shift() as Node;
-        let level = levels.pop() || 0;
-        let path =  paths.pop() || ''
         result.push(node);
+        let level = levels.shift() || 1     
+        let path = paths.shift() || node[pathKey]       
+        let parent = parents.shift()  
+
         if (node[childrenKey]) {
             for (const child of node[childrenKey]) {
                 queue.push(child);
                 levels.push(level + 1)
+                paths.push(`${path}${pathDelimiter}${child[pathKey]}`)
+                parents.push(node)
             }
         }
         if (isStart === false && startId != null) {
@@ -106,9 +107,9 @@ export function bfsForEachTree<Node extends TreeNodeBase = TreeNode>(treeData: N
             const r = callback({ 
                 node, 
                 level, 
-                parent:queue.length>0 ? queue[queue.length-1] :null,
-                path: curPath.join(pathDelimiter), 
-                index 
+                parent,
+                path, 
+                index:1
             })
             if (r === ABORT) {
                 break

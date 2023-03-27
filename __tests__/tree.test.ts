@@ -7,6 +7,8 @@ import { moveTreeNode, MoveTreeNodePosition } from "../src/tree/moveTreeNode"
 import { toPidTree } from "../src/tree/toPidTree"
 import { TreeNode } from "../src/tree/types"
 
+import { bfsForEachTree } from "../src/tree/forEachTree"
+
 // 共30个节点的数据，不要变更，后续用户例依赖此数据
 type Book = {id:number, title:string}
 const books = {
@@ -57,7 +59,20 @@ const books = {
     ]
 } as TreeNode<Book>
 
-  
+test("广度优先遍历树",()=>{
+    let ids:any[]= [],titles:string[] = [],paths:string[] = [],levels:any[]=[],parents:any[]=[]
+    bfsForEachTree(books,({node,level,parent,path})=>{
+        ids.push(node.id)
+        titles.push(node.title)
+        paths.push(path)
+        levels.push(level)
+        parents.push(parent)
+    },{pathKey:"title"})
+    expect(ids.length).toBe(30)
+    expect(titles.length).toBe(30)
+})
+
+bfsForEachTree
 
 test("遍历树",()=>{
     let ids = [],titles:string[] = [],paths:string[] = []
