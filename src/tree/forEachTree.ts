@@ -82,6 +82,7 @@ export function bfsForEachTree<Node extends TreeNodeBase = TreeNode>(treeData: N
     const levels: number[] = [];
     const paths:any[] = []
     const parents:Node[] = []
+    const indexs:number[]=[]
 
     while (queue.length > 0) {
         const node = queue.shift() as Node;
@@ -89,13 +90,15 @@ export function bfsForEachTree<Node extends TreeNodeBase = TreeNode>(treeData: N
         let level = levels.shift() || 1     
         let path = paths.shift() || node[pathKey]       
         let parent = parents.shift()  
-
+        let index = indexs.shift() || 0
         if (node[childrenKey]) {
-            for (const child of node[childrenKey]) {
+            for (let i=0;i<node[childrenKey].length;i++) {
+                const child = node[childrenKey][i]
                 queue.push(child);
                 levels.push(level + 1)
                 paths.push(`${path}${pathDelimiter}${child[pathKey]}`)
                 parents.push(node)
+                indexs.push(i)
             }
         }
         if (isStart === false && startId != null) {
@@ -104,14 +107,13 @@ export function bfsForEachTree<Node extends TreeNodeBase = TreeNode>(treeData: N
         // skip参数决定是否执行跳过节点而不执行callback
         if (isStart) {
             //如果在Callback中返回false则
-            const r = callback({ 
+            if (callback({ 
                 node, 
                 level, 
                 parent,
                 path, 
-                index:1
-            })
-            if (r === ABORT) {
+                index
+            }) === ABORT) {
                 break
             }
         }
@@ -122,27 +124,62 @@ export function bfsForEachTree<Node extends TreeNodeBase = TreeNode>(treeData: N
 
 
 
+/**
+ * 深度优先的树遍历
+ * @param treeData 
+ * @param callback 
+ * @param options 
+ * @returns 
+ */
+export function dfsForEachTree<Node extends TreeNodeBase = TreeNode>(treeData: Node[] | Node, callback: IForEachTreeCallback<Node>, options?: ForEachTreeOptions) {
+    let { startId, childrenKey, idKey, pathKey, pathDelimiter } = assignObject({
+        startId: null,
+    }, DefaultTreeOptions, options) as Required<ForEachTreeOptions>
 
-function dfsTraversal(roots: any[], options: Options = { childKey: 'children', callback: null }): any[] {
-    const stack = [...roots];
+    // 当指定startId时用来标识是否开始调用callback
+    let isStart = startId == null ? true : (typeof (treeData) == 'object' ? String((treeData as Node)[idKey]) === String(startId) : false)
+
+    const stack = (isPlainObject(treeData) ? [treeData] : treeData as Node[]) as Node[]
     const result: any[] = [];
     const levels: number[] = [];
+    const paths:any[] = []
+    const parents:Node[] = []
+    const indexs:number[]=[]
 
     while (stack.length > 0) {
-        const node = stack.pop();
-        const level = levels.pop();
+        const node = stack.pop() as Node;
         result.push(node);
-
-        if (node[options.childKey || 'children']) {
-            for (let i = node[options.childKey || 'children'].length - 1; i >= 0; i--) {
-                stack.push(node[options.childKey || 'children'][i]);
+        const level = levels.pop() || 1; 
+        let path = paths.pop() || node[pathKey]       
+        let parent = parents.pop()  
+        let index = indexs.pop() || 0
+        if (node[childrenKey]) {
+            for (let i = node[childrenKey].length - 1; i >= 0; i--) {
+                const child = node[childrenKey][i]
+                stack.push(child);
                 levels.push(level + 1);
+                paths.push(`${path}${pathDelimiter}${child[pathKey]}`)
+                parents.push(node)
+                indexs.push(i)
             }
         }
-
-        if (isFunction(options.callback) && options.callback(node, level, stack[stack.length - 1]) === 'ABORT') {
-            break;
+        if (isStart === false && startId != null) {
+            isStart = String(node[idKey]) === String(startId)
         }
+        // skip参数决定是否执行跳过节点而不执行callback
+        if (isStart) {
+            //如果在Callback中返回false则
+            if (callback({ 
+                node, 
+                level, 
+                parent,
+                path, 
+                index
+            }) === ABORT) {
+                break
+            }
+        }
+        
     }
 
     return result;
