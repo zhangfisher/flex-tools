@@ -239,7 +239,7 @@ test("删除节点",()=>{
 
 test("遍历树节点",()=>{ 
     let tree = new FlexTree<Book>(books)
-    let nodes =[]
+    let nodes:any[] =[]
     for(let node of tree){
         nodes.push(node)
     }    

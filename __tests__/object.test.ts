@@ -4,7 +4,7 @@ import { omit } from "../src/object/omit"
 import { pick } from "../src/object/pick"
 import { get } from "../src/object/get"
 import { set } from "../src/object/set"
-import { forEachObjectDfs } from "../src/object/forEachObject"
+import { forEachObject } from "../src/object/forEachObject"
 
 
 test("遍历对象",() => {
@@ -23,7 +23,7 @@ test("遍历对象",() => {
     }    
 
     let results:any[] = []
-    forEachObjectDfs(obj,({value,parent,keyOrIndex}) => {
+    forEachObject(obj,({value,parent,keyOrIndex}) => {
         results.push([`${String(keyOrIndex)}=${JSON.stringify(value)}`,parent])
     })
 

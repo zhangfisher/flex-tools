@@ -193,7 +193,10 @@ function getPropertyNames(obj: any)
 ```typescript
 forEachObject(obj:object | any[],callback:IForEachCallback,options?:ForEachObjectOptions)
 interface ForEachObjectOptions{
-    keys?:string[]                              // 限定只能指定的健执行callback
+    keys?:string[]               // 限定只能指定的健执行callback
+    skipObject?:boolean         // 跳过对象
+    skipArray?:boolean          // 跳过数组
+    onlyPrimitive?:boolean      // 仅遍历原始类型，如string,number,boolean,symbol,null,undefined等
 }
 type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:any[] | object | null,keyOrIndex?:string | number | null})=>any
 ```

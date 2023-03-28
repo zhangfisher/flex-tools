@@ -6,6 +6,7 @@
  */
 import { canIterable } from "../typecheck"
 import { isPlainObject } from "../typecheck/isPlainObject"
+import { isPrimitive } from "../typecheck/isPrimitive"
 import { assignObject } from "./assignObject"
 import type { IForEachCallback } from "./forEachUpdateObject"
 
@@ -43,16 +44,17 @@ export function forEachObject(obj:object | any[],callback:IForEachCallback,optio
                 keyOrIndexs.push(k)
             } 
         }       
-        //如果在Callback中返回false则
         if(skipObject && isPlainObject(item)) continue
         if(skipArray && Array.isArray(item)) continue
+        if(onlyPrimitive && !isPrimitive(item)) continue
+        if(keys && keys.length>0 && !keys.includes(String(keyOrIndex))) continue
         if (callback({ value:item,parent,keyOrIndex }) === ABORT) {
             break
         }         
     } 
 } 
 
-
+// 递归算法实现
 // export function forEachObject(obj:object | any[],callback:IForEachCallback,options?:ForEachObjectOptions){
 //     let isAbort = false
 //     let opts = assignObject({
