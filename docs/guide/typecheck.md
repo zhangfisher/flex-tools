@@ -88,3 +88,8 @@ isSerializable(value:any):boolean
 ```typescript
 canIterable(obj:any):boolean
 ```
+
+## isPrimitive 
+
+判断值是否是原始值类型，即值为`string | number | boolean | symbol | bigInt | null | undefined`
+
