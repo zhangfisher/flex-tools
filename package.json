@@ -1,7 +1,7 @@
 {
   "name": "flex-tools",
   "version": "1.0.65",
-  "description": "modular utilities",
+  "description": "modular utilities.",
   "main": "src/index.js",
   "module": "src/index.mjs",
   "types": "src/index.d.ts",
@@ -9,175 +9,12 @@
   "repository": "https://github.com/zhangfisher/flex-tools",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsup",
-    "release": "npm version patch  --commit-hooks=false && npm run build && npm publish",
+    "build": "tsup && cd dist && npm pkg set main=index.js && npm pkg set module=index.mjs && npm pkg set types=index.d.ts",
+    "release": "npm version patch  --commit-hooks=false && npm run build && cd dist && npm publish",
     "doc": "docsify serve docs",
     "prepare": "husky install",
     "commit": "git add . && git cz",
     "build:test": "modern build"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs"
-    },
-    "./types": {
-      "types": "./dist/types.d.ts",
-      "require": "./dist/types.js",
-      "import": "./dist/types.mjs"
-    },
-    "./async": {
-      "types": "./dist/async/index.d.ts",
-      "require": "./dist/async/index.js",
-      "import": "./dist/async/index.mjs"
-    },
-    "./class": {
-      "types": "./dist/class/index.d.ts",
-      "require": "./dist/class/index.js",
-      "import": "./dist/class/index.mjs"
-    },
-    "./collection": {
-      "types": "./dist/collection/index.d.ts",
-      "require": "./dist/collection/index.js",
-      "import": "./dist/collection/index.mjs"
-    },
-    "./events": {
-      "types": "./dist/events/index.d.ts",
-      "require": "./dist/events/index.js",
-      "import": "./dist/events/index.mjs"
-    },
-    "./func": {
-      "types": "./dist/func/index.d.ts",
-      "require": "./dist/func/index.js",
-      "import": "./dist/func/index.mjs"
-    },
-    "./object": {
-      "types": "./dist/object/index.d.ts",
-      "require": "./dist/object/index.js",
-      "import": "./dist/object/index.mjs"
-    },
-    "./tree": {
-      "types": "./dist/tree/index.d.ts",
-      "require": "./dist/tree/index.js",
-      "import": "./dist/tree/index.mjs"
-    },
-    "./typecheck": {
-      "types": "./dist/typecheck/index.d.ts",
-      "require": "./dist/typecheck/index.js",
-      "import": "./dist/typecheck/index.mjs"
-    },
-    "./misc": {
-      "types": "./dist/misc/index.d.ts",
-      "require": "./dist/misc/index.js",
-      "import": "./dist/misc/index.mjs"
-    },
-    "./string": {
-      "types": "./dist/string/index.d.ts",
-      "require": "./dist/string/index.js",
-      "import": "./dist/string/index.mjs"
-    },
-    "./string/params": {
-      "types": "./dist/string/params.d.ts",
-      "require": "./dist/string/params.js",
-      "import": "./dist/string/params.mjs"
-    },
-    "./string/firstUpper": {
-      "types": "./dist/string/firstUpper.d.ts",
-      "require": "./dist/string/firstUpper.js",
-      "import": "./dist/string/firstUpper.mjs"
-    },
-    "./string/center": {
-      "types": "./dist/string/center.d.ts",
-      "require": "./dist/string/center.js",
-      "import": "./dist/string/center.mjs"
-    },
-    "./string/reverse": {
-      "types": "./dist/string/reverse.d.ts",
-      "require": "./dist/string/reverse.js",
-      "import": "./dist/string/reverse.mjs"
-    },
-    "./string/ljust": {
-      "types": "./dist/string/ljust.d.ts",
-      "require": "./dist/string/ljust.js",
-      "import": "./dist/string/ljust.mjs"
-    },
-    "./string/rjust": {
-      "types": "./dist/string/rjust.d.ts",
-      "require": "./dist/string/rjust.js",
-      "import": "./dist/string/rjust.mjs"
-    },
-    "./string/trimBeginChars": {
-      "types": "./dist/string/trimBeginChars.d.ts",
-      "require": "./dist/string/trimBeginChars.js",
-      "import": "./dist/string/trimBeginChars.mjs"
-    },
-    "./string/trimEndChars": {
-      "types": "./dist/string/trimEndChars.d.ts",
-      "require": "./dist/string/trimEndChars.js",
-      "import": "./dist/string/trimEndChars.mjs"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "string": [
-        "./dist/string/index.d.ts"
-      ],
-      "string/params": [
-        "./dist/string/params.d.ts"
-      ],
-      "string/firstUpper": [
-        "./dist/string/firstUpper.d.ts"
-      ],
-      "string/center": [
-        "./dist/string/center.d.ts"
-      ],
-      "string/reverse": [
-        "./dist/string/reverse.d.ts"
-      ],
-      "string/ljust": [
-        "./dist/string/ljust.d.ts"
-      ],
-      "string/rjust": [
-        "./dist/string/rjust.d.ts"
-      ],
-      "string/trimBeginChars": [
-        "./dist/string/trimBeginChars.d.ts"
-      ],
-      "string/trimEndChars": [
-        "./dist/string/trimEndChars.d.ts"
-      ],
-      "typecheck": [
-        "./dist/typecheck/index.d.ts"
-      ],
-      "tree": [
-        "./dist/tree/index.d.ts"
-      ],
-      "object": [
-        "./dist/object/index.d.ts"
-      ],
-      "func": [
-        "./dist/func/index.d.ts"
-      ],
-      "events": [
-        "./dist/events/index.d.ts"
-      ],
-      "collection": [
-        "./dist/collection/index.d.ts"
-      ],
-      "async": [
-        "./dist/async/index.d.ts"
-      ],
-      "classs": [
-        "./dist/classs/index.d.ts"
-      ],
-      "types": [
-        "./dist/types.d.ts"
-      ],
-      "misc": [
-        "./dist/misc.d.ts"
-      ]
-    }
   },
   "keywords": [],
   "author": "",
