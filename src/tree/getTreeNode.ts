@@ -5,7 +5,7 @@
  */
 import { ABORT } from "../object";
 import { DefaultTreeOptions } from "./consts";
-import { forEachTree } from "./forEachTree";
+import { forEachTreeByDfs } from "./forEachTreeByDfs";
 import { TreeNode, TreeNodeOptions } from "./types";
  
   
@@ -17,7 +17,7 @@ import { TreeNode, TreeNodeOptions } from "./types";
      let result:Node | undefined;
      const opts = Object.assign({}, DefaultTreeOptions ,options || {}) as Required<GetTreeNodeOptions>     
      const { idKey } = opts
-     forEachTree<Node>(treeObj,({node})=>{
+     forEachTreeByDfs<Node>(treeObj,({node})=>{
           if(node[idKey] == nodeId){
             result =  node;
             return ABORT

@@ -5,9 +5,9 @@
  */
 
 import { DefaultTreeOptions } from "./consts";
-import { forEachTree } from "./forEachTree";
 import { TreeNode, TreeNodeOptions } from "./types";
 import { ABORT } from '../object/forEachObject';
+import { forEachTreeByDfs } from "./forEachTreeByDfs";
 
  
 export interface GetTreeNodeRelationOptions extends TreeNodeOptions{
@@ -33,7 +33,7 @@ export function getTreeNodeRelation<Node extends TreeNode = TreeNode,IdKey exten
 
     let nodes: string | any[]=[] 
     
-    forEachTree<Node>(treeObj,({node:curNode,level,parent,path})=>{
+    forEachTreeByDfs<Node>(treeObj,({node:curNode,level,parent,path})=>{
         if(nodes.length==0){
             if(curNode[idKey]==nodeId) {
                 nodes = [[nodeId,level,parent && parent[idKey],path],refNodeId]

@@ -9,7 +9,7 @@
 
 import { ABORT } from "../object";
 import { DefaultTreeOptions } from "./consts";
-import { forEachTree } from "./forEachTree";
+import { forEachTreeByDfs } from "./forEachTreeByDfs";
 import { TreeNode, TreeNodeOptions } from "./types";
 
  
@@ -20,7 +20,7 @@ export interface GetByPathOptions extends TreeNodeOptions{
 export function getByPath<Node extends TreeNode = TreeNode>(treeObj:Node | Node[],fullpath: string,options?:GetByPathOptions):Node | undefined {
     let result:Node | undefined;
     let opts = Object.assign({}, DefaultTreeOptions ,options || {}) as Required<GetByPathOptions>     
-    forEachTree<Node>(treeObj,({node,path})=>{
+    forEachTreeByDfs<Node>(treeObj,({node,path})=>{
         if(path == fullpath){
             result = node
             return ABORT    

@@ -1,6 +1,7 @@
 import { ABORT } from "../object/forEachObject"
-import { forEachTree, ForEachTreeOptions, IForEachTreeCallback  } from "./forEachTree"
+import type { ForEachTreeOptions, IForEachTreeCallback  } from "./forEachTree"
 import { TreeNode,TreeNodeOptions } from "./types"
+import { forEachTreeByDfs } from "./forEachTreeByDfs";
 
 export interface SerachTreeOptions extends TreeNodeOptions,ForEachTreeOptions {
     matchOne?:boolean               //   只匹配一个就退出搜索
@@ -27,7 +28,7 @@ export function serachTree<Node extends TreeNode=TreeNode,Returns=Node[]>(treeDa
     let result:Returns[] = []
     const pickerFunc = picker || (({node})=>node) as IForEachTreeCallback<Node>
     const opts = Object.assign({matchOne:true},options || {})   
-    forEachTree<Node>(treeData,({node,level,parent,path,index})=>{
+    forEachTreeByDfs<Node>(treeData,({node,level,parent,path,index})=>{
        if(matcher({node,level,parent,path,index})){
            result.push(pickerFunc({node,level,parent,path,index}))
            return opts.matchOne==false ? undefined : ABORT  

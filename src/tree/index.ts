@@ -1,4 +1,3 @@
-export * from './forEachTree'
 export * from './mapTree'
 export * from './searchTree'
 export * from "./consts"
@@ -12,3 +11,6 @@ export * from "./getByPath"
 export * from "./getTreeNode" 
 export * from "./tree"
 export * from "./getById"
+export * from './forEachTree'
+export * from "./forEachTreeByDfs"
+export * from "./forEachTreeByBfs"

@@ -1,14 +1,14 @@
  
 import { isNothing } from "../typecheck/isNothing";
-import { forEachTree, IForEachTreeCallback } from "./forEachTree";
+import type { IForEachTreeCallback } from "./forEachTree";
 import { getById } from "./getById";
 import { getTreeNodeInfo } from "./getTreeNodeInfo";
 import { moveTreeNode, MoveTreeNodePosition } from "./moveTreeNode";
 import { removeTreeNodes } from "./removeTreeNodes";
 import { serachTree, SerachTreeOptions } from "./searchTree";
 import { TreeNode, TreeNodeOptions } from "./types";
+import { forEachTreeByDfs } from "./forEachTreeByDfs";
 
- 
 export interface FlexTreeOptions<Node extends TreeNode = TreeNode,IdKey extends string = "id"> extends TreeNodeOptions {
     idGenerator(node:Partial<Node>):Node[IdKey]
 }
@@ -29,7 +29,7 @@ export class FlexTree<Node extends TreeNode = TreeNode,IdKey extends string = "i
     [Symbol.iterator](){        
         type ParamsType = Parameters<IForEachTreeCallback<Node>>[0] 
         let nodes:ParamsType[] = []
-        forEachTree<Node>(this.#treeObj,({node,parent,index,level,path})=>{
+        forEachTreeByDfs<Node>(this.#treeObj,({node,parent,index,level,path})=>{
             nodes.push({node,parent,index,level,path})
         },this.#options)
         let index = 0

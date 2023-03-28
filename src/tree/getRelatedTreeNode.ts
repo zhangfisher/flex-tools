@@ -4,8 +4,8 @@
 
 import { TreeNode, TreeNodeOptions } from "./types";
 import { ABORT } from '../object/forEachObject';
-import { forEachTree } from "./forEachTree";
 import { getTreeNodeInfo, TreeNodeInfo } from "./getTreeNodeInfo";
+import { forEachTreeByDfs } from "./forEachTreeByDfs";
 
 export interface GetRelatedTreeNodeOptions extends TreeNodeOptions {
     
@@ -22,9 +22,9 @@ export function getRelatedTreeNode<Node extends TreeNode = TreeNode,
 >(treeObj: Node | Node[],nodeId:Node[IdKey],pos:RelatedTreeNode , options?:GetRelatedTreeNodeOptions):Node | null {
     const opts = Object.assign({},options) as Required<GetRelatedTreeNodeOptions>
     const { idKey } = opts
-    let result:Node | null = null
+    let result:Node | null | undefined = null
     let nodeInfo:TreeNodeInfo<Node> | undefined
-    forEachTree<Node>(treeObj,({node,parent,index})=>{
+    forEachTreeByDfs<Node>(treeObj,({node,parent,index})=>{
         if(pos==RelatedTreeNode.Parent && node[idKey]==nodeId){
             result = parent
             return ABORT

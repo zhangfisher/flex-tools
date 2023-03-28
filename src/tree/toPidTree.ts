@@ -9,9 +9,9 @@
 
 
 import { DefaultTreeOptions } from "./consts";
-import { forEachTree } from "./forEachTree";
 import { TreeNode, TreeNodeBase, TreeNodeId, TreeNodeOptions } from "./types";
 import { omit } from "../object/omit"
+import { forEachTreeByDfs } from "./forEachTreeByDfs";
 
  export interface ToPidTreeOptions<
     FromNode extends TreeNodeBase = TreeNode,
@@ -21,7 +21,7 @@ import { omit } from "../object/omit"
 > extends TreeNodeOptions{
      includeLevel?: boolean
      includePath?: boolean
-     mapper?:({node,level,parent,path,index}:{node:FromNode,level:number,parent:FromNode | null,path:string,index:number}) => Omit<ToNode,ChildrenKey | IdKey>
+     mapper?:({node,level,parent,path,index}:{node:FromNode,level:number,parent?:FromNode | null ,path:string,index:number}) => Omit<ToNode,ChildrenKey | IdKey>
  }
   
 export type PidTreeNode< 
@@ -46,7 +46,7 @@ export function toPidTree<
     const { childrenKey,idKey,includeLevel=true, includePath=false,mapper } = opts
 
     let nodes:PidTreeNode<Omit<ToNode,ChildrenKey>,IdKey>[] = []
-    forEachTree<FromNode>(treeObj,({node,parent,level,path,index})=>{
+    forEachTreeByDfs<FromNode>(treeObj,({node,parent,level,path,index})=>{
         if(typeof(mapper)=='function'){
             let newNode = Object.assign({
                 [idKey]: node[idKey],
