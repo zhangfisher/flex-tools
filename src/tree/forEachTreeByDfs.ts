@@ -22,7 +22,6 @@ import type { ForEachTreeOptions, IForEachTreeCallback } from "./forEachTree";
     let isStart = startId == null ? true : (typeof (treeData) == 'object' ? String((treeData as Node)[idKey]) === String(startId) : false)
 
     const stack = (isPlainObject(treeData) ? [treeData] : treeData as Node[]) as Node[]
-    const result: any[] = [];
     const levels: number[] = [];
     const paths:any[] = []
     const parents:Node[] = []
@@ -30,7 +29,6 @@ import type { ForEachTreeOptions, IForEachTreeCallback } from "./forEachTree";
 
     while (stack.length > 0) {
         const node = stack.pop() as Node;
-        result.push(node);
         const level = levels.pop() || 1; 
         let path = paths.pop() || node[pathKey]       
         let parent = parents.pop()  
@@ -63,6 +61,4 @@ import type { ForEachTreeOptions, IForEachTreeCallback } from "./forEachTree";
         }
         
     }
-
-    return result;
 } 

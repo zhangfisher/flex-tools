@@ -22,7 +22,6 @@ export function forEachTreeByBfs<Node extends TreeNodeBase = TreeNode>(treeData:
     let isStart = startId == null ? true : (typeof (treeData) == 'object' ? String((treeData as Node)[idKey]) === String(startId) : false)
 
     const queue = (isPlainObject(treeData) ? [treeData] : treeData as Node[]) as Node[]
-    const result: any[] = [];
     const levels: number[] = [];
     const paths:any[] = []
     const parents:Node[] = []
@@ -30,7 +29,6 @@ export function forEachTreeByBfs<Node extends TreeNodeBase = TreeNode>(treeData:
 
     while (queue.length > 0) {
         const node = queue.shift() as Node;
-        result.push(node);
         let level = levels.shift() || 1     
         let path = paths.shift() || node[pathKey]       
         let parent = parents.shift()  
@@ -62,8 +60,6 @@ export function forEachTreeByBfs<Node extends TreeNodeBase = TreeNode>(treeData:
             }
         }
     }
-
-    return result;
 }
 
  
