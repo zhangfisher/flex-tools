@@ -1,4 +1,5 @@
-import { isPlainObject } from "../typecheck/isPlainObject"
+import { assignObject } from "./assignObject"
+import { ABORT, forEachObject, ForEachObjectOptions } from "./forEachObject"
 
 /**
  * 深度遍历对象成员,当值满足条件时,调用updater函数的返回值来更新值
@@ -18,31 +19,55 @@ import { isPlainObject } from "../typecheck/isPlainObject"
  */
 export type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:any[] | object | null,keyOrIndex?:string | symbol | number | null})=>any
     
-export function forEachUpdateObject<T=any>(obj:any[] | object,filter:IForEachCallback,updater:IForEachCallback):T{
-    function forEachUpdateItem(parent:any[] | object | null,keyOrIndex:string | number | null,value:any){
-        if(Array.isArray(value)){
-            for(let i=0;i<value.length;i++){
-                value[i] = forEachUpdateItem(value,i,value[i])
-            }
-            return value
-        }else if(isPlainObject(value)){
-            for(let [k,v] of Object.entries(value)){
-                value[k] = forEachUpdateItem(value,k,v)
-            }
-            return value
-        }else{
-            if(typeof(filter)=='function'){
-                if(filter({value,parent,keyOrIndex})){
-                    return updater({value,parent,keyOrIndex})
-                }else{
-                    return value
-                }
-            }else{
-                return updater({value,parent,keyOrIndex})
+export function forEachUpdateObject<T=any>(obj:any[] | object,filter:IForEachCallback,updater:IForEachCallback,options?:ForEachObjectOptions):T{       
+    let opts = assignObject({
+        onlyPrimitive:true
+    },options)
+    forEachObject(obj,({value,parent,keyOrIndex})=>{
+        let newValue = value
+        if(typeof(filter)=='function'){
+            if(!filter({value,parent,keyOrIndex})){
+                return 
             }
         }
-    }
-    forEachUpdateItem(null,null,obj)
+        newValue = updater({value,parent,keyOrIndex})    
+        if(newValue==ABORT){
+            return ABORT
+        }else{
+            if(parent && keyOrIndex){
+                (parent as any)[keyOrIndex as any] = newValue
+            }
+        }
+    },opts)
     return obj as T
-}
+} 
 
+
+
+// export function forEachUpdateObject<T=any>(obj:any[] | object,filter:IForEachCallback,updater:IForEachCallback):T{
+//     function forEachUpdateItem(parent:any[] | object | null,keyOrIndex:string | number | null,value:any){
+//         if(Array.isArray(value)){
+//             for(let i=0;i<value.length;i++){
+//                 value[i] = forEachUpdateItem(value,i,value[i])
+//             }
+//             return value
+//         }else if(isPlainObject(value)){
+//             for(let [k,v] of Object.entries(value)){
+//                 value[k] = forEachUpdateItem(value,k,v)
+//             }
+//             return value
+//         }else{
+//             if(typeof(filter)=='function'){
+//                 if(filter({value,parent,keyOrIndex})){
+//                     return updater({value,parent,keyOrIndex})
+//                 }else{
+//                     return value
+//                 }
+//             }else{
+//                 return updater({value,parent,keyOrIndex})
+//             }
+//         }
+//     }
+//     forEachUpdateItem(null,null,obj)
+//     return obj as T
+// }

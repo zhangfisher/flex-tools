@@ -5,6 +5,7 @@ import { pick } from "../src/object/pick"
 import { get } from "../src/object/get"
 import { set } from "../src/object/set"
 import { forEachObject } from "../src/object/forEachObject"
+import { forEachUpdateObject } from "../src/object/forEachUpdateObject"
 
 
 test("遍历对象",() => {
@@ -225,5 +226,27 @@ test("setByPath",() => {
     expect(get(set(obj,"y[5].m",5),"y[5].m")).toEqual(5)
     expect(get(set(obj,"y[5].n",6),"y[5].n")).toEqual(6) 
 
+})
+test("forEachUpdateObject",() => {
+    const obj = {
+        a:{
+            b1:{b11:1,b12:2},
+            b2:{b21:3,b22:4},
+            b3:[
+                {b31:5,b32:6},
+                {b31:7,b32:8}
+            ]            
+        },
+        x:9,
+        y:[10,11,12,13,14,{m:15,n:16}],
+        z:[17,18,19,new Set([20,21,22,23,24]),[25,[26,27,28],29,30]]
+    }          
+
+    forEachUpdateObject(obj,({value,parent,keyOrIndex})=>{
+        return value % 2 == 0 
+    },({value,parent,keyOrIndex})=>{
+        return value * 2
+    })
+    
 })
  

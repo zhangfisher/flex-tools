@@ -14,17 +14,13 @@ export const ABORT = Symbol('ABORT_FOR_EACH')
 
 export interface ForEachObjectOptions{
     keys?:string[]                              // 限定只能指定的健执行callback
-    skipObject?:boolean                          // 跳过对象
-    skipArray?:boolean                           // 跳过数组
     onlyPrimitive?:boolean                      // 仅遍历原始类型，如string,number,boolean,symbol,null,undefined等
 }
 
 export function forEachObject(obj:object | any[],callback:IForEachCallback,options?:ForEachObjectOptions){
-    let { keys,skipObject,skipArray,onlyPrimitive } = assignObject({
-        keys:[],
-        skipObject:false,           // 跳过对象
-        skipArray:false,            // 跳过数组
-        onlyPrimitive:false,        // 仅遍历原始类型，如string,number,boolean,symbol,null,undefined等
+    let { keys,onlyPrimitive } = assignObject({
+        keys:[], 
+        onlyPrimitive:true,        // 仅遍历原始类型，如string,number,boolean,symbol,null,undefined等
     },options) as Required<ForEachObjectOptions>
 
     const stack:any[] = [obj]
@@ -43,9 +39,7 @@ export function forEachObject(obj:object | any[],callback:IForEachCallback,optio
                 parents.push(item) 
                 keyOrIndexs.push(k)
             } 
-        }       
-        if(skipObject && isPlainObject(item)) continue
-        if(skipArray && Array.isArray(item)) continue
+        }        
         if(onlyPrimitive && !isPrimitive(item)) continue
         if(keys && keys.length>0 && !keys.includes(String(keyOrIndex))) continue
         if (callback({ value:item,parent,keyOrIndex }) === ABORT) {

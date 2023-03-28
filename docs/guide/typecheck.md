@@ -93,3 +93,6 @@ canIterable(obj:any):boolean
 
 判断值是否是原始值类型，即值为`string | number | boolean | symbol | bigInt | null | undefined`
 
+## isCollection
+
+当值是`Array`,`Set`,`Map`,`{}`,`WeakMap`,`WeakSet`时返回`true`

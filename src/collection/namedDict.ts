@@ -2,16 +2,16 @@ import { isNothing } from "../typecheck/isNothing"
 import { isPlainObject } from "../typecheck/isPlainObject"
 import { get as getByPath} from "../object/get"
 import { deepMerge } from "../object/deepMerge"
+import { assignObject } from "../object"
 /**
  * 从item中提取名称值，确保一定会有一个name,如果没有名称，则会自动生成一个随机名称
  *
  */
 function getNamedItemName(item={},defaultItem:any={},opts:Required<NamedDictOptions>){
-    let name = getByPath(item,opts.nameKey)  
+    let name =typeof(opts.nameKey)=='function' ? opts.nameKey(item) : getByPath(item,opts.nameKey)  
     // 如果没有找到，且默认从default指定的字段提取
     if(isNothing(name) && opts.default && (opts.default in item)) {
-        name = getByPath(getByPath(item,opts.default),"name",
-        {
+        name = getByPath(getByPath(item,opts.default),"name",{
             defaultValue:`${Date.now()}${Math.random()*1000}`
         }) 
     }
@@ -32,8 +32,9 @@ function normalizeNamedItem(item:any,defaultItem:any,opts:Required<NamedDictOpti
 
 export interface NamedDictOptions{
     requires?          : string[]                                  // item项必选字段名称列表
-    nameKey?           : string                                     // item名称键名,代表名称是从item[nameKey]提取,如果是class:name代表是由item.class字段的name提取，当然，此时item.class必须是一个对象或者是{}才行
-    ignoreInvalidItems?: boolean                                       // 忽略无效项，如果=false则会触发错误，否则会直接无视
+    // item名称键名,代表名称是从item[nameKey]提取,如果是class:name代表是由item.class字段的name提取，当然，此时item.class必须是一个对象或者是{}才行
+    nameKey?           : string | ((value:any)=>string)
+    ignoreInvalidItems?: boolean                                    // 忽略无效项，如果=false则会触发错误，否则会直接无视
     // 正常情况下定义一个命名容器是[{name,...},{name:...},....{}]
     // 某些情况下允许采用缩写形式，如[AClass,BClass,....],这样存在命名容器没有名称的问题,这种情况下
     // 可以指定default="class"，代表缩写的是成员的class字段值
@@ -63,7 +64,7 @@ export interface NamedDictOptions{
  * @constructor
  */
 export function NamedDict<T>(items: any[], defaultItem?:T, options?:NamedDictOptions):Record<string,T>{
-    let opts = Object.assign({
+    let opts = assignObject({
         requires          : ["class"],                                  // item项必选字段名称列表
         nameKey           : "name",                                     // item名称键名,代表名称是从item[nameKey]提取,如果是class:name代表是由item.class字段的name提取，当然，此时item.class必须是一个对象或者是{}才行
         ignoreInvalidItems: true,                                       // 忽略无效项，如果=false则会触发错误，否则会直接无视

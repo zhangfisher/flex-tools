@@ -193,18 +193,23 @@ function getPropertyNames(obj: any)
 ```typescript
 forEachObject(obj:object | any[],callback:IForEachCallback,options?:ForEachObjectOptions)
 interface ForEachObjectOptions{
-    keys?:string[]               // 限定只能指定的健执行callback
-    skipObject?:boolean         // 跳过对象
-    skipArray?:boolean          // 跳过数组
-    onlyPrimitive?:boolean      // 仅遍历原始类型，如string,number,boolean,symbol,null,undefined等
+    keys?:string[]               // 限定只能指定的健执行callback 
+    // 是否仅遍历原始类型，如string,number,boolean,symbol,null,undefined,bigInt等
+    // 如果为false，则也会为每一个数组和对象进行回调
+    onlyPrimitive?:boolean   
+    // 是否检测循环引用  
+    checkCircularRef?:boolean
 }
 type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:any[] | object | null,keyOrIndex?:string | number | null})=>any
 ```
+- 遍历过程中，如果`callback`返回`ABORT`则中止遍历。
+- `checkCircularRef`用来检测循环引用,默认为`false`也就是不检测循环引用。如果`true`则会进行循环引用检测，这样当存在循环引用时会触发错误，可以避免进行无限循环,但是也会产生额外的性能开销。
 
 **说明:**
 
 - 遍历过程中在`callback`中返回`ABORT`常量则中止遍历。
 - `keys`参数可以用来指只对指定的键名执行`callback`
+- 默认情况下，`onlyPrimitive=true`，遍历时只会对对象中的原子类型调用`callback`，如果为`false`则也会对每一个对象/数组等调用`callback`
 
 
 ## forEachUpdateObject
@@ -212,9 +217,12 @@ type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:any[] | o
 深度遍历对象成员,当值满足条件时,调用`updater`函数的返回值来更新值
 
 ```typescript
-type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:any[] | object | null,keyOrIndex?:string | number | null})=>any   
+type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:any[] | object | null,keyOrIndex?:string | number | null},options?:ForEachObjectOptions)=>any   
 function forEachUpdateObject<T=any>(obj:any[] | object,filter:IForEachCallback,updater:IForEachCallback):T
 ```
+- `forEachUpdateObject`内部使用`forEachObject`。
+- 遍历过程中，如果`updater`返回`ABORT`则中止遍历。
+- 
 
 **说明:**
 

@@ -14,3 +14,4 @@ export * from "./getById"
 export * from './forEachTree'
 export * from "./forEachTreeByDfs"
 export * from "./forEachTreeByBfs"
+export * from "./forEachTreeByDfsRecursion"
