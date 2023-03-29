@@ -39,24 +39,25 @@ declare global {
 
 export function params(str:string,...args:any):string{
     let result=str.valueOf()
-    let opts:Record<string,any> = {} , vars = [...args]
-    // 当最后一个参数是对象并且包括$$delimiter,$$empty,$$forFach时代表是配置参数
+    let opts:Record<string,any> = {} 
+    let vars = [...args]
+    // 当最后一个参数是对象并且包括$delimiter,$empty,$forFach时代表是配置参数
     if(args.length>0 && isPlainObject(args[args.length-1])){
         let lastArg = args[args.length-1]
-        if("$$delimiter" in lastArg || "$$empty" in lastArg || "$$forFach" in lastArg){
-            if("$$delimiter" in lastArg) opts.delimiter = lastArg.$$delimiter
-            if("$$empty" in lastArg) opts.empty = lastArg.$$empty
-            if("$$forFach" in lastArg) opts.forFach = lastArg.$$forFach
+        if("$delimiter" in lastArg || "$empty" in lastArg || "$forEach" in lastArg){
+            if("$delimiter" in lastArg) opts.delimiter = lastArg.$delimiter
+            if("$empty" in lastArg) opts.empty = lastArg.$empty
+            if("$forEach" in lastArg) opts.forEach = lastArg.$forEach
             vars.pop()
         }
     }
     try{        
-        if(args.length==1){
-            return replaceVars(result,args[0],opts)        
+        if(vars.length==1){
+            return replaceVars(result,vars[0],opts)        
         }else{
-            return replaceVars(result,[...args],opts)        
+            return replaceVars(result,[...vars],opts)        
         }        
-    }catch{
+    }catch(e:any){
         return result
     }    
 }  

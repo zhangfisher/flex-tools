@@ -53,7 +53,6 @@ export type TimeDuration = number | `${number}` | `${number}${
 }`
 
 
-
 /**
  * 可变记录,其类型由是type字段推断的
  * 
@@ -109,3 +108,12 @@ export type MutableRecordList<Items,KindKey extends string='type'> = {
     } & Items[Kind]
 }[keyof Items][]
 
+
+
+declare global {
+    interface String {
+        params(vars:Record<string,any> | any[] | Set<any> | Map<string,any>): string;
+        params(...vars: any[]): string; 
+        replaceAll(searchValue: string | RegExp, replaceValue: string): string;
+    }
+}

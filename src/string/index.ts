@@ -8,4 +8,3 @@ export * from "./trimBeginChars"
 export * from "./trimEndChars"
 export * from "./replaceVars"
  
- 

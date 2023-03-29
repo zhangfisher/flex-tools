@@ -125,29 +125,37 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
 也可以在`params`的最后一个参数中指定`{empty:"无"}`来配置当插值变量为`undefined`和`null`时，如何处理空值。
 
 ```typescript
-"My name is {name}".params({$$empty:"未知"})        //=="My name is 未知"         
-"My name is {<[> name <]>}".params(null,{$$empty:"未知"})      // =="My name is [未知]"
+"My name is {name}".params({$empty:"未知"})        //=="My name is 未知"         
+"My name is {<[> name <]>}".params(null,{$empty:"未知"})      // =="My name is [未知]"
 ```
+
+### 前缀和后缀
+
+前缀和后缀内容采用`<xxx>`进行标识，会原样输出（包括空格）。
+需要注意的是，当插值变量值为空时：
+- 如果`$empty`参数也为`null`，则前缀和后缀内容会被忽略。
+- 如果`$empty`参数不为`null`，则原样输出前缀和后缀内容。
 
 
 ### 控制参数
 
 `params`方法支持传入一些控制参数：
 
-- `$$empty:string | null`: 当变量值为空时(undefined,null,[],{})显示的内容，如果为null则不显示.
-- `$$delimiter:string`: 当变量值是`[]`或`{}`时，使用该分割来连接内容，默认值是`,`。如:
+- `$empty:string | null`: 当变量值为空时`(undefined,null,[],{})`显示的内容，如果为`null`则不显示.
+- `$delimiter:string`: 当变量值是`[]`或`{}`时，使用该分割来连接内容，默认值是`,`。如:
     ```typescript
         "{a}".params({a:[1,2]})   //=="1,2"
-        "{a}".params({a:[1,2]},{$$delimiter:"_"})   //=="1_2"
+        "{a}".params({a:[1,2]},{$delimiter:"_"})   //=="1_2"
         "{a}".params({a:{x:1,y:2}})   // =="x=1,y=2"
-        "{a}".params({a:{x:1,y:2}},{$$delimiter:"#"})   // =="x=1#y=2"
+        "{a}".params({a:{x:1,y:2}},{$delimiter:"#"})   // =="x=1#y=2"
     ```
-- `$$forEach:(name:string,value:string,prefix:string,suffix:string)=>[string,string,string ]`: 提供一个函数对插值变量进行遍历
+- `$forEach:(name:string,value:string,prefix:string,suffix:string)=>[string,string,string ]`: 提供一个函数对插值变量进行遍历。如果该函数返回`[string,string,string]`,则代表返回`prefix,value,suffix`
+
     ```typescript
         "{a}{b}{<#>c<#>}".params(
            {a:1,b:2,c:3}, 
            {
-                $$forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,string ]=>{
+                $forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,string ]=>{
                     console.log(name,value,prefix,suffix)
                     return [prefix,value,suffix]            // 分别返回前缀，变量值，后缀
                 }
@@ -158,7 +166,11 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
         // b 2 
         // c 3 # # 
     ```
-    利用`$$forEach`的机制，可以实现一些比较好玩的特性，比如：
+
+    利用`$forEach`的机制，可以实现一些比较好玩的特性，比如以下例子，
+    
+    - **可以为插值变量值添加终端着色，从而使得在终端输出时插值变量显示为不同的颜色。**
+
     ```typescript
         import logsets from "logsets"
         const result = "{a}{b}{<#>c<#>}".params(
@@ -174,10 +186,23 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
         console.log(result) // 可以将插值内容输出为红色
     ```
 
+    - **遍历字符串中的所有插值变量**
+
+    ```typescript
+    "{a}{b}{c}{d}{}{}{}".params({
+        $forEach:(name,value,prefix,suffix)=>{
+            vars.push(name)
+        }
+    })
+    expect(vars.length).toEqual(7)
+    expect(vars).toEqual(["a","b","c","d","","",""]) 
+    ```
 
 ### 特别注意 
 
-- 为了避免参数与插值变量冲突，约定当`params`的最后一个参数是`{$$empty,$$delimiter,$$forFach}`时代表配置参数。
+- 为了避免参数与插值变量冲突，约定当`params`的最后一个参数是`{...}`,并且包含`$empty`,`$delimiter`,`$forEach`中的任何一个成员时，则代表该参数是控制参数而不是插值变量。
+
+ 
 
 ## replaceVars
 
@@ -186,11 +211,18 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
 其函数签名如下：
 
 ```typescript
-function replaceVars(text:string,vars:any,options?:{empty?:string | null,delimiter?:string}):string
+function replaceVars(text:string,vars:any,options?:{
+    empty?:string | null,
+    delimiter?:string,
+    forEach?:(name:string,value:string,prefix:string,suffix:string)=>[string,string,string ]
+}):string
 
 console.log(replaceVars("{a}+{b}={c}",{a:1,b:1,c:2})) // Output: "1+1=2"       
 
 ```
+
+- `empty`,`delimiter`,`forEach`这三个参数在`params`中使用时，转换为`$empty`,`$delimiter`,`$forEach`
+
 
 ## firstUpper
 

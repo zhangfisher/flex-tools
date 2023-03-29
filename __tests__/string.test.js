@@ -4,7 +4,7 @@ import {  replaceVars } from "../src/string"
 
 
 test("replaceVars", ()=>{
-    expect(replaceVars("{a}",new Error("X"))).toBe("Error:X")
+    expect(replaceVars("{<x>a<y>}+{b}={c}",{a:1,b:1,c:[2,2]})).toBe("x1y+1=2,2")
 
     // 字典插值
     expect(replaceVars("{a}+{b}={c}",{a:1,b:1,c:[2,2]})).toBe("1+1=2,2")
@@ -67,9 +67,34 @@ test("replaceVars", ()=>{
     // 指定前后缀
     //expect(replaceVars("{size:size(mb)}{,type:type}",[1,"exe"])).toBe("size:1(mb),type:exe")
 
+    expect(replaceVars("{a}",new Error("X"))).toBe("Error:X")
 
 })
 
+test("replaceVars  forEach", ()=>{
+    let vars=[]
+    "{a}+{<prefix>b<suffix>}={<prefix>c}{d<suffix>}".params(1,2,3,{
+        $forEach:(name,value,prefix,suffix)=>{
+            vars.push([name,value,prefix,suffix])
+        }
+    })
+    expect(vars.length).toEqual(4)
+    expect(vars[0]).toEqual(["a","1","",""])
+    expect(vars[1]).toEqual(["b","2","prefix","suffix"])
+    expect(vars[2]).toEqual(["c","3","prefix",""])
+    // 由于第4个参数是空，并且$empty为空，所以将不会输出
+    expect(vars[3]).toEqual(["d","","","suffix"])
+})
+test("replaceVars遍历插值变量", ()=>{
+    let vars=[]
+    "{a}{b}{c}{d}{}{}{}".params({
+        $forEach:(name,value,prefix,suffix)=>{
+            vars.push(name)
+        }
+    })
+    expect(vars.length).toEqual(7)
+    expect(vars).toEqual(["a","b","c","d","","",""]) 
+})
 
 
 test("params",() => {
@@ -84,3 +109,5 @@ test("params",() => {
       })
       expect(result).toBe("[ERROR] - 2023-02-24 14:56:20 428 : 程序出错数据类型出错")
 })
+
+

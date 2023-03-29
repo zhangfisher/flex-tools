@@ -2,6 +2,9 @@ import { assignObject } from "../object/assignObject";
 import { canIterable } from "../typecheck";
 import { isNothing } from "../typecheck/isNothing";
 import { isPlainObject } from "../typecheck/isPlainObject";   
+// @ts-ignore 
+import replaceAll from "string.prototype.replaceall"  
+replaceAll.shim()
 
 function getInterpVar(this:string,value:any,{empty,delimiter=","}:ReplaceVarsOptions):string{
     let finalValue  = value
@@ -33,8 +36,13 @@ function getInterpVar(this:string,value:any,{empty,delimiter=","}:ReplaceVarsOpt
 
 // V2 const VAR_MATCHER = /\{(?<prefix>[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*?[\u4E00-\u9FA5A\w]*?[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]+)?(?<name>[\u4E00-\u9FA5A\w]*?)(?<suffix>[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]+[\u4E00-\u9FA5A\w]*?[^a-zA-Z0-9_\{\}\u4E00-\u9FA5A]*?)?\}/gm
 
-// 使用<>包装前后缀
-const VAR_MATCHER = /\{(\<(?<prefix>.*?)\>)?\s*(?<name>[\u4E00-\u9FA5A\w]*)\s*(\<(?<suffix>.*?)\>)?\}/gm
+// V3 使用<>包装前后缀，其中包含prefix,name,suffix三个命名捕获组
+//const VAR_MATCHER = /\{(\<(?<prefix>.*?)\>)?\s*(?<name>[\u4E00-\u9FA5A\w]*)\s*(\<(?<suffix>.*?)\>)?\}/gm
+
+// V4 由于在react-native中不支持命名捕获组，会导致出错，所以移除命名捕获组
+const VAR_MATCHER = /\{(\<(.*?)\>)?\s*([\u4E00-\u9FA5A\w]*)\s*(\<(.*?)\>)?\}/gm
+
+
 
 export type VarReplacer = (name:string,prefix:string,suffix:string,matched:string) => string
 /**
@@ -44,10 +52,12 @@ export type VarReplacer = (name:string,prefix:string,suffix:string,matched:strin
  */
 export interface ReplaceVarsOptions{
     empty?:string | null
+    default?:string                 // 如果变量不存在时的默认值
     delimiter?:string
     // 遍历所有插值变量的回调函数，必须返回[prefix,value,suffix]
     forEach?:(name:string,value:string,prefix:string,suffix:string)=>[string,string,string ]
 }
+
 export function replaceVars(text:string,vars:any,options?:ReplaceVarsOptions):string {
     let finalVars:any[] | Map<string,any> | Record<string,any>
     const opts =assignObject({
@@ -64,64 +74,144 @@ export function replaceVars(text:string,vars:any,options?:ReplaceVarsOptions):st
     }else if(Symbol.iterator in vars){
         finalVars = [...vars]
     }else if(isPlainObject(vars)){
-        finalVars =vars
+        finalVars = vars
+    }else if(vars instanceof Error){
+        finalVars = [`Error:${vars.message}`]
     }else{
         finalVars =[ vars ]
     }
-    if(Array.isArray(finalVars)){
-        let i:number = 0
-        const useVars = finalVars as any[]
-        return text.replaceAll(VAR_MATCHER, function():string{
-            let {prefix='',name='',suffix=''} = arguments[arguments.length-1] 
 
-            if(i<useVars.length){
-                // 如果empty==null,且变量值为空，则不显示
-                if(opts.empty==null && isNothing(useVars[i])){
-                    return ''
-                }else{
-                    let replaced =  getInterpVar.call(text,useVars[i++],opts)
-                    // 如果指定了forEach则调用
-                    if(typeof(opts.forEach)=='function'){
-                        const r = opts.forEach(name,replaced,prefix,suffix)
-                        if(Array.isArray(r) && r.length==3){                            
-                            prefix=r[0]
-                            replaced = r[1]
-                            suffix=r[2]
-                        }
-                    }
-                    return `${prefix}${replaced}${suffix}`
-                    
-                }                
-            }else{ // 没有对应的插值
-                return opts.empty==null ? '': `${prefix}${opts.empty}${suffix}`
-            }            
-        }) 
-    }else if(isPlainObject(finalVars)){
-        const useVars = finalVars as Record<string,any>
-        return text.replaceAll(VAR_MATCHER, function():string{
-            let {prefix='',name='',suffix=''} = arguments[arguments.length-1] 
-            if(name in finalVars){
-                let replaced =  getInterpVar.call(text,useVars[name],opts)
-                if(opts.empty==null && isNothing(useVars[name])){
-                    return ''
-                }else{
-                    // 如果指定了callback则调用
-                    if(typeof(opts.forEach)=='function'){
-                        const r = opts.forEach(name,replaced,prefix,suffix)
-                        if(Array.isArray(r) && r.length==3){                            
-                            prefix=r[0]
-                            replaced = r[1]
-                            suffix=r[2]
-                        }
-                    }
-                    return `${prefix}${replaced}${suffix}`
-                }                
-            }else{
-                return opts.empty==null ? '': `${prefix}${opts.empty}${suffix}`
+    // let index:number = 0
+    // // {<变量名称>:<变量值>}, 如果是数组则转换为{0:<变量值>,1:<变量值>,...} 
+    // const varList = Array.isArray(finalVars) ? finalVars.reduce((pre,cur,index)=>{
+    //     pre[index]=cur
+    //     return pre
+    // },{}) : finalVars
+    // // replaceAll在低版本ES中不存在，上面已经加了shim，这需要加any类型才不会报错
+    // return (text as any).replaceAll(VAR_MATCHER, function():string{
+    //     let prefix = arguments[2] || ''
+    //     let name = arguments[3] || ''
+    //     let suffix = arguments[5] || ''        
+    //     if(index<varList.length){
+    //         // 如果empty==null,且变量值为空，则不显示
+    //         if(opts.empty==null && isNothing(varList[index][1])){
+    //             return ''
+    //         }else{
+    //             let value =  getInterpVar.call(text,varList[index++][1],opts)
+    //             // 如果指定了forEach则调用
+    //             if(typeof(opts.forEach)=='function'){
+    //                 const r = opts.forEach(name,value,prefix,suffix)
+    //                 if(Array.isArray(r) && r.length==3){                            
+    //                     prefix=r[0]
+    //                     value = r[1]
+    //                     suffix=r[2]
+    //                 }
+    //             }
+    //             return `${prefix}${value}${suffix}`
+                
+    //         }                
+    //     }else{ // 没有对应的变量时使用空值替换
+    //         return opts.empty==null ? '': `${prefix}${opts.empty}${suffix}`
+    //     }            
+    // })  
+    let i:number = 0
+    return (text as any).replaceAll(VAR_MATCHER, function():string{
+        let prefix = arguments[2] || ''
+        let name = arguments[3] || ''
+        let suffix = arguments[5] || ''
+        let varValue:string = '',isEmpty:boolean=false
+        if(Array.isArray(finalVars)){           // 位置插值            
+            const isOverflow = i >= (finalVars as []).length
+            varValue = isOverflow ? '' : getInterpVar.call(text,(finalVars as any)[i],opts)  
+            isEmpty= isNothing(varValue) || isOverflow
+            i++
+        }else if(isPlainObject(finalVars)){         // 字典插值
+            const isExists = name in (finalVars as {})
+            varValue =isExists ? getInterpVar.call(text,(finalVars as any)[name],opts) : ''
+            isEmpty= isNothing(varValue) || !isExists
+        }
+        // 如果指定了forEach则调用
+        if(typeof(opts.forEach)=='function'){
+            const r = opts.forEach(name,varValue,prefix,suffix)
+            if(Array.isArray(r) && r.length==3){                            
+                prefix=r[0]
+                varValue = r[1]
+                suffix=r[2]
             }
-        }) 
-    }else{
-        return text
-    }    
+        }
+        // 为空时使用empty替换
+        if(isEmpty){
+            if(opts.empty==null){
+                varValue='';prefix='';suffix='';
+            }else{
+                varValue = opts.empty
+            }
+        }          
+        return `${prefix}${varValue}${suffix}`
+    }) 
+
+
 }
   
+
+
+// if(Array.isArray(finalVars)){           // 位置插值
+//     let i:number = 0
+//     const useVars = finalVars as any[]
+//     // replaceAll在低版本ES中不存在，上面已经加了shim，这需要加any类型才不会报错
+//     return (text as any).replaceAll(VAR_MATCHER, function():string{
+//         let prefix = arguments[2] || ''
+//         let name = arguments[3] || ''
+//         let suffix = arguments[5] || ''
+//         if(i<useVars.length){
+//             // 如果empty==null,且变量值为空，则不显示
+//             if(opts.empty==null && isNothing(useVars[i])){
+//                 return ''
+//             }else{
+//                 let value =  getInterpVar.call(text,useVars[i++],opts)
+//                 // 如果指定了forEach则调用
+//                 if(typeof(opts.forEach)=='function'){
+//                     const r = opts.forEach(name,value,prefix,suffix)
+//                     if(Array.isArray(r) && r.length==3){                            
+//                         prefix=r[0]
+//                         value = r[1]
+//                         suffix=r[2]
+//                     }
+//                 }
+//                 return `${prefix}${value}${suffix}`
+                
+//             }                
+//         }else{ // 没有对应的变量时使用空值替换
+//             return opts.empty==null ? '': `${prefix}${opts.empty}${suffix}`
+//         }            
+//     }) 
+// }else if(isPlainObject(finalVars)){         // 字典插值
+//     const useVars = finalVars as Record<string,any>
+//     return (text as any).replaceAll(VAR_MATCHER, function():string{
+//         //let {prefix='',name='',suffix=''} = arguments[arguments.length-1] 
+//         let prefix = arguments[2] || ''
+//         let name = arguments[3] || ''
+//         let suffix = arguments[5] || ''
+//         if(name in finalVars){
+//             let value =  getInterpVar.call(text,useVars[name],opts)
+//             if(opts.empty==null && isNothing(useVars[name])){
+//                 return ''
+//             }else{
+//                 // 如果指定了callback则调用
+//                 if(typeof(opts.forEach)=='function'){
+//                     const r = opts.forEach(name,value,prefix,suffix)
+//                     if(Array.isArray(r) && r.length==3){                            
+//                         prefix=r[0]
+//                         value = r[1]
+//                         suffix=r[2]
+//                     }
+//                 }
+//                 return `${prefix}${value}${suffix}`
+//             }                
+//         }else{
+//             return opts.empty==null ? '': `${prefix}${opts.empty}${suffix}`
+//         }
+//     }) 
+// }else{
+//     return text
+// }    

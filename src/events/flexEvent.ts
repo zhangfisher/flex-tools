@@ -5,7 +5,9 @@
  */
 
 import { assignObject } from "../object"
-
+// @ts-ignore 
+import replaceAll from "string.prototype.replaceall"
+replaceAll.shim()
 
  export interface FlexEventOptions{
     context?: any               // 可选的上下文对象，当指定时作为订阅者的this
