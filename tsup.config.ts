@@ -14,6 +14,7 @@ export default defineConfig({
     treeshake:true,  
     minify: true,
     esbuildPlugins:[
+        // @ts-ignore
         copy({
             source:['package.json','README.md','LICENSE'],
             target:"dist/"
