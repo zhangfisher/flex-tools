@@ -4,6 +4,7 @@ import copy from "esbuild-copy-files-plugin";
 
 const esbuildOptions = {
   plugins: [
+    //@ts-ignore
     copy({
       source: ['package.json', 'README.md', 'LICENSE'],
       target: "dist/"
