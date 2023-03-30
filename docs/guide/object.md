@@ -287,19 +287,6 @@ export function searchObject<T=any>(obj:any[] | object,matcher:IForEachCallback,
 ```typescript
 function serializableObject(data:any[] | object){
 ```
-
-## setObjectDefault
-
-使用`src`来为`target`设置默认值。
-
-```typescript
-function setObjectDefaultValue(target:any,src:any)
-```
-
-**说明**
-
--  仅当`target`中不存在的key或`target`值为`undefined`时，将`src`中的对应项更新到`target`.
-
 ## isDiff
 
 以`baseObj`为基准判断两个对象值是否相同，值不同则返回false 

@@ -1,6 +1,7 @@
 import { test,expect} from "vitest"
 
 import {  parseFileSize, parseTimeDuration } from "../src/misc"
+import { formatDateTime } from '../src/misc/formatDateTime';
 
 
 
@@ -98,4 +99,10 @@ test("getTimeInterval", () => {
 
 
 
+})
+
+
+test("formatDateTime", () => {
+    expect(formatDateTime(new Date(2021, 3, 8, 6, 8, 12, 24), "yyyy-MM-DD HH:mm:ss.SSS")).toBe("2021-04-08 06:08:12.024")
+        
 })

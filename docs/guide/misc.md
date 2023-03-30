@@ -128,3 +128,16 @@ timer.end("耗时：",{unit:'s'})  // 耗时：1200s
     parseFileSize("1.5gb")          //1610612736
     parseFileSize("1.5GB")          //1610612736
 ```
+
+## formatDateTime
+
+简单的日期时间格式化函数，格式化模板字符兼容`dayjs`。在某些场合如果要对时间日期进行格式化，就可以不再需要引入完整的`dayjs`了。
+
+```typescript
+
+function formatDateTime(value?: Date | number, format?: string,options?:FormatDateTimeOptions);
+
+expect(formatDateTime(new Date(2021, 3, 8, 6, 8, 12, 24), "yyyy-MM-DD HH:mm:ss.SSS")).toBe("2021-04-08 06:08:12.024")
+
+```
+
