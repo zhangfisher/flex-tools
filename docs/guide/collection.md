@@ -27,9 +27,9 @@ interface  DictArrayOptions{
   
   ```typescript
   const dict =  dictArray(`[{name:"xx“，...},{name:"",},"tom",{name:"",...}]`)
-  // 
- 
-  ，在进行处理后将变成`[{name:"xx“，...},{name:"",},{name:"tom",..默认项.},{name:"",...}]`
+  /**
+  [{name:"xx“，...},{name:"",},{name:"tom",..default:true},{name:"",...}]`
+  **/
   ```
 
 - 如果输入的是`{}`，则转换成[{..}]
