@@ -23,8 +23,15 @@ interface  DictArrayOptions{
 **说明**
 
 - 每一项均是一个`{}`,且具有相同的结构
-- 数组成员可以指定默认字段，比如`defaultField='name`，则
-  [{name:"xx“，...},{name:"",},"tom",{name:"",...}]，在进行处理后将变成[{name:"xx“，...},{name:"",},{name:"tom",..默认项.},{name:"",...}]
+- 数组成员可以指定默认字段，比如`defaultField='name'`，则:
+  
+  ```typescript
+  const dict =  dictArray(`[{name:"xx“，...},{name:"",},"tom",{name:"",...}]`)
+  // 
+ 
+  ，在进行处理后将变成`[{name:"xx“，...},{name:"",},{name:"tom",..默认项.},{name:"",...}]`
+  ```
+
 - 如果输入的是`{}`，则转换成[{..}]
 - 如果是其他非`{}`和Array，则按省略项进行处理，如`dictArray("tom")==> [{name:"tom",..默认项.}]`
 - 可以指定其中的一个为`default=true`
