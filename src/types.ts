@@ -1,3 +1,4 @@
+
 export type Class = new (...args: any[]) => any
 
 // 提取数组成员的类型
@@ -107,6 +108,9 @@ export type MutableRecordList<Items,KindKey extends string='type'> = {
         [type in KindKey]: Kind;
     } & Items[Kind]
 }[keyof Items][]
+
+
+export type Collection = Record<string|number|symbol,any> | any[] | Set<any> | Map<string,any> | WeakMap<any,any> | WeakSet<any>
 
 
 

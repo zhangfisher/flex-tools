@@ -1,8 +1,12 @@
 
 /**
- * 以baseObj为基准判断两个对象值是否相同，值不同则返回false
+ * 判断两个对象是否不同，不同则返回true，相同则返回false
  * 
- * 以baseObj为基准的意思是，只对refObj中与baseObj相同键名的进行对比，允许refObj存在不同的键名
+ * {
+ *      recursion:true,     // 是否递归比较
+ * }
+ * 
+ * 比较是baseObj为基准的，如果refObj中有baseObj中没有的属性，则不会被比较
  * 
  * @param baseObj 
  * @param refObj 
@@ -10,8 +14,18 @@
  * @returns {Boolean} 
  */
 
-export function isDiff(baseObj:Record<string,any> | [], refObj:Record<string,any> | [],isRecursion:boolean=false):boolean{ 
-    if(typeof(baseObj)!= typeof(refObj)) return true    
+import { isPlainObject } from "../typecheck/isPlainObject"
+import { assignObject } from "./assignObject"
+ 
+export interface IsDiffOptions{
+    recursion?:boolean                            // 是否递归
+}
+
+export function isDiff(baseObj:Record<string,any> | [], refObj:Record<string,any> | [],options?:IsDiffOptions):boolean{ 
+    const {recursion} = assignObject({recursion:true},options) as Required<IsDiffOptions>
+
+    if(typeof(baseObj)!= typeof(refObj)) return true     
+
     if(Array.isArray(baseObj) && Array.isArray(refObj)){
         if(baseObj.length!=refObj.length) return true  // 长度不同
         for(let i:number = 0; i < baseObj.length;i++){
@@ -19,15 +33,15 @@ export function isDiff(baseObj:Record<string,any> | [], refObj:Record<string,any
             if(typeof(v1)!=typeof(v2)) return true   // 类型不同
             if(v1 == null && v2 == null)  continue
             if(Array.isArray(v1) && Array.isArray(v2)){
-                if(isDiff(v1,v2,true)) return true    
-            }else if(typeof(v1)=="object" && typeof(v2)=="object"){
-                if(isDiff(v1,v2,true)) return true 
+                if(isDiff(v1,v2,{recursion})) return true    
+            }else if(isPlainObject(v1)  && isPlainObject(v2) ){
+                if(isDiff(v1,v2,{recursion})) return true 
             }else{
                 if(v1!=v1) return true
             }            
         }
-    }else if(typeof(baseObj)=="object" && typeof(refObj)=="object"){
-        if(isRecursion){
+    }else if(isPlainObject(baseObj) && isPlainObject(refObj)){
+        if(recursion){
             if(Object.keys(baseObj).length != Object.keys(refObj).length) return true 
         }else{
             if(Object.keys(baseObj).length > Object.keys(refObj).length) return true 
@@ -38,14 +52,14 @@ export function isDiff(baseObj:Record<string,any> | [], refObj:Record<string,any
             if(!(key in refObj)) return true
             if(typeof(v1) != typeof(v2)) return true        
             if(Array.isArray(v1) && Array.isArray(v2)){
-                if(isDiff(v1,v2,true)) return true    
+                if(isDiff(v1,v2,{recursion})) return true    
             }else if(typeof(v1)=="object" && typeof(v2)=="object"){
-                if(isDiff(v1,v2,true)) return true                            
+                if(isDiff(v1,v2,{recursion})) return true                            
             }else{
                 if(v1 != v2) return true
             }
         }                      
-    }     
+    }    
     return false
 }
 
