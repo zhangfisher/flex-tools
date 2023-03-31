@@ -4,7 +4,7 @@ import { omit } from "../src/object/omit"
 import { pick } from "../src/object/pick"
 import { get } from "../src/object/get"
 import { set } from "../src/object/set"
-import { forEachObject } from "../src/object/forEachObject"
+import { ABORT, CircularRefError, forEachObject } from "../src/object/forEachObject"
 import { forEachUpdateObject } from "../src/object/forEachUpdateObject"
 
 
@@ -35,6 +35,40 @@ test("遍历对象",() => {
     forEachObject(obj,({value,parent,keyOrIndex}) => {
         result2.push(value)
     },{onlyPrimitive:false})
+
+})
+
+test("遍历对象存在循环引用问题",() => {
+    const a:any = {a:1}
+    const b = {b:1}
+    a.b=a
+    a.c=b
+    
+    // 1： 不检测时会导致无限遍历
+    let values:any[]=[]
+    forEachObject(a,({value,parent,keyOrIndex}) => {        
+        values.push(value)
+        if(values.length>100) return ABORT
+    })
+    // 2. 触发错误
+    values=[]
+    try{
+        forEachObject(a,({value,parent,keyOrIndex}) => {        
+            values.push(value)
+            if(values.length>100) return ABORT
+        },{circularRef:'error'})
+    }catch(e:any){
+        expect(e).toBeInstanceOf(CircularRefError)
+    }
+    // 2. 触发错误
+    values=[]
+
+    forEachObject(a,({value,parent,keyOrIndex}) => {        
+        values.push(value)
+    },{circularRef:'skip'})
+    expect(values).toEqual([1,1])
+    
+    
 
 })
 

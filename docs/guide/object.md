@@ -197,13 +197,17 @@ interface ForEachObjectOptions{
     // 是否仅遍历原始类型，如string,number,boolean,symbol,null,undefined,bigInt等
     // 如果为false，则也会为每一个数组和对象进行回调
     onlyPrimitive?:boolean   
-    // 是否检测循环引用  
-    checkCircularRef?:boolean
+    // 是否检测循环引用  no-check:不进行检测, error: 触发错误,  skip: 跳过 
+    circularRef?:'no-check' | 'error' | 'skip'
 }
 type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:Collection | null,keyOrIndex?:string | number | null})=>any
 ```
 - 遍历过程中，如果`callback`返回`ABORT`则中止遍历。
-- `checkCircularRef`用来检测循环引用,默认为`false`也就是不检测循环引用。如果`true`则会进行循环引用检测，这样当存在循环引用时会触发错误，可以避免进行无限循环,但是也会产生额外的性能开销。
+- `circularRef`用来决定是否检测循环引用以及当发现循环引用时的行力。`circularRef`取值如下：
+    - `no-check`: 不进行检测，由于存在循环引用时会导致导致无限循环，所以需要特别注意。
+    - `error`：当检测到循环引用时会触发错误`CircularRefError`
+    - `skip`: 当检测到循环引用时跳过,这是**默认值**。 
+    
 
 **说明:**
 
