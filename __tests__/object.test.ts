@@ -23,11 +23,18 @@ test("遍历对象",() => {
         z:[17,18,19,new Set([20,21,22,23,24]),[25,[26,27,28],29,30]]
     }    
 
-    let results:any[] = []
+    let results:number[]= []
+    // 只遍历对象中的原始类型
     forEachObject(obj,({value,parent,keyOrIndex}) => {
-        results.push([`${String(keyOrIndex)}=${JSON.stringify(value)}`,parent])
+        results.push(value)
     })
+    expect(results).toEqual(new Array(30).fill(0).map((value,index)=>index+1))
 
+    // 只遍历对象中的原始类型
+    let result2:any[]=[]
+    forEachObject(obj,({value,parent,keyOrIndex}) => {
+        result2.push(value)
+    },{onlyPrimitive:false})
 
 })
 
@@ -250,3 +257,18 @@ test("forEachUpdateObject",() => {
     
 })
  
+
+
+test("forEachObject Set/Map/Array",() => {
+    let result:any[] =[]
+    forEachObject(new Set([1,2,3,4,5]),({value,parent,keyOrIndex})=>{
+        result.push([keyOrIndex,value])
+    })
+    expect(result).toEqual([[1,1],[2,2],[3,3],[4,4],[5,5]])
+    result = []
+    forEachObject(new Map([["a",1],["b",2],["c",3],["d",4],["e",5]]),({value,parent,keyOrIndex})=>{
+        result.push([keyOrIndex,value])
+    })
+    expect(result).toEqual([["a",1],["b",2],["c",3],["d",4],["e",5]])
+    
+})

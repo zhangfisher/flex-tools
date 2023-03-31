@@ -1,3 +1,4 @@
+import { Collection } from "../types"
 import { assignObject } from "./assignObject"
 import { ABORT, forEachObject, ForEachObjectOptions } from "./forEachObject"
 
@@ -17,7 +18,7 @@ import { ABORT, forEachObject, ForEachObjectOptions } from "./forEachObject"
  *         当指定该函数时,会在调用updater时先调用此函数,如果返回true则更新,否则不更新
  * @returns 
  */
-export type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:any[] | object | null,keyOrIndex?:string | symbol | number | null})=>any
+export type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:Collection| null,keyOrIndex?:string | symbol | number | null})=>any
     
 export function forEachUpdateObject<T=any>(obj:any[] | object,filter:IForEachCallback,updater:IForEachCallback,options?:ForEachObjectOptions):T{       
     let opts = assignObject({

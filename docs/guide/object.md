@@ -191,7 +191,7 @@ function getPropertyNames(obj: any)
 遍历对象成员,对每一个成员调用`callback`函数。
 
 ```typescript
-forEachObject(obj:object | any[],callback:IForEachCallback,options?:ForEachObjectOptions)
+forEachObject(obj:Collection,callback:IForEachCallback,options?:ForEachObjectOptions)
 interface ForEachObjectOptions{
     keys?:string[]               // 限定只能指定的健执行callback 
     // 是否仅遍历原始类型，如string,number,boolean,symbol,null,undefined,bigInt等
@@ -200,7 +200,7 @@ interface ForEachObjectOptions{
     // 是否检测循环引用  
     checkCircularRef?:boolean
 }
-type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:any[] | object | null,keyOrIndex?:string | number | null})=>any
+type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:Collection | null,keyOrIndex?:string | number | null})=>any
 ```
 - 遍历过程中，如果`callback`返回`ABORT`则中止遍历。
 - `checkCircularRef`用来检测循环引用,默认为`false`也就是不检测循环引用。如果`true`则会进行循环引用检测，这样当存在循环引用时会触发错误，可以避免进行无限循环,但是也会产生额外的性能开销。
@@ -209,7 +209,8 @@ type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:any[] | o
 
 - 遍历过程中在`callback`中返回`ABORT`常量则中止遍历。
 - `keys`参数可以用来指只对指定的键名执行`callback`
-- 默认情况下，`onlyPrimitive=true`，遍历时只会对对象中的原子类型调用`callback`，如果为`false`则也会对每一个对象/数组等调用`callback`
+- 默认情况下，`onlyPrimitive=true`，遍历时只会对对象中的原子类型(`number`,`string`,`symbol`,`bingInt`,`boolean`)调用`callback`，如果为`false`则也会对每一个对象/数组等调用`callback`
+- `forEachObject`可以对`{}`，`Array`，`Set`，`Map`进行遍历
 
 
 ## forEachUpdateObject

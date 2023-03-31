@@ -13,5 +13,5 @@
         || typeof(value)=='symbol'
         || typeof(value)=='bigint'        
     ) return true
-    return true
+    return false
 }
