@@ -35,8 +35,8 @@ events.offAll()                               // 退订所有事件
 
 
 events.getListeners()                         //  返回所有侦听器
-events.emit(event:string,...args:any[])       // 触发事件
-events.emitAsync(event:string,...args:any[])  // 使用Promise.allSettled触发事件
+events.emit(event:string,message?:any)       // 触发事件
+events.emitAsync(event:string,message?:any)  // 使用Promise.allSettled触发事件
 await events.waitFor(event:string)             // 等待某个事件触发
 
 // 通配符
@@ -59,6 +59,15 @@ events.emit("a/b/c/d/e/x")          // 匹配触发
 
     - 构建`FlexEvent`时可以指定`context`参数作为订阅函数的`this`
     - 事件订阅支持通配符，可能通过`wildcard=false`来关闭此功能。
+    - `FlexEvent`有一个泛型可以用来指定消息类型，如下：
+
+    ```typescript
+    const type Message ={
+        type:string,
+        payload:any
+    }
+    const events = new FlexEvent<Message>()
+    ```
 
 ## FlexEventBus
 
