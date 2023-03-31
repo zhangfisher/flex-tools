@@ -2,9 +2,6 @@
 /**
  * 判断两个对象是否不同，不同则返回true，相同则返回false
  * 
- * {
- *      recursion:true,     // 是否递归比较
- * }
  * 
  * 比较是baseObj为基准的，如果refObj中有baseObj中没有的属性，则不会被比较
  * 
@@ -15,16 +12,8 @@
  */
 
 import { isPlainObject } from "../typecheck/isPlainObject"
-import { Collection } from "../types"
-import { assignObject } from "./assignObject"
-import { ABORT, forEachObject } from "./forEachObject"
- 
-export interface IsDiffOptions{
-    recursion?:boolean                            // 是否递归比较
-}
 
-export function isDiff(baseObj:Record<string,any> | [], refObj:Record<string,any> | [],options?:IsDiffOptions):boolean{ 
-    const {recursion} = assignObject({recursion:true},options) as Required<IsDiffOptions>
+export function isDiff(baseObj:Record<string,any> | [], refObj:Record<string,any> | []):boolean{ 
 
     if(typeof(baseObj)!= typeof(refObj)) return true     
 
@@ -35,28 +24,24 @@ export function isDiff(baseObj:Record<string,any> | [], refObj:Record<string,any
             if(typeof(v1)!=typeof(v2)) return true   // 类型不同
             if(v1 == null && v2 == null)  continue
             if(Array.isArray(v1) && Array.isArray(v2)){
-                if(isDiff(v1,v2,{recursion})) return true    
+                if(isDiff(v1,v2)) return true    
             }else if(isPlainObject(v1)  && isPlainObject(v2) ){
-                if(isDiff(v1,v2,{recursion})) return true 
+                if(isDiff(v1,v2)) return true 
             }else{
                 if(v1!=v1) return true
             }            
         }
     }else if(isPlainObject(baseObj) && isPlainObject(refObj)){
-        if(recursion){
-            if(Object.keys(baseObj).length != Object.keys(refObj).length) return true 
-        }else{
-            if(Object.keys(baseObj).length > Object.keys(refObj).length) return true 
-        }
+        if(Object.keys(baseObj).length != Object.keys(refObj).length) return true 
         for(let [key,value] of Object.entries(baseObj)){
             const v1 = value,v2 = (refObj as Record<string,any>) [key]
             if(v1 == null && v2 == null)  continue
             if(!(key in refObj)) return true
             if(typeof(v1) != typeof(v2)) return true        
             if(Array.isArray(v1) && Array.isArray(v2)){
-                if(isDiff(v1,v2,{recursion})) return true    
+                if(isDiff(v1,v2)) return true    
             }else if(typeof(v1)=="object" && typeof(v2)=="object"){
-                if(isDiff(v1,v2,{recursion})) return true                            
+                if(isDiff(v1,v2)) return true                            
             }else{
                 if(v1 != v2) return true
             }
@@ -67,25 +52,4 @@ export function isDiff(baseObj:Record<string,any> | [], refObj:Record<string,any
 
 
 
-
-
-export function isDiff2(baseObj:Collection, refObj:Collection,options?:IsDiffOptions){ 
-    const {recursion} = assignObject({recursion:true},options) as Required<IsDiffOptions>
-
-    if(typeof(baseObj)!= typeof(refObj)) return true      
-    let refValue,refParent:any=refObj,refKeyOrIndex
-    let isDiffValue = false
-    let preParent:any
-    forEachObject(baseObj,({value,parent,keyOrIndex})=>{
-        if(preParent!=parent){
-            preParent==parent
-            refParent= refParent[keyOrIndex]
-        }
-        refValue = refParent[keyOrIndex]
-        if(value!=refValue){
-            isDiffValue=true
-            return ABORT
-        }
-    })
-}
 

@@ -12,6 +12,7 @@ import { objectIterator } from "../src/object/objectIterator"
 describe("forEachObject",()=>{
 
     test("遍历对象",() => {
+
         const obj = {
             a:{
                 b1:{b11:1,b12:2},
@@ -106,7 +107,7 @@ describe("forEachObject",()=>{
         
     
     })
-    
+
 })
 
 

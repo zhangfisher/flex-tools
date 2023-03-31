@@ -18,9 +18,7 @@ export interface ObjectIteratorOptions{
     // 也就是说对于数组和对象只会遍历其成员，不会遍历数组和对象本身，不会执行callback
     onlyPrimitive?:boolean     
     // 是否检测循环引用  no-check:不进行检测, error: 触发错误,  skip: 跳过 
-    circularRef?: 'no-check' | 'error' | 'skip'
-    // =true时返回一个迭代器
-    returnIterator?:boolean                   
+    circularRef?: 'no-check' | 'error' | 'skip'       
 }
 
 export interface ObjectIteratorValue { 

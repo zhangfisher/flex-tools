@@ -186,21 +186,55 @@ deepMerge支持以下参数:
 function getPropertyNames(obj: any)
 ```
 
+## objectIterator
+
+返回一个对象(`{}`,`[]`,`Set`,`Map`)的**深层遍历**迭代器。
+
+```typescript
+export interface ObjectIteratorOptions{
+    keys?:string[]                              // 限定只能指定的健执行callback
+    // 仅遍历原始类型，如string,number,boolean,symbol,null,undefined等，
+    // 也就是说对于数组和对象只会遍历其成员，不会遍历数组和对象本身，不会执行callback
+    onlyPrimitive?:boolean     
+    // 是否检测循环引用  no-check:不进行检测, error: 触发错误,  skip: 跳过 
+    circularRef?: 'no-check' | 'error' | 'skip'       
+}
+export interface ObjectIteratorValue { 
+    value?:any
+    parent?:Collection| null,
+    keyOrIndex?:string | symbol | number | null
+}
+
+export function objectIterator(obj:Collection,options?:ObjectIteratorOptions):Iterable<ObjectIteratorValue>
+
+const obj = {a:1,b:2,c:{c1:3,c2:4,c3:{c31:5,c32:[6,7,8,9]}}}
+const results = []
+for(let {value,parent,keyOrIndex} of objectIterator(obj) ){
+    results.push(value)
+}
+console.log(results.join(",")) // 1,2,3,4,5,6,7,8,9
+
+// 不仅仅遍历原子类型
+for(let {value,parent,keyOrIndex} of objectIterator(obj,{onlyPrimitive:false}) ){
+    results.push(value)
+}
+console.log(results.map(r=>JSON.stringify(r)).join(" | ")) 
+// '1 | 2 | {"c1":3,"c2":4,"c3":{"c31":5,"c32":[6,7,8,9]}} | 3 | 4 | {"c31":5,"c32":[6,7,8,9]} | 5 | [6,7,8,9] | 6 | 7 | 8 | 9'
+
+```
+
+
 ## forEachObject
 
 遍历对象成员,对每一个成员调用`callback`函数。
+`forEachObject`内部使用了`objectIterator`,其配置参数与`objectIterator`相同。
 
 ```typescript
-forEachObject(obj:Collection,callback:IForEachCallback,options?:ForEachObjectOptions)
-interface ForEachObjectOptions{
-    keys?:string[]               // 限定只能指定的健执行callback 
-    // 是否仅遍历原始类型，如string,number,boolean,symbol,null,undefined,bigInt等
-    // 如果为false，则也会为每一个数组和对象进行回调
-    onlyPrimitive?:boolean   
-    // 是否检测循环引用  no-check:不进行检测, error: 触发错误,  skip: 跳过 
-    circularRef?:'no-check' | 'error' | 'skip'
-}
+type ForEachObjectOptions = ObjectIteratorOptions
 type IForEachCallback = ({value,parent,keyOrIndex}:{value?:any,parent?:Collection | null,keyOrIndex?:string | number | null})=>any
+
+function forEachObject(obj:Collection,callback:IForEachCallback,options?:ForEachObjectOptions);
+
 ```
 - 遍历过程中，如果`callback`返回`ABORT`则中止遍历。
 - `circularRef`用来决定是否检测循环引用以及当发现循环引用时的行力。`circularRef`取值如下：
