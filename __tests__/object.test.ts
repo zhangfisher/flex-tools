@@ -1,76 +1,114 @@
-import { test,expect, assert} from "vitest"
+import { test,expect, describe} from "vitest"
 import { EXCLUDE, INCLUDE,assignObject, deepMerge } from "../src/object"
 import { omit } from "../src/object/omit"
 import { pick } from "../src/object/pick"
 import { get } from "../src/object/get"
 import { set } from "../src/object/set"
-import { ABORT, CircularRefError, forEachObject } from "../src/object/forEachObject"
+import { ABORT, forEachObject  } from "../src/object/forEachObject"
 import { forEachUpdateObject } from "../src/object/forEachUpdateObject"
+import {CircularRefError} from "../src/errors"
+import { objectIterator } from "../src/object/objectIterator"
 
+describe("forEachObject",()=>{
 
-test("遍历对象",() => {
-    const obj = {
-        a:{
-            b1:{b11:1,b12:2},
-            b2:{b21:3,b22:4},
-            b3:[
-                {b31:5,b32:6},
-                {b31:7,b32:8}
-            ]            
-        },
-        x:9,
-        y:[10,11,12,13,14,{m:15,n:16}],
-        z:[17,18,19,new Set([20,21,22,23,24]),[25,[26,27,28],29,30]]
-    }    
-
-    let results:number[]= []
-    // 只遍历对象中的原始类型
-    forEachObject(obj,({value,parent,keyOrIndex}) => {
-        results.push(value)
-    })
-    expect(results).toEqual(new Array(30).fill(0).map((value,index)=>index+1))
-
-    // 只遍历对象中的原始类型
-    let result2:any[]=[]
-    forEachObject(obj,({value,parent,keyOrIndex}) => {
-        result2.push(value)
-    },{onlyPrimitive:false})
-
-})
-
-test("遍历对象存在循环引用问题",() => {
-    const a:any = {a:1}
-    const b = {b:1}
-    a.b=a
-    a.c=b
+    test("遍历对象",() => {
+        const obj = {
+            a:{
+                b1:{b11:1,b12:2},
+                b2:{b21:3,b22:4},
+                b3:[
+                    {b31:5,b32:6},
+                    {b31:7,b32:8}
+                ]            
+            },
+            x:9,
+            y:[10,11,12,13,14,{m:15,n:16}],
+            z:[17,18,19,new Set([20,21,22,23,24]),[25,[26,27,28],29,30]]
+        }    
     
-    // 1： 不检测时会导致无限遍历
-    let values:any[]=[]
-    forEachObject(a,({value,parent,keyOrIndex}) => {        
-        values.push(value)
-        if(values.length>100) return ABORT
+        let results:number[]= []
+        // 只遍历对象中的原始类型
+        forEachObject(obj,({value,parent,keyOrIndex}) => {
+            results.push(value)
+        })
+        expect(results).toEqual(new Array(30).fill(0).map((value,index)=>index+1))
+    
+        // 只遍历对象中的原始类型
+        let result2:any[]=[]
+        forEachObject(obj,({value,parent,keyOrIndex}) => {
+            result2.push(`${String(keyOrIndex)}=${JSON.stringify(value)}`)
+        },{onlyPrimitive:false})
+    
     })
-    // 2. 触发错误
-    values=[]
-    try{
+    
+    test("使用迭代器遍历对象",() => {
+        const obj = {
+            a:{
+                b1:{b11:1,b12:2},
+                b2:{b21:3,b22:4},
+                b3:[
+                    {b31:5,b32:6},
+                    {b31:7,b32:8}
+                ]            
+            },
+            x:9,
+            y:[10,11,12,13,14,{m:15,n:16}],
+            z:[17,18,19,new Set([20,21,22,23,24]),[25,[26,27,28],29,30]]
+        }    
+    
+        let results:number[]= []
+        let keyOrIndexs:any[]=[]
+        // 只遍历对象中的原始类型
+        let iterator = objectIterator(obj)
+        for(const {value,parent,keyOrIndex} of iterator)    {
+            results.push(value)
+            keyOrIndexs.push(keyOrIndex)
+        }
+        expect(results).toEqual(new Array(30).fill(0).map((value,index)=>index+1))
+        // 遍历所有成员
+        iterator = objectIterator(obj,{onlyPrimitive:false})
+        for(const {value,parent,keyOrIndex} of iterator)    {
+            results.push(value)
+            keyOrIndexs.push(keyOrIndex)
+        }    
+    })    
+    
+    test("遍历对象存在循环引用问题",() => {
+        const a:any = {a:1}
+        const b = {b:1}
+        a.b=a
+        a.c=b
+        
+        // 1： 不检测时会导致无限遍历
+        let values:any[]=[]
         forEachObject(a,({value,parent,keyOrIndex}) => {        
             values.push(value)
             if(values.length>100) return ABORT
-        },{circularRef:'error'})
-    }catch(e:any){
-        expect(e).toBeInstanceOf(CircularRefError)
-    }
-    // 2. 触发错误
-    values=[]
-
-    forEachObject(a,({value,parent,keyOrIndex}) => {        
-        values.push(value)
-    },{circularRef:'skip'})
-    expect(values).toEqual([1,1])
+        })
+        // 2. 触发错误
+        values=[]
+        try{
+            forEachObject(a,({value,parent,keyOrIndex}) => {        
+                values.push(value)
+                if(values.length>100) return ABORT
+            },{circularRef:'error'})
+        }catch(e:any){
+            expect(e).toBeInstanceOf(CircularRefError)
+        }
+        // 2. 触发错误
+        values=[]
     
+        forEachObject(a,({value,parent,keyOrIndex}) => {        
+            values.push(value)
+        },{circularRef:'skip'})
+        expect(values).toEqual([1,1])
+        
+        
     
-
+    })
+    
 })
+
 
 test("深度合并",() => {
 
