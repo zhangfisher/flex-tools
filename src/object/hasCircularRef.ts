@@ -2,15 +2,22 @@
  * 检查一个对象是否存在循环引用
  */
 
+import { isPrimitive } from "../typecheck/isPrimitive"
+import { ABORT, forEachObject } from "./forEachObject"
+
 export function hasCircularRef(obj:object):boolean {
-    try{
-        JSON.stringify(obj)
-    }catch(e:any){
-        if(e.message.includes("circular")){
-            return true
-        }
-    }
-    return false
+    let refs= new Set([obj])
+    let isCircular=false
+    forEachObject(obj,(value)=>{
+        if(isPrimitive(value)) return 
+        if(refs.has(value)) {
+            isCircular=true
+            return  ABORT
+        }else{
+            refs.add(value)
+        }     
+    },{onlyPrimitive:false})
+    return isCircular
  }
 
 
