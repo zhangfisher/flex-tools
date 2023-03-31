@@ -16,9 +16,10 @@
 
 import { isPlainObject } from "../typecheck/isPlainObject"
 import { assignObject } from "./assignObject"
+import { forEachObject } from "./forEachObject"
  
 export interface IsDiffOptions{
-    recursion?:boolean                            // 是否递归
+    recursion?:boolean                            // 是否递归比较
 }
 
 export function isDiff(baseObj:Record<string,any> | [], refObj:Record<string,any> | [],options?:IsDiffOptions):boolean{ 
@@ -61,5 +62,19 @@ export function isDiff(baseObj:Record<string,any> | [], refObj:Record<string,any
         }                      
     }    
     return false
+}
+
+
+
+
+
+export function isDiff2(baseObj:Record<string,any> | [], refObj:Record<string,any> | [],options?:IsDiffOptions):boolean{ 
+    const {recursion} = assignObject({recursion:true},options) as Required<IsDiffOptions>
+
+    if(typeof(baseObj)!= typeof(refObj)) return true      
+    let refItem
+    forEachObject(baseObj,({value,parent,keyOrIndex})=>{
+        
+    })
 }
 

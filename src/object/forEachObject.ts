@@ -25,7 +25,7 @@ export function forEachObject(obj:Collection,callback:IForEachCallback,options?:
     let { keys,onlyPrimitive,circularRef } = assignObject({
         keys:[], 
         onlyPrimitive:true,   
-        circularRef:'skip'    
+        circularRef:'skip'
     },options) as Required<ForEachObjectOptions>
 
     const stack:any[] = [obj]
@@ -49,12 +49,12 @@ export function forEachObject(obj:Collection,callback:IForEachCallback,options?:
                 stepObjects!.add(item)
             }        
             if(!hasCircularRef){
-                const items ='entries' in item ?  [...item.entries()] : Object.entries(item)
+                const items ='entries' in item ?  [...item.entries()] : Object.entries(item)                
                 for (let i = items.length - 1; i >= 0; i--) {
                     const [k,v] = items[i]
                     stack.push(v); 
                     parents.push(item) 
-                    keyOrIndexs.push(k)
+                    keyOrIndexs.push(k) 
                 } 
             }            
         }  
