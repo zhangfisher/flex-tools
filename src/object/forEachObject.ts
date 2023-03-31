@@ -4,11 +4,7 @@
  * 
  * 遍历过程中可以通过在在callback中返回ABORT来中止遍历
  */
-import { CircularRefError } from "../errors"
-import { isCollection } from "../typecheck/isCollection"
-import { isPrimitive } from "../typecheck/isPrimitive"
 import { Collection } from "../types"
-import { assignObject } from "./assignObject"
 import type { IForEachCallback } from "./forEachUpdateObject"
 import { ObjectIteratorOptions,objectIterator } from "./objectIterator"
 
