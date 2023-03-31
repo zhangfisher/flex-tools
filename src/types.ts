@@ -110,9 +110,7 @@ export type MutableRecordList<Items,KindKey extends string='type'> = {
 }[keyof Items][]
 
 
-export type Collection = Record<string|number|symbol,any> | any[] | Set<any> | Map<string,any> | WeakMap<any,any> | WeakSet<any>
-
-
+export type Collection<T=any> = Record<string|number|symbol,T> | T[] | Set<T> | Map<string,T>  
 
 declare global {
     interface String {

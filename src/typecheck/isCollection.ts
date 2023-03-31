@@ -12,10 +12,6 @@ export function isCollection(value:any):boolean{
     if(Array.isArray(value)) return true
     if(value instanceof Set) return true
     if(value instanceof Map) return true
-    if(isPlainObject(value)) return true
-    try{
-        if(value instanceof WeakMap) return true
-        if(value instanceof WeakSet) return true
-    }catch{}
+    if(isPlainObject(value)) return true 
     return false
 }
