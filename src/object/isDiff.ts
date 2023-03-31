@@ -68,13 +68,13 @@ export function isDiff(baseObj:Record<string,any> | [], refObj:Record<string,any
 
 
 
-export function isDiff2(baseObj:Record<string,any> | [], refObj:Record<string,any> | [],options?:IsDiffOptions):boolean{ 
-    const {recursion} = assignObject({recursion:true},options) as Required<IsDiffOptions>
+// export function isDiff2(baseObj:Record<string,any> | [], refObj:Record<string,any> | [],options?:IsDiffOptions){ 
+//     const {recursion} = assignObject({recursion:true},options) as Required<IsDiffOptions>
 
-    if(typeof(baseObj)!= typeof(refObj)) return true      
-    let refItem
-    forEachObject(baseObj,({value,parent,keyOrIndex})=>{
-        
-    })
-}
+//     if(typeof(baseObj)!= typeof(refObj)) return true      
+//     let refItem
+//     forEachObject(baseObj,({value,parent,keyOrIndex})=>{
+
+//     })
+// }
 
