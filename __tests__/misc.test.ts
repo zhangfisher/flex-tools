@@ -2,6 +2,7 @@ import { test,expect} from "vitest"
 
 import {  parseFileSize, parseTimeDuration } from "../src/misc"
 import { formatDateTime } from '../src/misc/formatDateTime';
+import { parseTags } from '../src/misc/parseTags';
 
 
 
@@ -105,4 +106,12 @@ test("getTimeInterval", () => {
 test("formatDateTime", () => {
     expect(formatDateTime(new Date(2021, 3, 8, 6, 8, 12, 24), "yyyy-MM-DD HH:mm:ss.SSS")).toBe("2021-04-08 06:08:12.024")
         
+})
+
+
+
+test("parseTags", () => {
+    expect(parseTags("a{1}{2}")).toEqual(["1", "2"])
+    expect(parseTags("a<div>1</div><div>2</div>")).toEqual(["1", "2"])
+    expect(parseTags("a<div><div>1</div><div><div>2</div>")).toEqual(["1", "2"])
 })
