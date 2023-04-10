@@ -23,7 +23,7 @@
  * 
  */
 import { assignObject } from "../object/assignObject"
-import { FlexEvent,FlexEventListener,FlexEventSubscriber } from "./flexEvent"
+import { FlexEvent,FlexEventListener,FlexEventOptions,FlexEventSubscriber } from "./flexEvent"
 
 
 export interface FlexEventLikeError{
@@ -209,8 +209,7 @@ export class FlexEventBusNode{
         }        
     }
 }
-
-
+export type FlexEventBusOptions = FlexEventOptions 
 /**
  * 
  * 一个简单的事件总线，每一个节点均具有唯一的ID
@@ -218,8 +217,8 @@ export class FlexEventBusNode{
  */
 export class FlexEventBus extends FlexEvent<FlexEventBusMessage>{
     #nodes:string[] = []
-    constructor(){
-        super(...arguments)
+    constructor(options?:FlexEventBusOptions){
+        super(options)
         this.on(FlexEventBusNodeEvents.Join,this.onNodeJoin.bind(this) as FlexEventListener)
         this.on(FlexEventBusNodeEvents.Disjoin,this.onNodeDisjoin.bind(this) as FlexEventListener)
     }
