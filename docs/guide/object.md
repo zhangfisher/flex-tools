@@ -183,9 +183,9 @@ deepMerge支持以下参数:
  获取指定对象的所有包含原型链上的所有属性列表  
 
  ```typescript
-function getPropertyNames(obj: any)
+function getPropertyNames(obj: any,includePrototype?:boolean):string[]
 ```
-
+- 默认当`includePrototype=true`时，会包含原型链上的属性列表。
 ## objectIterator
 
 返回一个对象(`{}`,`[]`,`Set`,`Map`)的**深层遍历**迭代器。

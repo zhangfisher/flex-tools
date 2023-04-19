@@ -1,5 +1,5 @@
 import { test,expect, describe} from "vitest"
-import { EXCLUDE, INCLUDE,assignObject, deepMerge } from "../src/object"
+import { EXCLUDE, INCLUDE,assignObject, deepMerge, getPropertyNames } from "../src/object"
 import { omit } from "../src/object/omit"
 import { pick } from "../src/object/pick"
 import { get } from "../src/object/get"
@@ -344,4 +344,44 @@ test("forEachObject Set/Map/Array",() => {
     })
     expect(result).toEqual([["a",1],["b",2],["c",3],["d",4],["e",5]])
     
+})
+
+
+test("getPropertyNames",() => {
+    class A{
+        a = 1
+        b = 2
+        c = 3
+        private _count = 0
+        #isOpen:boolean = false
+        get count(){
+            return this._count
+        }
+        set count(value){
+            this._count = value
+        }
+        atest(){
+
+        }
+    }
+    class A1 extends A{
+        a = 11
+        b = 22
+        c = 33
+        atest1(){
+
+        }        
+    }
+
+    let names = getPropertyNames(new A1())
+    //expect(names).toEqual(["a","b","c","constructor","count","atest","atest1"])
+
+    names = getPropertyNames({})
+    names = getPropertyNames(()=>{})
+    const func = function(){}
+    func.a=1
+    names = getPropertyNames(func)
+
+
+
 })

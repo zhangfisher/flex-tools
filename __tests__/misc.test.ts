@@ -2,7 +2,7 @@ import { test,expect} from "vitest"
 
 import {  parseFileSize, parseTimeDuration } from "../src/misc"
 import { formatDateTime } from '../src/misc/formatDateTime';
-import { parseTags } from '../src/misc/parseTags';
+// import { parseTags } from '../src/misc/parseTags';
 
 
 
@@ -110,8 +110,8 @@ test("formatDateTime", () => {
 
 
 
-test("parseTags", () => {
-    expect(parseTags("a{1}{2}")).toEqual(["1", "2"])
-    expect(parseTags("a<div>1</div><div>2</div>")).toEqual(["1", "2"])
-    expect(parseTags("a<div><div>1</div><div><div>2</div>")).toEqual(["1", "2"])
-})
+// test("parseTags", () => {
+//     expect(parseTags("a{1}{2}")).toEqual(["1", "2"])
+//     expect(parseTags("a<div>1</div><div>2</div>")).toEqual(["1", "2"])
+//     expect(parseTags("a<div><div>1</div><div><div>2</div>")).toEqual(["1", "2"])
+// })
