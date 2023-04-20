@@ -57,6 +57,7 @@ export class FlexEvent<Message=any>{
     get options(){return this.#options}
     get delimiter(){return this.#options.delimiter}
     get context(){ return this.options.context}
+    get retainedMessages(){return this.#lastMessage}
     /**
      * 检测事件是否匹配
      * 

@@ -188,6 +188,11 @@ describe("事件触发器", () => {
     test("retain=false时单独为事件指定保留消息", () => {
         return new Promise<void>(resolve => {
             let events = new FlexEvent({ retain: false })
+            events.emit(`workspace/test/counter/ready`,events,true)
+            events.once(`workspace/test/counter/ready`, (data) => {
+                expect(data).toBe(events)
+            })
+
             events.emit("a", 1, true)  // 先触发
             // 后订阅时接收事件
             events.once("a", (data) => {
