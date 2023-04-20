@@ -10,7 +10,7 @@ import { <函数名称> } from "flex-tools/events"
 
 一个简单的事件发生器，可以用来替代`eventemitter2`。
 
-- **使用方法**
+### 实例化
 
 ```typescript
 import { FlexEvent } from "flex-tools"
@@ -20,9 +20,13 @@ let events = new FlexEvent({
     ignoreError?: boolean       // 是否忽略订阅者的执行错误  
     wildcard?: boolean          // 是否启用通配符订阅  
     delimiter?:string           // 当启用通配符时的事件分割符
+    retain?:boolean             // 是否保留事件最后一次触发的消息
 })
+```
 
-// 订阅事件
+### 订阅事件
+
+```typescript
 let listenerId = events.on("<事件名称>",callback)              // 订阅事件
 let listenerId = events.once("<事件名称>",callback)            // 只订阅一次
 let listener = events.on("<事件名称>",callback,{objectify:true}) 
@@ -38,9 +42,12 @@ events.getListeners()                         //  返回所有侦听器
 events.emit(event:string,message?:any)       // 触发事件
 events.emitAsync(event:string,message?:any)  // 使用Promise.allSettled触发事件
 await events.waitFor(event:string)             // 等待某个事件触发
+```
+### 通配符
 
-// 通配符
+`FlexEvent`在订阅和发布时均支持启用通配符
 
+```typescript
 events.on("a/*",callback)
 events.emit("a/b")                  // 匹配触发
 
@@ -53,21 +60,59 @@ events.emit("a/b/c/x")              // 匹配触发
 events.emit("a/b/x")                // 匹配触发
 events.emit("a/b/c/d/e/x")          // 匹配触发
 
+// 也可以触发通配符事件
+
+events.on("a/x/c",callback)          // 匹配触发
+events.on("a/y/c",callback)          // 匹配触发
+events.on("a/z/c",callback)          // 匹配触发
+events.emit("a/*/c",1)               // 通配符触发
+events.emit("a/**",1)               // 通配符触发
+
+
 ```
- 
-- **说明**
 
-    - 构建`FlexEvent`时可以指定`context`参数作为订阅函数的`this`
-    - 事件订阅支持通配符，可能通过`wildcard=false`来关闭此功能。
-    - `FlexEvent`有一个泛型可以用来指定消息类型，如下：
+- 阅和发布时均支持通配符，可能通过`wildcard=false`来关闭此功能。 
 
-    ```typescript
-    const type Message ={
-        type:string,
-        payload:any
-    }
-    const events = new FlexEvent<Message>()
-    ```
+    
+### 上下文
+
+构建`FlexEvent`时可以指定`context`参数作为订阅函数的`this`
+
+### 消息类型
+
+`FlexEvent`有一个泛型可以用来指定消息类型，如下：
+
+```typescript
+const type Message ={
+    type:string,
+    payload:any
+}
+const events = new FlexEvent<Message>()
+```
+
+### 粘性消息
+
+当配置`retain=true`时,会保留最后一次触发的消息,这样当有新的订阅时就可以马上接收到最近的消息了.
+
+```typescript
+ let events = new FlexEvent({retain:true})
+events.emit("a",1)  // 先触发,后订阅
+events.once("a",(data)=>{
+    expect(data).toBe(1)
+}) 
+events.emit("b",1,false)
+
+// 当retain=false时也可以指定在emit单独为某个事件指定retain参数
+let events = new FlexEvent()
+events.emit("a",1,true)  // 先触发,后订阅
+events.once("a",(data)=>{
+    expect(data).toBe(1)
+}) 
+
+```
+- 当启用`retain=true`时,所有触发发的事件消息均会被保留最后一条,并在新的订阅时立即发送给订阅者
+- 也可以在`emit`时单独指定`emit(event,message,true)`来保留某个事件的最后一条消息.由于`emit`的第三个参数是`retain`参数,所以当`retain=true`时,可以使用`emit(event,message,false)`来禁用某个事件的粘性消息.也可以在`retain=false`时使用`emit(event,message,true)`来单独启用某个事件的粘性消息.
+
 
 ## FlexEventBus
 

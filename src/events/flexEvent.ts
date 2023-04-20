@@ -14,6 +14,7 @@ replaceAll.shim()
     ignoreError?: boolean       // 是否忽略订阅者的执行错误  
     wildcard?: boolean          // 是否启用通配符订阅  
     delimiter?:string           // 当启用通配符时的事件分割符
+    retain?:boolean             // 是否保留事件最后一次触发的消息
  }
 
 export interface OmitOptions{
@@ -42,6 +43,8 @@ export class FlexEvent<Message=any>{
     // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
     #listeners:FlexListenerRegistry<Message>= new Map()
     #options:Required<FlexEventOptions> 
+    // 保留最后一次触发的消息,key=事件名称,value=消息
+    #lastMessage:Record<string,any> = {}        
     static listenerSeqId:number = 0
     constructor(options:FlexEventOptions = {ignoreError:true,context:null}){
         this.#options = assignObject({
@@ -66,8 +69,6 @@ export class FlexEvent<Message=any>{
      * 
      * 事件中的**代表所有层级
      * *代表一个事件名称
-     * 
-     * 
      * 
      * @param onEvent 
      * @param event 
@@ -98,10 +99,13 @@ export class FlexEvent<Message=any>{
     on(event:string,callback:FlexEventListener<Message>,options?:OmitOptions):FlexEventSubscriber | number{
         const { objectify = false,count=-1 } =Object.assign({},options) as Required<OmitOptions>        
         if(!this.#listeners.has(event)){
-            this.#listeners.set(event,new Map())        }
+            this.#listeners.set(event,new Map())        
+        }
         const listenerId =  ++ FlexEvent.listenerSeqId            
         const eventListeners = this.#listeners.get(event)
         eventListeners?.set(listenerId,[callback,count])        
+        // 如果启用了retain,则应该马上
+        this.emitRetainEvent(event)      
         if(objectify){
             return {
                 off:()=>{
@@ -115,6 +119,23 @@ export class FlexEvent<Message=any>{
             return listenerId
         }
     } 
+    /**
+     * 如果事件已经有最近触发时保留的数据
+     * @param event 
+     */
+    private emitRetainEvent(event:string){
+        setTimeout(()=>{
+            if(event in this.#lastMessage){
+                this.executeListeners(event,this.#lastMessage[event])             
+            }else{      // 检查是否有通配符                                
+                for(const [key] of Object.entries(this.#lastMessage)){
+                    if(key.includes('*') && this.isEventMatched(key,event)){
+                        this.executeListeners(event,this.#lastMessage[key])             
+                    }
+                }
+            }            
+        },0)
+    }
     /**
      * 只订阅一次事件
      * @param event 
@@ -157,7 +178,7 @@ export class FlexEvent<Message=any>{
         // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}        
         let isAbort = false        
         let ls:[string,FlexEventListenerRegistry<Message> | undefined][] = this.options.wildcard ? 
-                [...this.#listeners.entries()].filter(([eventName])=>this.isEventMatched(eventName,event))             //
+                [...this.#listeners.entries()].filter(([eventName])=>this.isEventMatched(eventName,event) || this.isEventMatched(event,eventName))             //
                 : [[event,this.#listeners.get(event)]]              // 精确匹配
            
         for(let [eventName,eventListeners] of ls){
@@ -242,6 +263,7 @@ export class FlexEvent<Message=any>{
     }
 
     clear(){
+        this.#lastMessage={}
         this.offAll()
     }
     offAll(event?:string){
@@ -289,15 +311,7 @@ export class FlexEvent<Message=any>{
             }            
         }  
     }   
-    /**
-     * 触发事件
-     * 
-     * emit("a/b/c")
-     * 
-     * @param event 
-     * @param args 
-     */
-    emit(event:string,message?:Message){
+    private executeListeners(event:string,message?:Message){
         let results:any[] = []
         this.forEachEventListeners(event,({event:eventName,listenerId,eventListeners})=>{
             results.push(this.executeListener(listenerId,eventListeners,message))
@@ -308,15 +322,33 @@ export class FlexEvent<Message=any>{
         return results
     }
     /**
+     * 触发事件
+     * 
+     * emit("a/b/c")
+     * 
+     * @param event 
+     * @param message 
+     */
+    emit(event:string,message?:Message,retain?:boolean){
+        if(retain || (this.#options.retain && retain!==false)){
+            this.#lastMessage[event] = message
+        }  
+        return this.executeListeners(event,message)
+    }
+    /**
      * 异步触发事件
      * @param this 
      * @param event 
-     * @param args 
+     * @param message 
      * @returns 
      */
-    async emitAsync(event:string,message?:Message){
+    async emitAsync(event:string,message?:Message,retain?:boolean){
         const listeners  = this.getListeners(event)        
+        if(retain || (this.#options.retain && retain!==false)){
+            this.#lastMessage[event] = message
+        }
         let results = await Promise.allSettled(listeners.map((listener:Function) =>listener.apply(this,message))) 
+        // 以下处理侦听器的计数,每次递增并且在=0时清除
         this.forEachEventListeners(event,({event:eventName,listenerId,eventListeners})=>{
             let listener = eventListeners.get(listenerId)
             if(listener){
