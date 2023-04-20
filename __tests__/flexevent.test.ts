@@ -189,19 +189,23 @@ describe("事件触发器", () => {
         return new Promise<void>(resolve => {
             let events = new FlexEvent({ retain: false })
             events.emit(`workspace/test/counter/ready`,events,true)
-            events.once(`workspace/test/counter/ready`, (data) => {
-                expect(data).toBe(events)
-            })
+            setTimeout(() => {
+                events.once(`workspace/test/counter/ready`, (data) => {
+                    expect(data).toBe(events)
+                })
+            },500)
 
             events.emit("a", 1, true)  // 先触发
-            // 后订阅时接收事件
-            events.once("a", (data) => {
-                expect(data).toBe(1)
-            })
-            events.once("a", (data) => {
-                expect(data).toBe(1)
-                resolve()
-            })
+            setTimeout(()=>{
+                // 后订阅时接收事件
+                events.once("a", (data) => {
+                    expect(data).toBe(1)
+                })
+                events.once("a", (data) => {
+                    expect(data).toBe(1)
+                    resolve()
+                })
+            },500)            
         })
     })
 
