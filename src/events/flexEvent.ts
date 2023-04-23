@@ -23,7 +23,7 @@ export interface OmitOptions{
 }
 
 export interface FlexEventListener<Message=any>{
-    (message:Message | undefined):void 
+    (message:Message):void 
 }
 
 
@@ -295,9 +295,9 @@ export class FlexEvent<Message=any>{
         if(!listener) return 
         try{
             if(this.context!==undefined){
-                return listener[0].apply(this.context, [message])
+                return listener[0].apply(this.context, [message!])
             }else{
-                return listener[0](message)
+                return listener[0](message!)
             }            
         }catch(e){
             if(this.options.ignoreError==false){
