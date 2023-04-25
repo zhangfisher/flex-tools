@@ -348,7 +348,9 @@ export class FlexEvent<Message=any>{
         if(retain || (this.#options.retain && retain!==false)){
             this.#lastMessage[event] = message
         }
-        let results = await Promise.allSettled(listeners.map((listener:Function) =>listener.apply(this,message))) 
+        let results = await Promise.allSettled(listeners.map((listener:Function) =>{
+            return listener.call(this,message)
+        })) 
         // 以下处理侦听器的计数,每次递增并且在=0时清除
         this.forEachEventListeners(event,({event:eventName,listenerId,eventListeners})=>{
             let listener = eventListeners.get(listenerId)

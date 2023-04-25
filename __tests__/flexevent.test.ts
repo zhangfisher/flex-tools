@@ -138,7 +138,7 @@ describe("事件触发器", () => {
         let events = new FlexEvent()
         let list = new Array(10).fill(0).map((value, index) => index + 1)
         list.forEach((value, index) => {
-            events.on("click", async () => {
+            events.on("click", async (args) => {
                 if (index % 2 == 0) {
                     return value
                 } else {
@@ -147,7 +147,7 @@ describe("事件触发器", () => {
 
             })
         })
-        let results = await events.emitAsync("click")
+        let results = await events.emitAsync("click",1)
         expect(results[0]).toStrictEqual(1)
         expect(results[1]).toBeInstanceOf(Error)
         expect(results[2]).toStrictEqual(3)
@@ -298,5 +298,6 @@ describe("测试事件总线", async () => {
             resolve()
         })
     })
+
 
 })
