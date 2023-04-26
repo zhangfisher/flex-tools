@@ -20,33 +20,53 @@
  */
 
 import { assignObject } from "./assignObject"
-import { get } from "./get"
+import { get, InvalidPathError } from './get';
 
 export interface setByPathOptions{
-    onlyUpdateUndefined?:boolean
+    onlyUpdateUndefined?:boolean            // 仅在原值为undefined时更新
+    allowUpdateNullPath?:boolean            // 当路径不存在时，是否允许更新
 }
 
 export function set(obj:object,path:string,value:any,options?:setByPathOptions):object{
-    const {onlyUpdateUndefined} = assignObject({
-        onlyUpdateUndefined:false
+    const {onlyUpdateUndefined,allowUpdateNullPath} = assignObject({
+        onlyUpdateUndefined:false,
+        allowUpdateNullPath:true
     },options)
     if(!path || path.trim().length==0) return obj
-    get(obj,path,{
-        matched:({value:itemValue,parent,indexOrKey})=>{
-            if(itemValue!==undefined && onlyUpdateUndefined)  return
-            if(Array.isArray(parent) && typeof(indexOrKey) == "number"){
-                if(indexOrKey >= 0 && indexOrKey < parent.length ){
-                    parent[indexOrKey] = value
-                }else if(indexOrKey >= parent.length){
-                    parent.push(value)
-                }else{
-                    throw new Error("index out of range")
+    try{
+        get(obj,path,{
+            matched:({value:itemValue,parent,indexOrKey})=>{
+                if(itemValue!==undefined && onlyUpdateUndefined)  return
+                if(Array.isArray(parent) && typeof(indexOrKey) == "number"){
+                    if(indexOrKey >= 0 && indexOrKey < parent.length ){
+                        parent[indexOrKey] = value
+                    }else if(indexOrKey >= parent.length){
+                        parent.push(value)
+                    }else{
+                        throw new Error("index out of range")
+                    }
+                }else if(typeof(parent) == "object"){
+                    (parent as any)[indexOrKey!] = value
                 }
-            }else if(typeof(parent) == "object"){
-                (parent as any)[indexOrKey!] = value
+            },
+            ignoreInvalidPath:false
+        })
+    }catch(e:any){
+        // 不存在的路径
+        if(e instanceof InvalidPathError){  
+            if(!allowUpdateNullPath) throw e
+            let keys:string[] = path.split('.')
+            let curItem:any = obj
+            for(let i=0;i<keys.length;i++){
+                const key = keys[i]
+                if(!(key in curItem)){
+                    curItem[key] = i==keys.length-1 ? value : {}                   
+                }
+                curItem = curItem[key]
             }
-        },
-        ignoreInvalidPath:false
-    })
+        }else{
+            throw e
+        }
+    }    
     return obj
 }

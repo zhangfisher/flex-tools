@@ -279,8 +279,6 @@ test("getByPath的匹配回调",() => {
 })
 
 test("setByPath",() => {
-    const regex = /(?<name>\w+){0,1}(\[\s*(?<index>\d+)\s*\]){1}/gm;
-
     const obj = {
         a:{
             b1:{b11:1,b12:2},
@@ -293,7 +291,7 @@ test("setByPath",() => {
         x:1,
         y:[1,2,3,4,5,{m:1,n:2}],
         z:[1,2,3,new Set([1,2,3,4,5]),[1,[2,2,2,],2,4]]
-    }        
+    }            
     expect(get(set(obj,"a.b1.b11",2),"a.b1.b11")).toEqual(2)
     expect(get(set(obj,"a.b3[0].b31",22),"a.b3[0].b31")).toEqual(22)
     expect(get(set(obj,"a.b3[1].b31",33),"a.b3[1].b31")).toEqual(33)
@@ -305,7 +303,12 @@ test("setByPath",() => {
     expect(get(set(obj,"y[1]",4),"y[1]")).toEqual(4)
     expect(get(set(obj,"y[5].m",5),"y[5].m")).toEqual(5)
     expect(get(set(obj,"y[5].n",6),"y[5].n")).toEqual(6) 
-
+    // 设置不存的属性
+    expect(get(set(obj,"X",2),"X")).toEqual(2)
+    expect(get(set(obj,"X",3),"X")).toEqual(3)
+    expect(get(set(obj,"y",3),"X")).toEqual(3)
+    expect(get(set(obj,"XX.Y",2),"XX.Y")).toEqual(2)
+    expect(get(set(obj,"XX.YY.Z",2),"XX.YY.Z")).toEqual(2)
 })
 test("forEachUpdateObject",() => {
     const obj = {

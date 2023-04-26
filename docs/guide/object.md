@@ -116,7 +116,8 @@ export interface getByPathOptions{
 ```typescript
 
 interface setByPathOptions{
-    onlyUpdateUndefined?:boolean
+    onlyUpdateUndefined?:boolean            // 仅在原值为undefined时更新
+    allowUpdateNullPath?:boolean            // 当路径不存在时，是否允许更新
 }
 function set(obj:object,path:string,value:any,options?:setByPathOptions):object;
 
@@ -147,7 +148,15 @@ function set(obj:object,path:string,value:any,options?:setByPathOptions):object;
 
 ```
 
-- 当`onlyUpdateUndefined=true`时，则仅当原始值是`undefined`时才会更新。默认值为`false`。
+- 当`onlyUpdateUndefined=true`时，则仅当原始值是`undefined`时才会更新。默认值为`false`。此参数在某此场合不能会很有用。比如在进行函数参数设置时，可以用来指定某个参数的默认值。
+
+```typescript
+function test(options){
+    // 仅当options.a.b为undefined时才会设置,这样就相当于设置了一个默认值
+    set(options,"a.b",1) 
+}
+```
+-  `allowUpdateNullPath`指定当路径不存在时，是否允许更新，默认为`true`。
 
 ## deepMerge
 
