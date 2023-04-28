@@ -7,8 +7,8 @@
 import { Collection } from "../types"
 import type { IForEachCallback } from "./forEachUpdateObject"
 import { ObjectIteratorOptions,objectIterator } from "./objectIterator"
-
-export const ABORT = Symbol('ABORT_FOR_EACH')
+export { ABORT } from "../consts"
+import { ABORT } from "../consts"
 
 export type ForEachObjectOptions = ObjectIteratorOptions
 
