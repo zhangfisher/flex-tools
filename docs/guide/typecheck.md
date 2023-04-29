@@ -36,7 +36,7 @@ isGeneratorFunction(fn:any):boolean
 ```
 ## isInteger
 
-判断一个字符串是否是一个整形数。isNumber无法判断字符串的形式。
+判断一个字符串是否是一个整形数。
 
 ```typescript
 isInteger(value:any):boolean
@@ -73,6 +73,14 @@ isNothing(new Map()) == true
 
 ```typescript
 isNumber(value:any):boolean
+
+isNumber(122) == true
+isNumber("122") == true
+isNumber("122.1") == true
+// 严格模式下
+isNumber("122",true) == false
+isNumber("122.1",true) == false
+
 ```
 
 ## isSerializable
