@@ -141,3 +141,39 @@ expect(formatDateTime(new Date(2021, 3, 8, 6, 8, 12, 24), "yyyy-MM-DD HH:mm:ss.S
 
 ```
 
+## relativeTime
+
+返回相对时间友好描述。
+
+
+```typescript
+function relativeTime(value:Date | number,baseTime?:Date | number,options?:RelativeTimeOptions)
+
+    let now = Date.now()
+    relativeTime(now,now)                                   // 刚刚
+    relativeTime(now-500,now)                               // 刚刚
+    relativeTime(now-1000,now)                              // 1秒前
+    relativeTime(now-1000*60,now)                           // 1分钟前
+    relativeTime(now-1000*60*60,now)                        // 1小时前
+    relativeTime(now-1000*60*60*24,now)                     // 1天前
+    relativeTime(now-1000*60*60*24*13,now)                  // 1周前
+    relativeTime(now-1000*60*60*24*30,now)                  // 1个月前
+    relativeTime(now-1000*60*60*24*30*3,now)                // 3个月前
+    relativeTime(now-1000*60*60*24*365 ,now)                // 1年前  
+    relativeTime(now+1000,now)                              // 1秒后
+    relativeTime(now+1000*60,now)                           // 1分钟后
+    relativeTime(now+1000*60*60,now)                        // 1小时后
+    relativeTime(now+1000*60*60*24,now)                     // 1天后
+    relativeTime(now+1000*60*60*24*30,now)                  // 1个月后
+    relativeTime(now+1000*60*60*24*30*12,now)               // 12个月后
+    relativeTime(now+1000*60*60*24*365,now)                 // 1年后
+```
+
+- `baseTime` 用于计算相对时间的基准时间，默认为当前时间。
+- `value`参数可以是`Date`对象或者时间戳。
+- `options`参数可以指定`units`,`now`,`before`,`after`的参数。
+    - `units`默认等于`["秒","分钟","小时","天","周","个月","年"]`，如果是英文环境则可以更改为`["second","minute","hour","day","week","month","year"]`。
+    - `now`默认等于`刚刚`，如果是英文环境则可以更改为`Just now`。
+    - `before`默认等于`{value}{unit}前`，可以自定义显示方式。
+    - `after`默认等于`{value}{unit}后`，可以自定义显示方式。
+

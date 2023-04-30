@@ -1,6 +1,6 @@
 import { test,expect} from "vitest"
 
-import {  parseFileSize, parseTimeDuration } from "../src/misc"
+import {  parseFileSize, parseTimeDuration, relativeTime } from "../src/misc"
 import { formatDateTime } from '../src/misc/formatDateTime';
 // import { parseTags } from '../src/misc/parseTags';
 
@@ -108,6 +108,26 @@ test("formatDateTime", () => {
         
 })
 
+test("relativeTime", () => {
+    let now = Date.now()
+    expect(relativeTime(now,now)).toBe("刚刚")
+    expect(relativeTime(now-500,now)).toBe("刚刚")
+    expect(relativeTime(now-1000,now)).toBe("1秒前")
+    expect(relativeTime(now-1000*60,now)).toBe("1分钟前")
+    expect(relativeTime(now-1000*60*60,now)).toBe("1小时前")
+    expect(relativeTime(now-1000*60*60*24,now)).toBe("1天前")
+    expect(relativeTime(now-1000*60*60*24*13,now)).toBe("1周前")
+    expect(relativeTime(now-1000*60*60*24*30,now)).toBe("1个月前")
+    expect(relativeTime(now-1000*60*60*24*30*3,now)).toBe("3个月前")
+    expect(relativeTime(now-1000*60*60*24*365 ,now)).toBe("1年前")    
+    expect(relativeTime(now+1000,now)).toBe("1秒后")
+    expect(relativeTime(now+1000*60,now)).toBe("1分钟后")
+    expect(relativeTime(now+1000*60*60,now)).toBe("1小时后")
+    expect(relativeTime(now+1000*60*60*24,now)).toBe("1天后")
+    expect(relativeTime(now+1000*60*60*24*30,now)).toBe("1个月后")
+    expect(relativeTime(now+1000*60*60*24*30*12,now)).toBe("12个月后")
+    expect(relativeTime(now+1000*60*60*24*365,now)).toBe("1年后")
+})
 
 
 // test("parseTags", () => {
