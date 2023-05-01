@@ -15,7 +15,7 @@
     "prepare": "husky install",
     "commit": "git add . && git cz",
     "build:test": "modern build"
-  },
+  }, 
   "keywords": [],
   "author": "",
   "license": "ISC",
