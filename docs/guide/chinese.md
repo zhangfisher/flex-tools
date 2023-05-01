@@ -50,7 +50,8 @@ function toChineseNumber(value: number | string, isBig?: boolean)
 转换数字为中文货币，如`123456.78`转换为`壹拾贰万叁仟肆佰伍拾陆元柒角捌分`
 
 ```typescript
- function toChineseCurrency(value: number | string, options : { big?: boolean, prefix?: string, unit?: string, suffix?: string } = {}, $config: any): string 
+ function toChineseCurrency(value: number | string, options : { big?: boolean, prefix?: string, unit?: string, suffix?: string } = {}, $config: any): string  
+
  ```
 
 - `value` 要转换的数字
