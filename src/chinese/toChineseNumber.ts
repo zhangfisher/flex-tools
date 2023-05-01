@@ -40,6 +40,7 @@ import { CN_NUMBER_BIG_DIGITS, CN_NUMBER_BIG_UNITS, CN_NUMBER_DIGITS, CN_NUMBER_
             .replace("兆億", "兆")
             .replace("億萬", "億")
             .replace("萬仟", "萬")
+        if (result.startsWith("壹拾")) result = result.substring(1)
     } else {
         result = result.replace("垓京", "垓")
             .replace("京兆", "京")

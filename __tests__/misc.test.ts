@@ -2,6 +2,8 @@ import { test,expect} from "vitest"
 
 import {  parseFileSize, parseTimeDuration, relativeTime } from "../src/misc"
 import { formatDateTime } from '../src/misc/formatDateTime';
+import { toChineseNumber,toChineseCurrency} from '../src/chinese';
+
 // import { parseTags } from '../src/misc/parseTags';
 
 
@@ -128,8 +130,76 @@ test("relativeTime", () => {
     expect(relativeTime(now+1000*60*60*24*30*12,now)).toBe("12个月后")
     expect(relativeTime(now+1000*60*60*24*365,now)).toBe("1年后")
 })
+test("toChineseNumber",()=>{
+    expect(toChineseNumber("1")).toBe("一")
+    expect(toChineseNumber("12")).toBe("十二")
+    expect(toChineseNumber("123")).toBe("一百二十三")
+    expect(toChineseNumber("1234")).toBe("一千二百三十四")
+    expect(toChineseNumber("12345")).toBe("一万二千三百四十五")
+    expect(toChineseNumber("123456")).toBe("十二万三千四百五十六")
+    expect(toChineseNumber("1234567")).toBe("一百二十三万四千五百六十七")
+    expect(toChineseNumber("12345678")).toBe("一千二百三十四万五千六百七十八")
+    expect(toChineseNumber("123456789")).toBe("一亿二千三百四十五万六千七百八十九")
+    expect(toChineseNumber("1234567890")).toBe("十二亿三千四百五十六万七千八百九十")
+    expect(toChineseNumber("12345678901")).toBe("一百二十三亿四千五百六十七万八千九百零一")
+    expect(toChineseNumber("123456789012")).toBe("一千二百三十四亿五千六百七十八万九千零一十二")
+    expect(toChineseNumber("1234567890123")).toBe("一兆二千三百四十五亿六千七百八十九万零一百二十三")
+    expect(toChineseNumber("12345678901234")).toBe("十二兆三千四百五十六亿七千八百九十万一千二百三十四")
+    expect(toChineseNumber("123456789012345")).toBe("一百二十三兆四千五百六十七亿八千九百零一万二千三百四十五")
+    expect(toChineseNumber("1234567890123456")).toBe("一千二百三十四兆五千六百七十八亿九千零一十二万三千四百五十六")
+    expect(toChineseNumber("12345678901234567")).toBe("一京二千三百四十五兆六千七百八十九亿零一百二十三万四千五百六十七")
+    expect(toChineseNumber("123456789012345678")).toBe("十二京三千四百五十六兆七千八百九十亿一千二百三十四万五千六百七十八")
+    // 大写
+    expect(toChineseNumber("1",true)).toBe("壹") 
+    expect(toChineseNumber("12",true)).toBe("拾贰")
+    expect(toChineseNumber("123",true)).toBe("壹佰贰拾叁")
+    expect(toChineseNumber("1234",true)).toBe("壹仟贰佰叁拾肆")
+    expect(toChineseNumber("12345",true)).toBe("壹万贰仟叁佰肆拾伍")
+    expect(toChineseNumber("123456",true)).toBe("拾贰万叁仟肆佰伍拾陆")
+    expect(toChineseNumber("1234567",true)).toBe("壹佰贰拾叁万肆仟伍佰陆拾柒")
+    expect(toChineseNumber("12345678",true)).toBe("壹仟贰佰叁拾肆万伍仟陆佰柒拾捌")
+    expect(toChineseNumber("123456789",true)).toBe("壹亿贰仟叁佰肆拾伍万陆仟柒佰捌拾玖")
+    expect(toChineseNumber("1234567890",true)).toBe("拾贰亿叁仟肆佰伍拾陆万柒仟捌佰玖拾")
+    expect(toChineseNumber("12345678901",true)).toBe("壹佰贰拾叁亿肆仟伍佰陆拾柒万捌仟玖佰零壹")
+    expect(toChineseNumber("123456789012",true)).toBe("壹仟贰佰叁拾肆亿伍仟陆佰柒拾捌万玖仟零壹拾贰")
 
-
+    
+})
+test("toChineseCurrency",()=>{
+    expect(toChineseCurrency("1.2")).toBe("一元二角")
+    expect(toChineseCurrency("12.4")).toBe("十二元四角")
+    expect(toChineseCurrency("1")).toBe("一元")
+    expect(toChineseCurrency("12")).toBe("十二元")
+    expect(toChineseCurrency("123")).toBe("一百二十三元")
+    expect(toChineseCurrency("1234")).toBe("一千二百三十四元")
+    expect(toChineseCurrency("12345")).toBe("一万二千三百四十五元")
+    expect(toChineseCurrency("123456")).toBe("十二万三千四百五十六元")
+    expect(toChineseCurrency("1234567")).toBe("一百二十三万四千五百六十七元")
+    expect(toChineseCurrency("12345678")).toBe("一千二百三十四万五千六百七十八元")
+    expect(toChineseCurrency("123456789")).toBe("一亿二千三百四十五万六千七百八十九元")
+    expect(toChineseCurrency("1234567890")).toBe("十二亿三千四百五十六万七千八百九十元")
+    expect(toChineseCurrency("12345678901")).toBe("一百二十三亿四千五百六十七万八千九百零一元")
+    expect(toChineseCurrency("123456789012")).toBe("一千二百三十四亿五千六百七十八万九千零一十二元")
+    expect(toChineseCurrency("1234567890123")).toBe("一兆二千三百四十五亿六千七百八十九万零一百二十三元")
+    expect(toChineseCurrency("12345678901234")).toBe("十二兆三千四百五十六亿七千八百九十万一千二百三十四元")
+    expect(toChineseCurrency("123456789012345")).toBe("一百二十三兆四千五百六十七亿八千九百零一万二千三百四十五元")
+    expect(toChineseCurrency("1234567890123456")).toBe("一千二百三十四兆五千六百七十八亿九千零一十二万三千四百五十六元")
+    expect(toChineseCurrency("12345678901234567")).toBe("一京二千三百四十五兆六千七百八十九亿零一百二十三万四千五百六十七元")
+    expect(toChineseCurrency("123456789012345678")).toBe("十二京三千四百五十六兆七千八百九十亿一千二百三十四万五千六百七十八元")
+    // 大写
+    expect(toChineseCurrency("1",{big:true})).toBe("壹元") 
+    expect(toChineseCurrency("12",{big:true})).toBe("拾贰元")
+    expect(toChineseCurrency("123",{big:true})).toBe("壹佰贰拾叁元")
+    expect(toChineseCurrency("1234",{big:true})).toBe("壹仟贰佰叁拾肆元")
+    expect(toChineseCurrency("12345",{big:true})).toBe("壹万贰仟叁佰肆拾伍元")
+    expect(toChineseCurrency("123456",{big:true})).toBe("拾贰万叁仟肆佰伍拾陆元")
+    expect(toChineseCurrency("1234567",{big:true})).toBe("壹佰贰拾叁万肆仟伍佰陆拾柒元")
+    expect(toChineseCurrency("12345678",{big:true})).toBe("壹仟贰佰叁拾肆万伍仟陆佰柒拾捌元")
+    expect(toChineseCurrency("123456789",{big:true})).toBe("壹亿贰仟叁佰肆拾伍万陆仟柒佰捌拾玖元")
+    expect(toChineseCurrency("1234567890",{big:true})).toBe("拾贰亿叁仟肆佰伍拾陆万柒仟捌佰玖拾元")
+    expect(toChineseCurrency("12345678901",{big:true})).toBe("壹佰贰拾叁亿肆仟伍佰陆拾柒万捌仟玖佰零壹元")
+    expect(toChineseCurrency("123456789012",{big:true})).toBe("壹仟贰佰叁拾肆亿伍仟陆佰柒拾捌万玖仟零壹拾贰元")
+})
 // test("parseTags", () => {
 //     expect(parseTags("a{1}{2}")).toEqual(["1", "2"])
 //     expect(parseTags("a<div>1</div><div>2</div>")).toEqual(["1", "2"])

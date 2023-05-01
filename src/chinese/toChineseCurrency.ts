@@ -2,12 +2,24 @@ import { assignObject } from "../object/assignObject"
 import { CN_NUMBER_BIG_DIGITS, CN_NUMBER_DIGITS } from "./consts"
 import { toChineseNumber } from "./toChineseNumber"
 
+
+export interface ToChineseCurrencyOptions{
+    big?: boolean                   // 是否大写
+    prefix?: string                 // 前缀
+    unit?: string                   // 单位
+    suffix?: string                 // 后缀
+}
 /**
  * 转换为中文大写货币
  * @param {*} value  
  */
- export function toChineseCurrency(value: number | string, options : { big?: boolean, prefix?: string, unit?: string, suffix?: string } = {}, $config: any): string {
-    const { big, prefix, unit, suffix } = assignObject({},options)
+ export function toChineseCurrency(value: number | string, options? :ToChineseCurrencyOptions): string {
+    const { big, prefix, unit, suffix } = assignObject({
+        big: false,
+        prefix: "",
+        unit: "元",
+        suffix: ""
+    },options)
     let [wholeValue, decimalValue] = String(value).split(".")
     let result
     if (big) {
