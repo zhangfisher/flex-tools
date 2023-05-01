@@ -1,6 +1,6 @@
 {
   "name": "flex-tools",
-  "version": "1.0.83",
+  "version": "1.0.84",
   "description": "modular utilities.",
   "main": "src/index.js",
   "module": "src/index.mjs",
@@ -15,7 +15,7 @@
     "prepare": "husky install",
     "commit": "git add . && git cz",
     "build:test": "modern build"
-  }, 
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
