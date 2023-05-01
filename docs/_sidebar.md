@@ -1,5 +1,6 @@
 * [关于](/readme)
 * [指南](/readme)
+    * [中文](/guide/chinese)
     * [字符串](/guide/string)
     * [对象](/guide/object)
     * [函数](/guide/func)
@@ -10,4 +11,5 @@
     * [类型判断](/guide/typecheck)
     * [类](/guide/classs)
     * [异步](/guide/async)
+    * [杂项](/guide/misc)    
     * [TypeScript类型](/guide/types)

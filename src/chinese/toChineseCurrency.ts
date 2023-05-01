@@ -4,11 +4,7 @@ import { toChineseNumber } from "./toChineseNumber"
 
 /**
  * 转换为中文大写货币
- * @param {*} value 
- * @param {*} division    分割符号位数,3代表每3个数字添加一个,号  
- * @param {*} prefix      前缀 
- * @param {*} suffix      后缀
- * @param {*} showWhole   显示
+ * @param {*} value  
  */
  export function toChineseCurrency(value: number | string, options : { big?: boolean, prefix?: string, unit?: string, suffix?: string } = {}, $config: any): string {
     const { big, prefix, unit, suffix } = assignObject({},options)
