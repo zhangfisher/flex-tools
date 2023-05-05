@@ -109,3 +109,34 @@ function reliable(fn:AsyncFunction,options:reliableOptions):AsyncFunction
 ```
 
 
+## safeCall
+
+安全执行函数并对错误进行捕获，不会抛出异常。用于执行一些函数的时候不希望抛出异常。
+
+```typescript
+
+export function safeCall(fn:Function,args?:any[]):any;
+export function safeCall(fn:Function,options?:SafeCallOptions | SafeCallCatcher):any;
+export function safeCall(fn:Function,args?:any[] | SafeCallOptions | SafeCallCatcher,options?:SafeCallOptions | SafeCallCatcher):any
+
+safeCall(fn) // 相当于 try{fn()}catch(e){}
+safeCall(fn,[1,2]) // 相当于 try{fn(1,2)}catch(e){}
+safeCall(fn,{catch:'throw'}) // 相当于 try{fn()}catch(e){throw e}
+safeCall(fn,{catch:'ignore'}) // 相当于 try{fn()}catch(e){}
+safeCall(fn,{catch:'throw',error:new MyError()}) // 相当于 try{fn()}catch(e){throw MyError}
+safeCall(fn,[1,2],{default:100}) // 相当于 try{fn(1,2)}catch(e){return 100}
+safeCall(fn,{default:100}) // 相当于 try{fn()}catch(e){return 100}
+safeCall(fn,(e)=>1)  //  相当于 try{fn()}catch(e){return (e)=>1}
+
+// 支持异步函数
+
+await safeCall(asyncFn) // 相当于 try{ await asyncFn()}catch(e){}
+await safeCall(asyncFn,[1,2]) // 相当于 try{ await asyncFn(1,2)}catch(e){}
+await safeCall(asyncFn,{catch:'throw'}) // 相当于 try{ await asyncFn()}catch(e){throw e}
+await safeCall(asyncFn,{catch:'ignore'}) // 相当于 try{ await asyncFn()}catch(e){}
+await safeCall(asyncFn,[1,2],{default:100}) // 相当于 try{ await asyncFn(1,2)}catch(e){return 100}
+await safeCall(asyncFn,{default:100}) // 相当于 try{ await asyncFn()}catch(e){return 100}
+await safeCall(asyncFn,(e)=>1)  //  相当于 try{ await asyncFn()}catch(e){return (e)=>1}
+
+
+``` 

@@ -26,7 +26,7 @@ export interface FindUpOptions{
 }
 
 export function findUp(files:string | string[], options?:FindUpOptions){
-    const { includeSelf,entry=process.cwd() } = assignObject({},options)
+    const { includeSelf=true,entry=process.cwd() } = assignObject({},options)
     let result:string[] = []
     if(typeof(files) == "string"){
         files = [files]

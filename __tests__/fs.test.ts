@@ -17,6 +17,14 @@ describe("文件操作测试",()=>{
      test("向上查找文件",()=>{
         let results = findUp(["package.json"] ,{entry:path.join(__dirname,"../src/fs")})
         expect(results.length).toBe(1)
+        let configFiles = findUp([
+            "flexapp.config.yaml", 
+            "flexapp.config.json",
+            "flexapp.config.js"        
+        ],{
+            includeSelf:true
+
+        })
      })
 
      test("fileMatcher",()=>{
