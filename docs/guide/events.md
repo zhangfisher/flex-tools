@@ -124,7 +124,8 @@ events.once("a",(data)=>{
 ```typescript
 
 const events =  new FlexEvent<Message,'a' | 'b' | 'c'>()
-
+events.on("aaa") // ERROR
+events.on("a")  // OK
 ```
 ## FlexEventBus
 
