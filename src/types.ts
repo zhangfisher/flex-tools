@@ -12,6 +12,12 @@ export type SecondArgument<T> = T extends (...args: any) => any ? Parameters<T>[
 // 提取函数的返回值类型
 export type ReturnValueType<T> = T extends (...args: any) => any ? ReturnType<T> : any;
 
+// 改变成员类型
+export type ChangeFieldType<Record,Name extends string,Type=any> = Omit<Record,Name> & {
+    [K in Name]:Type
+}
+  
+
 // 允许为空
 export type AllowEmpty<T> = T | null | undefined
 // 构造类
