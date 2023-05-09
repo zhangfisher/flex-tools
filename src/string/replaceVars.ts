@@ -66,7 +66,7 @@ export function replaceVars(text:string,vars:any,options?:ReplaceVarsOptions):st
         forEach:null
     },options)  as ReplaceVarsOptions
     
-    if(typeof(vars)=='function') finalVars = vars.call(text)
+    if(typeof(vars)=='function') vars = vars.call(text)
     if(["boolean","string","number"].includes(typeof(vars))){
         finalVars= [vars]
     }else if(vars instanceof Map){

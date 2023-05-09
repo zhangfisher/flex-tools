@@ -4,6 +4,8 @@ import {  replaceVars } from "../src/string"
 
 
 test("replaceVars", ()=>{
+    expect(replaceVars("{a}+{b}={c}",()=>({a:1,b:1,c:2}))).toBe("1+1=2")
+
     expect(replaceVars("{<x>a<y>}+{b}={c}",{a:1,b:1,c:[2,2]})).toBe("x1y+1=2,2")
 
     // 字典插值
