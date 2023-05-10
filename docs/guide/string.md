@@ -102,6 +102,17 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
 "{<file size:>size<MB>}".params(12)    // =="file size:12MB"    
 ```
 
+### 函数插值
+
+当插值变量为函数时，会自动调用函数并使用函数返回值进行插值。
+
+```typescript
+"this is {a}+{b}".params(()=>1,()=>2)                 // == "this is 1+2"
+"this is {a}+{b}".params([()=>1,()=>2])               // == "this is 1+2"
+"this is {a}+{b}".params(()=>[1,2])                   // == "this is 1+2"
+"this is {a}+{b}".params(()=>{a:1,b:2})               // == "this is 1+2"
+```
+
 ### 处理空值
 
 当插值变量为`undefined`和`null`时，默认整个插值内容均不输出。
@@ -176,7 +187,7 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
         const result = "{a}{b}{<#>c<#>}".params(
            {a:1,b:2,c:3}, 
            {
-                $$forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,string ]=>{
+                $forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,string ]=>{
                     let colorizer = logsets.getColorizer("red")
                     // 分别返回前缀，变量值，后缀
                     return [prefix,colorizer(value),suffix]            
