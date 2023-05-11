@@ -33,15 +33,15 @@ export interface FlexEventSubscriber{
 
 
 export type FlexEventListenerRegistry<M> = Map<number,[FlexEventListener<M>,number]>
-export type FlexListenerRegistry<M> = Map<string,FlexEventListenerRegistry<M>>
+export type FlexListenerRegistry<M,E> = Map<E,FlexEventListenerRegistry<M>>
 
 
 /**
  * Event: 指定一个通用事件类型
  */
-export class FlexEvent<Message=any>{
+export class FlexEvent<Message=any,Events extends string = string>{
     // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
-    #listeners:FlexListenerRegistry<Message>= new Map()
+    #listeners:FlexListenerRegistry<Message,Events>= new Map()
     #options:Required<FlexEventOptions> 
     // 保留最后一次触发的消息,key=事件名称,value=消息
     #lastMessage:Record<string,any> = {}        
@@ -97,7 +97,7 @@ export class FlexEvent<Message=any>{
      * @param options 
      * @returns 
      */
-    on(event:string,callback:FlexEventListener<Message>,options?:OmitOptions):FlexEventSubscriber | number{
+    on(event:Events,callback:FlexEventListener<Message>,options?:OmitOptions):FlexEventSubscriber | number{
         const { objectify = false,count=-1 } =Object.assign({},options) as Required<OmitOptions>        
         if(!this.#listeners.has(event)){
             this.#listeners.set(event,new Map())        
@@ -124,7 +124,7 @@ export class FlexEvent<Message=any>{
      * 如果事件已经有最近触发时保留的数据
      * @param event 
      */
-    private emitRetainEvent(event:string){
+    private emitRetainEvent(event:Events){
         setTimeout(()=>{
             if(event in this.#lastMessage){
                 this.executeListeners(event,this.#lastMessage[event])             
@@ -144,7 +144,7 @@ export class FlexEvent<Message=any>{
      * @param options 
      * @returns 
      */
-    once(event:string,callback:FlexEventListener<Message>,options?:OmitOptions){
+    once(event:Events,callback:FlexEventListener<Message>,options?:OmitOptions){
         return this.on(event,callback,Object.assign({},options,{count:1}))        
     }  
 
@@ -153,7 +153,7 @@ export class FlexEvent<Message=any>{
      *   {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
      * @param callback  ={}
      */
-    private forEachListeners(callback:({event,listenerId,listener,count,eventListeners}:{event:string,listenerId:number,listener:FlexEventListener<Message>,count:number,eventListeners:FlexEventListenerRegistry<Message>})=>boolean | void){
+    private forEachListeners(callback:({event,listenerId,listener,count,eventListeners}:{event:Events,listenerId:number,listener:FlexEventListener<Message>,count:number,eventListeners:FlexEventListenerRegistry<Message>})=>boolean | void){
         // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
         let isAbort = false
         for(let [event,eventListeners] of this.#listeners.entries()){
@@ -175,10 +175,10 @@ export class FlexEvent<Message=any>{
      * @param callback 
      * @returns 
      */
-    private forEachEventListeners(event:string,callback:({event,listenerId,listener,count,eventListeners}:{event:string,listenerId:number,listener:FlexEventListener<Message>,count:number,eventListeners:FlexEventListenerRegistry<Message>})=>boolean | void){
+    private forEachEventListeners(event:Events,callback:({event,listenerId,listener,count,eventListeners}:{event:Events,listenerId:number,listener:FlexEventListener<Message>,count:number,eventListeners:FlexEventListenerRegistry<Message>})=>boolean | void){
         // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}        
         let isAbort = false        
-        let ls:[string,FlexEventListenerRegistry<Message> | undefined][] = this.options.wildcard ? 
+        let ls:[Events,FlexEventListenerRegistry<Message> | undefined][] = this.options.wildcard ? 
                 [...this.#listeners.entries()].filter(([eventName])=>this.isEventMatched(eventName,event) || this.isEventMatched(event,eventName))             //
                 : [[event,this.#listeners.get(event)]]              // 精确匹配
            
@@ -210,7 +210,7 @@ export class FlexEvent<Message=any>{
      */ 
      off(listener:FlexEventListener<Message>):void;
      off(listenerId:number):void;
-     off(event:string,listener:FlexEventListener<Message>):void;
+     off(event:Events,listener:FlexEventListener<Message>):void;
      off(){
         // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
        if(arguments.length==1){
@@ -233,7 +233,7 @@ export class FlexEvent<Message=any>{
             }
        }else if(arguments.length==2){
             if(typeof(arguments[0])=='string' && typeof(arguments[1])=='function'){// off(event,callback)
-                this.forEachEventListeners(arguments[0],({event,listenerId,listener,eventListeners})=>{
+                this.forEachEventListeners(arguments[0] as Events,({event,listenerId,listener,eventListeners})=>{
                     if(event == arguments[0] && listener ==  arguments[1] ){
                         eventListeners.delete(listenerId) 
                         if(this.#listeners.get(event)?.size==0) this.#listeners.delete(event)
@@ -247,7 +247,7 @@ export class FlexEvent<Message=any>{
      * 等待某个事件触发后返回
      * @param event 
      */
-    async waitFor(event:string,timeout:number=0){        
+    async waitFor(event:Events,timeout:number=0){        
         return new Promise<any[]>((resolve,reject)=>{
             let tm:any, eid:number
             if(timeout>0){
@@ -267,7 +267,7 @@ export class FlexEvent<Message=any>{
         this.#lastMessage={}
         this.offAll()
     }
-    offAll(event?:string){
+    offAll(event?:Events){
         if(event){
             this.#listeners.delete(event)
         }else{
@@ -279,7 +279,7 @@ export class FlexEvent<Message=any>{
      * @param event 
      * @returns 
      */
-    getListeners(event:string):FlexEventListener<Message>[]{
+    getListeners(event:Events):FlexEventListener<Message>[]{
         let listeners: FlexEventListener<Message>[]=[]
         this.forEachEventListeners(event,({listener})=>{
             listeners.push(listener)
@@ -312,7 +312,7 @@ export class FlexEvent<Message=any>{
             }            
         }  
     }   
-    private executeListeners(event:string,message?:Message){
+    private executeListeners(event:Events,message?:Message){
         let results:any[] = []
         this.forEachEventListeners(event,({event:eventName,listenerId,eventListeners})=>{
             results.push(this.executeListener(listenerId,eventListeners,message))
@@ -330,7 +330,7 @@ export class FlexEvent<Message=any>{
      * @param event 
      * @param message 
      */
-    emit(event:string,message?:Message,retain?:boolean){
+    emit(event:Events,message?:Message,retain?:boolean){
         if(retain || (this.#options.retain && retain!==false)){
             this.#lastMessage[event] = message
         }  
@@ -343,7 +343,7 @@ export class FlexEvent<Message=any>{
      * @param message 
      * @returns 
      */
-    async emitAsync(event:string,message?:Message,retain?:boolean){
+    async emitAsync(event:Events,message?:Message,retain?:boolean){
         const listeners  = this.getListeners(event)        
         if(retain || (this.#options.retain && retain!==false)){
             this.#lastMessage[event] = message
@@ -370,3 +370,4 @@ export class FlexEvent<Message=any>{
         return results.map(result=>result.status=='fulfilled' ? result.value : result.reason)
     }
 }
+

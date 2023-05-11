@@ -231,3 +231,28 @@ type Animals = MutableRecordList<{
 //     | {kind: 'chicken', egg:number}
 // )[]
 ```
+
+
+## ChangeFieldType
+
+改变记录类型中某个字段的类型。
+
+```typescript
+export type ChangeFieldType<Record,Name extends string,Type=any> = Omit<Record,Name> & {
+    [K in Name]:Type
+}
+
+interface MyRecord{
+  a:number
+  b:boolean
+  c:string
+}
+
+type newRecord = ChangeFieldType<MyRecord,'a' ,boolean> 
+/** {
+  a:boolean
+  b:boolean
+  c:string
+}*/
+
+```

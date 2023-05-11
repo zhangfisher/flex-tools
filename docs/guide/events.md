@@ -113,7 +113,20 @@ events.once("a",(data)=>{
 - 当启用`retain=true`时,所有触发发的事件消息均会被保留最后一条,并在新的订阅时立即发送给订阅者
 - 也可以在`emit`时单独指定`emit(event,message,true)`来保留某个事件的最后一条消息.由于`emit`的第三个参数是`retain`参数,所以当`retain=true`时,可以使用`emit(event,message,false)`来禁用某个事件的粘性消息.也可以在`retain=false`时使用`emit(event,message,true)`来单独启用某个事件的粘性消息.
 
+## 泛型
 
+`FlexEvent`支持两个泛型参数：
+
+- `Message` 指定消息类型，默认为`any`
+- `Events` 指定事件名称类型,默认为`string`
+
+
+```typescript
+
+const events =  new FlexEvent<Message,'a' | 'b' | 'c'>()
+events.on("aaa") // ERROR
+events.on("a")  // OK
+```
 ## FlexEventBus
 
 基于`FlexEvent`实现的简单的事件总线,用来提供一个应用模块之间通讯的机制。

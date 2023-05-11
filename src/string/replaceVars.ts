@@ -67,6 +67,11 @@ export function replaceVars(text:string,vars:any,options?:ReplaceVarsOptions):st
     },options)  as ReplaceVarsOptions
     
     if(typeof(vars)=='function') vars = vars.call(text)
+    // 如果vars是数组且长度为1且是对象或数组，则直接使用该对象或数组作为vars
+    // replaceVars("hello {name}",[()=>{name:"world"}]) => replaceVars("hello {name}",{name:"world"})
+    if(Array.isArray(vars) && vars.length==1 && (isPlainObject(vars[0]) || Array.isArray(vars[0]))) {
+        vars = vars[0]
+    }
     if(["boolean","string","number"].includes(typeof(vars))){
         finalVars= [vars]
     }else if(vars instanceof Map){
@@ -79,41 +84,7 @@ export function replaceVars(text:string,vars:any,options?:ReplaceVarsOptions):st
         finalVars = [`Error:${vars.message}`]
     }else{
         finalVars =[ vars ]
-    }
-
-    // let index:number = 0
-    // // {<变量名称>:<变量值>}, 如果是数组则转换为{0:<变量值>,1:<变量值>,...} 
-    // const varList = Array.isArray(finalVars) ? finalVars.reduce((pre,cur,index)=>{
-    //     pre[index]=cur
-    //     return pre
-    // },{}) : finalVars
-    // // replaceAll在低版本ES中不存在，上面已经加了shim，这需要加any类型才不会报错
-    // return (text as any).replaceAll(VAR_MATCHER, function():string{
-    //     let prefix = arguments[2] || ''
-    //     let name = arguments[3] || ''
-    //     let suffix = arguments[5] || ''        
-    //     if(index<varList.length){
-    //         // 如果empty==null,且变量值为空，则不显示
-    //         if(opts.empty==null && isNothing(varList[index][1])){
-    //             return ''
-    //         }else{
-    //             let value =  getInterpVar.call(text,varList[index++][1],opts)
-    //             // 如果指定了forEach则调用
-    //             if(typeof(opts.forEach)=='function'){
-    //                 const r = opts.forEach(name,value,prefix,suffix)
-    //                 if(Array.isArray(r) && r.length==3){                            
-    //                     prefix=r[0]
-    //                     value = r[1]
-    //                     suffix=r[2]
-    //                 }
-    //             }
-    //             return `${prefix}${value}${suffix}`
-                
-    //         }                
-    //     }else{ // 没有对应的变量时使用空值替换
-    //         return opts.empty==null ? '': `${prefix}${opts.empty}${suffix}`
-    //     }            
-    // })  
+    } 
     let i:number = 0
     return (text as any).replaceAll(VAR_MATCHER, function():string{
         let prefix = arguments[2] || ''
