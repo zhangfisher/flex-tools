@@ -1,5 +1,5 @@
 import { test,expect, describe} from "vitest"
-import { EXCLUDE, INCLUDE,assignObject, deepMerge, getPropertyNames } from "../src/object"
+import { EXCLUDE, INCLUDE,assignObject, deepMerge, getPropertyNames, isLikeObject } from "../src/object"
 import { omit } from "../src/object/omit"
 import { pick } from "../src/object/pick"
 import { get } from "../src/object/get"
@@ -384,7 +384,18 @@ test("getPropertyNames",() => {
     const func = function(){}
     func.a=1
     names = getPropertyNames(func)
+})
 
 
-
+test('isLikeObject',()=>{
+    expect(isLikeObject({a:1,b:2},{a:1,b:2})).toEqual(true)
+    expect(isLikeObject({a:1,b:2},{b:1,a:3})).toEqual(true)
+    expect(isLikeObject({a:1,b:2,c:3},{b:1,a:3})).toEqual(true)
+    expect(isLikeObject({a:1,b:2,c:3},{b:1,a:3},{strict:true})).toEqual(false)
+    // deep=true
+    expect(isLikeObject({a:1,b:2,c:{c1:1,c2:2}},{b:1,a:3,c:{c1:1,c2:2}})).toEqual(true)
+    expect(isLikeObject({a:1,b:2,c:{c1:1,c2:2,c3:3}},{b:1,a:3,c:{c1:1,c2:2}})).toEqual(true)
+    expect(isLikeObject({a:1,b:2,c:{c1:1,c2:2,c3:3}},{b:1,a:3,c:{c1:1,c2:2}},{strict:true})).toEqual(true)
+    expect(isLikeObject({a:1,b:2,c:{c1:1,c2:2,c3:3}},{b:1,a:3,c:{c1:1,c2:2}},{deep:true})).toEqual(true)
+    expect(isLikeObject({a:1,b:2,c:{c1:1,c2:2,c3:3}},{b:1,a:3,c:{c1:1,c2:2}},{strict:true,deep:true})).toEqual(false)
 })

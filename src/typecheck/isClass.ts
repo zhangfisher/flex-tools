@@ -10,4 +10,3 @@ export function isClass(cls:any):boolean{
     }
     return result;
 }
- 

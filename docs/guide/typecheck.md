@@ -26,7 +26,30 @@ isAsyncFunction(fn:any):boolean
 
 ```typescript
 isClass(cls:any):boolean
+
+class MyClass{}
+
+isInstance(new MyClass())= true
+isInstance({})= false
+isInstance(Symbol())= false
+isInstance(new Set())= false
+isInstance(new Map())= false
+isInstance(new WeakMap())= false
+isInstance(new WeakSet())= false
+isInstance(1)= false
+isInstance(null)= false
+isInstance(undefined)= false
+isInstance([1])= false
+isInstance(A)= false
 ```
+## isInstance
+
+判断值是否是类的实例
+
+```typescript
+function isInstance(obj:any):boolean
+```
+
 ## isGeneratorFunction
 
 判断是否是一个生成器函数

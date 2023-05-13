@@ -488,3 +488,29 @@ type ConflictStrategy ='ignore' | 'replace' | 'merge' | 'error' | ((key:string, 
 ## hasCircularRef
 
 返回指定的对象是否存在循环引用。
+
+## isLikeObject
+
+判断两个对象是否相似
+
+```typescript
+
+export interface IsLikeObjectOptions{
+    strict?:boolean                 // 是否严格比较
+    deep?:boolean                   // 是否深度比较, 对象的值为对象时，是否递归比较
+}
+export function isLikeObject(obj:Record<string | number | symbol,any>,baseObj:Record<string |number | symbol,any>,options?:IsLikeObjectOptions):boolean
+ 
+isLikeObject({a:1,b:2},{a:1,b:2}) // true
+isLikeObject({a:1,b:2},{b:2,a:1}) // true
+// 默认strict=false，允许srcObj中存在baseObj中不存在的键
+isLikeObject({a:1,b:2,c:3},{b:2,a:1}) // true
+isLikeObject({a:1,b:2,c:3},{b:2,a:1},{strict:true}) // false
+ 
+```
+
+- 只进行键名称的比较，不进行值的比较
+- 两个对象的键名称相同，但顺序不同也认为是相似的
+- 两个对象的键名称相同，但值的类型不同也认为是相似的
+- 默认`strict=false`代表不进行严格比较
+- `deep=true`则当对象的值均是对象时进行递归比较，否则只进行一层比较，默认值为`false`
