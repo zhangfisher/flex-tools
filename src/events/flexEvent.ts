@@ -17,7 +17,7 @@ replaceAll.shim()
     retain?:boolean             // 是否保留事件最后一次触发的消息
  }
 
-export interface OmitOptions{
+export interface SubscribeOptions{
     objectify?: boolean                 //  当调用时返回一个对象用来退订
     count?:number                       // 触发几次
 }
@@ -97,8 +97,8 @@ export class FlexEvent<Message=any,Events extends string = string>{
      * @param options 
      * @returns 
      */
-    on(event:Events,callback:FlexEventListener<Message>,options?:OmitOptions):FlexEventSubscriber | number{
-        const { objectify = false,count=-1 } =Object.assign({},options) as Required<OmitOptions>        
+    on(event:Events,callback:FlexEventListener<Message>,options?:SubscribeOptions):FlexEventSubscriber | number{
+        const { objectify = false,count=-1 } =Object.assign({},options) as Required<SubscribeOptions>        
         if(!this.#listeners.has(event)){
             this.#listeners.set(event,new Map())        
         }
@@ -144,7 +144,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
      * @param options 
      * @returns 
      */
-    once(event:Events,callback:FlexEventListener<Message>,options?:OmitOptions){
+    once(event:Events,callback:FlexEventListener<Message>,options?:SubscribeOptions){
         return this.on(event,callback,Object.assign({},options,{count:1}))        
     }  
 
