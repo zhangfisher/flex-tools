@@ -1,6 +1,6 @@
 import { test, expect, vi, describe, afterEach, beforeEach } from "vitest"
 import { FlexEvent, FlexEventBus, FlexEventBusMessage, FlexEventBusNode, FlexEventListener } from "../src"
-
+import { delay } from "../src/async"
 
 describe("事件触发器", () => {
 
@@ -209,17 +209,37 @@ describe("事件触发器", () => {
         })
     })
 
-    test("通配符保留事件订阅",()=>{
+    test("通配符保留事件订阅",async ()=>{
         const events = new FlexEvent() 
-        return new Promise<void>(resolve => {
+        const results:any[]=[]
+        
             events.emit("modules/auth/started",1,true)
             events.emit("modules/api/started",2,true)
-            events.on("modules/*/started",(msg:any)=>{
-                resolve()
+            events.once("modules/auth/started",(msg:any)=>{
+                results.push(msg)
             })
-        })
+            events.on("modules/*/started",(msg:any)=>{
+                results.push(msg)
+            })
+            await delay(100)
+            expect(results.length).toBe(3)
+            
     })
-
+    test("触发通配符事件",async ()=>{
+        const events = new FlexEvent() 
+        const results:any[]=[]
+        events.once("modules/auth/started",(msg:any)=>{
+            results.push(msg)
+        })
+        events.once("modules/api/started",(msg:any)=>{
+            results.push(msg)
+        })
+        events.emit("modules/*/started",1)
+        await delay(100)            
+        expect(results.length).toBe(2)
+        expect(results[0]).toBe(1)
+        expect(results[1]).toBe(1)
+    })
 })
 
 

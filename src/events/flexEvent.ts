@@ -181,7 +181,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
         // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}        
         let isAbort = false        
         let ls:[Events,FlexEventListenerRegistry<Message> | undefined][] = this.options.wildcard ? 
-                [...this.#listeners.entries()].filter(([eventName])=>this.isEventMatched(eventName,event) || this.isEventMatched(event,eventName))             //
+                [...this.#listeners.entries()].filter(([eventName])=>(this.isEventMatched(eventName,event)) || this.isEventMatched(event,eventName))             
                 : [[event,this.#listeners.get(event)]]              // 精确匹配
            
         for(let [eventName,eventListeners] of ls){
