@@ -209,6 +209,17 @@ describe("事件触发器", () => {
         })
     })
 
+    test("通配符保留事件订阅",()=>{
+        const events = new FlexEvent() 
+        return new Promise<void>(resolve => {
+            events.emit("modules/auth/started",1,true)
+            events.emit("modules/api/started",2,true)
+            events.on("modules/*/started",(msg:any)=>{
+                resolve()
+            })
+        })
+    })
+
 })
 
 
@@ -251,7 +262,7 @@ describe("测试事件总线", async () => {
             B.join(eventbus)
             A.onMessage = vi.fn((message: FlexEventBusMessage) => {
                 expect(message.payload).toBe(100)
-                expect(message.meta?.from).toBe("B")
+                expect(message.from).toBe("B")
                 resolve()
             })
             B.send("A", 100)
@@ -265,7 +276,7 @@ describe("测试事件总线", async () => {
             nodes.forEach(node => {
                 node.onMessage = vi.fn((message: FlexEventBusMessage) => {
                     expect(message.payload).toBe(100)
-                    expect(message.meta?.from).toBe("A")
+                    expect(message.from).toBe("A")
                     rec++
                     if (rec == count) resolve()
                 })

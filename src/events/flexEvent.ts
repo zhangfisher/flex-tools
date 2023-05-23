@@ -57,6 +57,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
     get options(){return this.#options}
     get delimiter(){return this.#options.delimiter}
     get context(){ return this.options.context}
+    get listeners(){return this.#listeners}
     get retainedMessages(){return this.#lastMessage}
     /**
      * 检测事件是否匹配
@@ -71,16 +72,17 @@ export class FlexEvent<Message=any,Events extends string = string>{
      * 事件中的**代表所有层级
      * *代表一个事件名称
      * 
-     * @param onEvent 
+     * @param pattern 
      * @param event 
      */
-    private isEventMatched(onEvent:string,event:string):boolean{
-        if(this.#options.wildcard && onEvent.includes("*")){
+    private isEventMatched(pattern:string,event:string):boolean{
+        if(pattern == event) return true
+        if(this.#options.wildcard && pattern.includes("*")){
             // 由于通配符**与*冲突，所以先将**替换成一个特殊的字符
-            const regex =new RegExp("^"+onEvent.replaceAll("**",`__###__`).replaceAll("*","[\\w]*").replaceAll("__###__",`[\\w\\${this.delimiter}]*`)+"$")
+            const regex =new RegExp("^"+pattern.replaceAll("**",`__###__`).replaceAll("*","[\\w]*").replaceAll("__###__",`[\\w\\${this.delimiter}]*`)+"$")
             return regex.test(event)
         }else{
-            return onEvent == event
+            return pattern == event
         }
     }
     /**
@@ -105,7 +107,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
         const listenerId =  ++ FlexEvent.listenerSeqId            
         const eventListeners = this.#listeners.get(event)
         eventListeners?.set(listenerId,[callback,count])        
-        // 如果启用了retain,则应该马上
+        // 如果启用了retain,则应该马上触发最后保存的事件
         this.emitRetainEvent(event)      
         if(objectify){
             return {
@@ -128,10 +130,10 @@ export class FlexEvent<Message=any,Events extends string = string>{
         setTimeout(()=>{
             if(event in this.#lastMessage){
                 this.executeListeners(event,this.#lastMessage[event])             
-            }else{      // 检查是否有通配符                                
+            }else if(this.options.wildcard){      // 检查是否有通配符                                
                 for(const [key] of Object.entries(this.#lastMessage)){
-                    if(key.includes('*') && this.isEventMatched(key,event)){
-                        this.executeListeners(event,this.#lastMessage[key])             
+                    if(this.isEventMatched(event,key) || this.isEventMatched(key,event)){ 
+                        this.executeListeners(event,this.#lastMessage[key])     
                     }
                 }
             }            
