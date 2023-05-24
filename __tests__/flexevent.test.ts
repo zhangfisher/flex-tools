@@ -162,8 +162,8 @@ describe("事件触发器", () => {
 
     test("启用retain=true保留粘性消息", () => {
         return new Promise<void>(resolve => {
-            let events = new FlexEvent({ retain: true })
-            events.emit("a", 1)  // 先触发
+            let events = new FlexEvent()
+            events.emit("a", 1,true)  // 先触发
             // 后订阅时接收事件
             events.once("a", (data) => {
                 expect(data).toBe(1)
@@ -172,7 +172,8 @@ describe("事件触发器", () => {
                 expect(data).toBe(1)
             })
             // 也支持通配符
-            events.emit("a/*/c", 2)  // 先触发
+            events.emit("a/*/c", 2,true)  
+            // 先触发
             events.once("a/x/c", (data) => {
                 expect(data).toBe(2)
             })
@@ -187,7 +188,7 @@ describe("事件触发器", () => {
     })
     test("retain=false时单独为事件指定保留消息", () => {
         return new Promise<void>(resolve => {
-            let events = new FlexEvent({ retain: false })
+            let events = new FlexEvent()
             events.emit(`workspace/test/counter/ready`,events,true)
             setTimeout(() => {
                 events.once(`workspace/test/counter/ready`, (data) => {
@@ -218,11 +219,14 @@ describe("事件触发器", () => {
             events.once("modules/auth/started",(msg:any)=>{
                 results.push(msg)
             })
+            events.once("modules/*/started",(msg:any)=>{
+                results.push(msg)
+            })
             events.on("modules/*/started",(msg:any)=>{
                 results.push(msg)
             })
             await delay(100)
-            expect(results.length).toBe(3)
+            expect(results.length).toBe(4)
             
     })
     test("触发通配符事件",async ()=>{
