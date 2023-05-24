@@ -186,6 +186,19 @@ describe("事件触发器", () => {
             })
         })
     })
+    test("通配符触发粘性消息时",async ()=>{
+        const events = new FlexEvent()
+        let results:any[]=[]
+        events.emit("app/started",1,true)
+        events.once("app/started",(msg:any)=>{
+            events.emit("modules/auth/started",2,true) 
+        })
+        events.on("modules/*/started",(msg:any)=>{
+            results.push(`*:${msg}`)
+        })
+        await delay(100)
+        expect(results.length).toBe(1)
+    })
     test("retain=false时单独为事件指定保留消息", () => {
         return new Promise<void>(resolve => {
             let events = new FlexEvent()

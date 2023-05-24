@@ -129,7 +129,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
      * @param event 
      */
     private emitRetainEvent(event:Events,listenerId:number,eventListeners:FlexEventListenerRegistry<Message>){
-        setTimeout(()=>{
+        //setTimeout(()=>{
             if(event in this.#lastMessage){                
                 this.executeListener(listenerId,eventListeners,this.#lastMessage[event])   
             }else if(this.options.wildcard){      // 检查是否有通配符                                
@@ -139,7 +139,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
                     }
                 }
             }            
-        },0)
+        //},0)
     }
     /**
      * 只订阅一次事件
