@@ -41,3 +41,35 @@ getStaticFieldValue(new A1(),"settings") //==== {a:1,b:2}
 ```typescript
 function isPropertyMethod(inst:object, name:string)
 ```
+
+## getClassMethods
+
+返回类中声明的方法列表
+
+```typescript
+
+export interface GetClassMethodsOptions{
+    includePrototype?:boolean                  // 是否包含原型链上的所有方法
+    excludes?:(string | symbol)[] | ((name:string | symbol)=>boolean)       // 排除
+}
+
+export function getClassMethods(obj:object,options?:GetClassMethodsOptions)
+
+// 示例
+class A{
+    x(){}
+    y(){}
+}
+class AA extends A{
+    a1(){}
+    a2(){}
+    a3(){}
+}
+
+getClassMethods(new A())   //   ['x','y']
+getClassMethods(new AA())   //   ['x','y','a1','a2','a3']
+// 不在父类和祖先类中查找
+getClassMethods(new AA(),{includePrototype:false})   //   ['x','y','a1','a2','a3']
+
+getClassMethods(new AA(),{includePrototype:false,excludes:['x']})   //   ['y','a1','a2','a3']
+```

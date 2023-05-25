@@ -1,6 +1,11 @@
 import { isClass } from "../typecheck/isClass"
 import { isPlainObject } from "../typecheck/isPlainObject"
+import { assignObject } from '../object/assignObject';
 
+export interface GetClassStaticValueOptions{
+    merge:'none' | 'merge' | 'uniqueMerge'          // 指定合并策略
+    default?:any                                    // 当不存在时提供一个默认值
+}
 /**
  *
  * 获取继承链上指定字段的值
@@ -19,20 +24,20 @@ import { isPlainObject } from "../typecheck/isPlainObject"
  * @param fieldName
  * @param options
  */
-export function getClassStaticValue(instanceOrClass:object,fieldName:string,options:{merge?: number,default?:any}={}){
-    const opts = Object.assign({
+export function getClassStaticValue(instanceOrClass:object,fieldName:string,options?:GetClassStaticValueOptions){
+    const opts = assignObject({
         // 是否进行合并,0-代表不合并，也就是不会从原型链中读取，1-使用Object.assign合并,2-使用mergeDeepRigth合并
         // 对数组,0-不合并，1-合并数组,   2-合并且删除重复项
-        merge:2,
+        merge:'uniqueMerge',
         default:null                   // 提供默认值，如果{}和[]，会使用上述的合并策略
-    },options)
+    },options) as Required<GetClassStaticValueOptions>
 
     let proto = isClass(instanceOrClass) ? instanceOrClass : instanceOrClass.constructor
     let fieldValue = (proto as any)[fieldName]
     // 0-{}, 1-[], 2-其他类型
     let valueType = isPlainObject(fieldValue) ? 0 : (Array.isArray(fieldValue) ? 1 : 2)
     // 如果不是数组或者{}，则不需要在继承链上进行合并
-    if(opts.merge===0 || valueType===2){
+    if(opts.merge==='none' || valueType===2){
         return fieldValue
     }
 
@@ -54,7 +59,7 @@ export function getClassStaticValue(instanceOrClass:object,fieldName:string,opti
     if(valueType===0){// Object
         mergedResults =  valueList.reduce((result,item)=>{
             if(isPlainObject(item)){        // 只能合并字典
-                return opts.merge ===1 ? Object.assign({},defaultValue,item,result) : Object.assign({},defaultValue,item,result)
+                return opts.merge ==='merge' ? Object.assign({},defaultValue,item,result) : Object.assign({},defaultValue,item,result)
             }else{
                 return result
             }
@@ -68,7 +73,7 @@ export function getClassStaticValue(instanceOrClass:object,fieldName:string,opti
         },[])
     }
     // 删除数组中的重复项
-    if(Array.isArray(mergedResults) && opts.merge===2){
+    if(Array.isArray(mergedResults) && opts.merge==='uniqueMerge'){
         mergedResults = Array.from(new Set(mergedResults))
         // 如果提供defaultValue并且数组成员是一个{},则进行合并
         if(isPlainObject(defaultValue)){
