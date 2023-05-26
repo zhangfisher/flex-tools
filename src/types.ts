@@ -118,6 +118,27 @@ export type MutableRecordList<Items,KindKey extends string='type'> = {
 
 export type Collection<T=any> = Record<string|number|symbol,T> | T[] | Set<T> | Map<string,T>  
 
+ 
+/**
+ * 合并输入的多个类型
+ * type Foo = { a: number};
+type Bar = { b: string };
+type Baz = { c: boolean };
+
+type Merged = Merge<[Foo, Bar, Baz]>;
+
+返回 { a: string; b: number; c: boolean; } ，它包含了输入数组中所有类型的属性。
+ */
+export type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any
+    ? R
+    : never;
+export type Merge<T extends unknown[]> = {
+    [K in keyof UnionToIntersection<T[number]>]: UnionToIntersection<T[number]>[K]
+  };  
+  
+  
+
+
 declare global {
     interface String {
         params(vars:Record<string,any> | any[] | Set<any> | Map<string,any>): string;
@@ -125,3 +146,6 @@ declare global {
         replaceAll(searchValue: string | RegExp, replaceValue: string): string;
     }
 }
+
+
+

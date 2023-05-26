@@ -256,3 +256,16 @@ type newRecord = ChangeFieldType<MyRecord,'a' ,boolean>
 }*/
 
 ```
+
+## Merge
+
+ 合并输入的多个类型
+
+```typescript 
+type Foo = { a: number};
+type Bar = { b: string };
+type Baz = { c: boolean };
+type Merged = Merge<[Foo, Bar, Baz]>;
+// 返回 { a: string; b: number; c: boolean; } ，它包含了输入数组中所有类型的属性。
+```
+
