@@ -18,7 +18,7 @@ export function getClassMethods(obj:object,options?:GetClassMethodsOptions){
         excludes:['constructor'],
         includePrototype:true
     },options)
-    if(excludes.includes('constructor')) excludes.push('constructor')
+    if(!excludes.includes('constructor')) excludes.push('constructor')
     let methods:(string | symbol)[]=[]
     let proto  = (obj as any).__proto__
     while (proto && !Object.is(proto,Object.prototype)) {
