@@ -3,7 +3,7 @@ import { isPlainObject } from "../typecheck/isPlainObject"
 import { assignObject } from '../object/assignObject';
 
 export interface GetClassStaticValueOptions{
-    merge:'none' | 'merge' | 'uniqueMerge'          // 指定合并策略
+    merge?:'none' | 'merge' | 'uniqueMerge'          // 指定合并策略
     default?:any                                    // 当不存在时提供一个默认值
 }
 /**
