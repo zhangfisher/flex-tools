@@ -266,6 +266,7 @@ type Foo = { a: number};
 type Bar = { b: string };
 type Baz = { c: boolean };
 type Merged = Merge<[Foo, Bar, Baz]>;
+// == Foo & Bar & Baz
 // 返回 { a: string; b: number; c: boolean; } ，它包含了输入数组中所有类型的属性。
 ```
 

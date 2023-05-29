@@ -129,13 +129,8 @@ type Merged = Merge<[Foo, Bar, Baz]>;
 
 返回 { a: string; b: number; c: boolean; } ，它包含了输入数组中所有类型的属性。
  */
-export type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any
-    ? R
-    : never;
-export type Merge<T extends unknown[]> = {
-    [K in keyof UnionToIntersection<T[number]>]: UnionToIntersection<T[number]>[K]
-  };  
-  
+export type Merge<T extends any[]> =  T extends [infer I, ...infer rest] ?  I & Merge<rest> : {}
+
   
 
 
