@@ -41,8 +41,23 @@ events.offAll()                               // 退订所有事件
 events.getListeners()                         //  返回所有侦听器
 events.emit(event:string,message?:any)       // 触发事件
 events.emitAsync(event:string,message?:any)  // 使用Promise.allSettled触发事件
-await events.waitFor(event:string)             // 等待某个事件触发
 ```
+### 等待事件触发
+
+```typescript
+await events.waitFor(event:string)              // 等待某个事件触发
+await events.waitFor("a")                       // 等待a事件触发
+await events.waitFor(["a","b"])                 // 等待a或b中的任意一个事件触发
+await events.waitFor("a,bcc"])                  // 等待a,b,c均触发事件
+// 等待a事件触发，超时时间为2000毫秒，超时会触发TimeoutError
+await events.waitFor("a",2000)             
+// 等待a或b或c中的任意一个事件触发时返回
+await events.waitFor(["a","b","c"],2000)
+// 等待a,b,c事件均触发时返回
+await events.waitFor("a,b,c",2000)                 // 等待a,b均触发事件
+
+```
+
 ### 通配符
 
 `FlexEvent`在订阅和发布时均支持启用通配符

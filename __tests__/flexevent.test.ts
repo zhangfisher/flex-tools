@@ -1,5 +1,5 @@
 import { test, expect, vi, describe, afterEach, beforeEach } from "vitest"
-import { FlexEvent, FlexEventBus, FlexEventBusMessage, FlexEventBusNode, FlexEventListener } from "../src"
+import { FlexEvent, FlexEventBus, FlexEventBusMessage, FlexEventBusNode, FlexEventListener, TimeoutError } from "../src"
 import { delay } from "../src/async"
 
 describe("事件触发器", () => {
@@ -256,6 +256,79 @@ describe("事件触发器", () => {
         expect(results.length).toBe(2)
         expect(results[0]).toBe(1)
         expect(results[1]).toBe(1)
+    })
+    test("等待事件触发",async ()=>{
+        const events = new FlexEvent() 
+        let results:any[]=[]
+        setTimeout(()=>events.emit("a",1))
+        results.push(await events.waitFor("a"))
+        expect(results).toStrictEqual([[1]]);
+        results=[]
+
+        setTimeout(()=>{
+            events.emit("b",1)
+        },5000)
+        try{
+            await events.waitFor("b",1000)
+        }catch(e){
+            expect(e).toBeInstanceOf(TimeoutError)
+            expect(results).toStrictEqual([]);
+        }
+        
+        setTimeout(()=>{events.emit("a1",1)})
+        results.push(await events.waitFor(["a1","b1","c1"]))
+        expect(results).toStrictEqual([[1]]);
+        results=[]
+
+        setTimeout(()=>{events.emit("b2",2)})
+        results.push(await events.waitFor(["a2","b2","c2"]))
+        expect(results).toStrictEqual([[2]]);
+        results=[]
+
+        setTimeout(()=>{events.emit("c3",3)})
+        results.push(await events.waitFor(["a3","b3","c3"]))
+        expect(results).toStrictEqual([[3]]);
+        results=[]
+
+        setTimeout(()=>{events.emit("a4",1)},300)
+        try{
+            await events.waitFor(["a4","b4","c4"],200)
+        }catch(e){
+            expect(e).toBeInstanceOf(TimeoutError)
+        }
+        
+        setTimeout(()=>{events.emit("b5",2)},300)
+        try{
+            await events.waitFor(["a5","b5","c5"],200)
+        }catch(e){
+            expect(e).toBeInstanceOf(TimeoutError)
+        }
+        setTimeout(()=>{events.emit("c6",3)},300)
+        try{
+            await events.waitFor(["a6","b6","c6"],200)
+        }catch(e){
+            expect(e).toBeInstanceOf(TimeoutError)
+        }
+         
+        
+        setTimeout(()=>{
+            events.emit("a7",1)
+            events.emit("b7",2)
+            events.emit("c7",3)
+        })
+        results.push(await events.waitFor("a7,b7,c7"))
+        expect(results).toStrictEqual([[1,2,3]]);
+        results=[]
+        setTimeout(()=>{
+            events.emit("a8",1)
+            events.emit("b8",2)
+            setTimeout(()=>events.emit("c8",3),600)
+        })
+        try{
+            await events.waitFor("a8,b8,c8",500)
+        }catch(e){
+            expect(e).toBeInstanceOf(TimeoutError)
+        } 
     })
 })
 

@@ -7,7 +7,10 @@
 import { assignObject } from "../object"
 // @ts-ignore 
 import replaceAll from "string.prototype.replaceall"
+import { TimeoutError } from '../func/timeout';
 replaceAll.shim()
+
+import { remove } from "../array/remove"
 
  export interface FlexEventOptions{
     context?: any               // 可选的上下文对象，当指定时作为订阅者的this
@@ -260,24 +263,64 @@ export class FlexEvent<Message=any,Events extends string = string>{
 
     /**
      * 等待某个事件触发后返回
-     * @param event 
+     * @param event  一个或多个事件名称
      */
-    async waitFor(event:Events,timeout:number=0){        
+    waitFor(event:Events | Events[],timeout:number=0){        
         return new Promise<any[]>((resolve,reject)=>{
-            let tm:any, eid:number
+            let tmId:any,isTimeout:boolean=false
+            let listenerIds:number[]=[]
+            let isResolve:boolean = false
+            let isListened:string[]
+            let results:any[]=[]
+            // 与侦听模式，即需要同时侦听到所有事件才返回
+            let andMode:boolean = false
             if(timeout>0){
-                tm=setTimeout(()=>{
-                    this.off(eid)
-                    reject(new Error("Timeout"))    
+                tmId=setTimeout(()=>{
+                    isTimeout=true
+                    listenerIds.forEach(eid=>this.off(eid))
+                    reject(new TimeoutError())    
                 },timeout)
+            }            
+            const doneCallback = ()=>{
+                if(isResolve) return
+                clearTimeout(tmId)
+                isResolve=true
+                resolve(results)
             }
-            eid  = this.once(event,(...args:any[])=>{
-                clearTimeout(tm)
-                resolve(args)
-            }) as number
+            let events:Events[] = []
+            if(Array.isArray(event)){
+                events = event
+            }else if(typeof(event)=='string'){
+                if(event.includes(',')){
+                    events = event.split(',')  as Events[]
+                    andMode=true
+                }else{
+                    events = [event]
+                }
+            }
+            isListened = [...events]
+            if(andMode){        
+                listenerIds = events.map(ev=>{
+                    return this.once(ev,(...args:any[])=>{        
+                        if(isTimeout) return
+                        let c = remove(isListened,ev)
+                        if(c>0) results.push(...args) // 重复触发只返回一次
+                        if(isListened.length==0){
+                            doneCallback()
+                        }
+                    }) as number                    
+                })            
+            }else{
+                listenerIds = events.map(ev=>{
+                    return this.once(ev,(...args:any[])=>{     
+                        if(isTimeout) return
+                        results.push(...args)
+                        doneCallback()
+                    }) as number
+                }) 
+            }            
         })
     }
-
     clear(){
         this.#lastMessage={}
         this.offAll()
