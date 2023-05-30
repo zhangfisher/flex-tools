@@ -3,6 +3,7 @@
     * [中文](/guide/chinese)
     * [字符串](/guide/string)
     * [对象](/guide/object)
+    * [数组](/guide/array)
     * [函数](/guide/func)
     * [文件系统](/guide/fs)
     * [数据容器](/guide/collection)
