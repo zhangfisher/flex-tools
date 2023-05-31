@@ -235,31 +235,30 @@ $forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,s
 
     ```typescript
     // 输出出错时的模块名称、函数名称、行号
-    const template = "Error while execute method<{method}>({<(>module/func/lineno<)>})"
+    const template = "Error while execute method({<(>module/func/lineno<)>})"
     const errInfo = {module:"auth",func:"login",lineno:123}
     const opts = {
         $forEach:(name,value,prefix,suffix)=>{
-            if(name=='method'){
-                return "hello"
-            }else if(name=='module/func/lineno'){
-                if(errInfo.module==undefined || errInfo.func || errInfo.lineno){
+            if(name=='module/func/lineno'){
+                 if(name=='module/func/lineno'){
+                if(!(errInfo.module || errInfo.func || errInfo.lineno)){
                     return ['','','']
                 }else{
-                    return `${errInfo.module}/${errInfo.func ? errInfo.func:'unknow'}/${errInfo.lineno}`
+                    return `${errInfo.module}/${errInfo.func ? errInfo.func : 'unknow'}/${errInfo.lineno}`
                 }
             }
         }
     }
     let text = template.params(opts)
-    expect(text).toEqual("Error while execute method<hello>(auth/login/123)")
+    expect(text).toEqual("Error while execute method(auth/login/123)")
 
     text = template.params(opts)
     errorInfo.func = undefined
-    expect(text).toEqual("Error while execute method<hello>(auth/unknow/123)")
+    expect(text).toEqual("Error while execute method(auth/unknow/123)")
     //
     errorInfo={}
     text = template.params(opts)
-    expect(text).toEqual("Error while execute method<hello>")
+    expect(text).toEqual("Error while execute method")
 
     ```
  
