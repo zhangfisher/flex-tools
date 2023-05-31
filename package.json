@@ -14,7 +14,8 @@
     "doc": "docsify serve docs",
     "prepare": "husky install",
     "commit": "git add . && git cz",
-    "build:test": "modern build"
+    "build:test": "modern build",
+    "sync":"cnpm sync flex-tools"
   },
   "keywords": [],
   "author": "",
