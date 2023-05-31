@@ -40,9 +40,12 @@ function getInterpVar(this:string,value:any,{empty,delimiter=","}:ReplaceVarsOpt
 //const VAR_MATCHER = /\{(\<(?<prefix>.*?)\>)?\s*(?<name>[\u4E00-\u9FA5A\w]*)\s*(\<(?<suffix>.*?)\>)?\}/gm
 
 // V4 由于在react-native中不支持命名捕获组，会导致出错，所以移除命名捕获组
-const VAR_MATCHER = /\{(\<(.*?)\>)?\s*([\u4E00-\u9FA5A\w]*)\s*(\<(.*?)\>)?\}/gm
+//const VAR_MATCHER = /\{(\<(.*?)\>)?\s*([\u4E00-\u9FA5A\w]*)\s*(\<(.*?)\>)?\}/gm
+// V4不支持{ a b }{ a/b/c } 这种形式
 
 
+// V5  变量名更加宽泛约束，支持除<,>,{,}外的字符
+const VAR_MATCHER = /\{(\<(.*?)\>)?\s*([^\{\}\>\<]*)(?<!\s)\s*(\<(.*?)\>)?\}/gm
 
 export type VarReplacer = (name:string,prefix:string,suffix:string,matched:string) => string
 /**
@@ -54,8 +57,8 @@ export interface ReplaceVarsOptions{
     empty?:string | null
     default?:string                 // 如果变量不存在时的默认值
     delimiter?:string
-    // 遍历所有插值变量的回调函数，必须返回[prefix,value,suffix]
-    forEach?:(name:string,value:string,prefix:string,suffix:string)=>[string,string,string ]
+    // 遍历所有插值变量的回调函数，必须返回[prefix,value,suffix]或value
+    forEach?:(name:string,value:string,prefix:string,suffix:string)=>[string,string,string ] | string
 }
 
 export function replaceVars(text:string,vars:any,options?:ReplaceVarsOptions):string {
@@ -101,14 +104,17 @@ export function replaceVars(text:string,vars:any,options?:ReplaceVarsOptions):st
             varValue =isExists ? getInterpVar.call(text,(finalVars as any)[name],opts) : ''
             isEmpty= isNothing(varValue) || !isExists
         }
-        // 如果指定了forEach则调用
+        // 如果指定了forEach则调用，并且使用返回值作为插值变量的值
         if(typeof(opts.forEach)=='function'){
-            const r = opts.forEach(name,varValue,prefix,suffix)
+            const r = opts.forEach(name,varValue,prefix,suffix)            
             if(Array.isArray(r) && r.length==3){                            
                 prefix=r[0]
                 varValue = r[1]
                 suffix=r[2]
+            }else if(!isNothing(r)){
+                varValue = String(r)
             }
+            isEmpty= isNothing(varValue)
         }
         // 为空时使用empty替换
         if(isEmpty){

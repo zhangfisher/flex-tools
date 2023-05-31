@@ -4,16 +4,16 @@ import {  replaceVars } from "../src/string"
 
 
 test("replaceVars", ()=>{
-    expect(replaceVars("{a}+{b}={c}",()=>({a:1,b:1,c:2}))).toBe("1+1=2")
 
-    expect(replaceVars("{<x>a<y>}+{b}={c}",{a:1,b:1,c:[2,2]})).toBe("x1y+1=2,2")
 
     // 字典插值
+    expect(replaceVars("{<#> a}+{ b <%>}={c}",{a:1,b:1,c:2})).toBe("#1+1%=2")
+    expect(replaceVars("{<x>a<y>}+{b}={c}",{a:1,b:1,c:[2,2]})).toBe("x1y+1=2,2")
+    expect(replaceVars("{a}+{b}={c}",()=>({a:1,b:1,c:2}))).toBe("1+1=2")
     expect(replaceVars("{a}+{b}={c}",{a:1,b:1,c:[2,2]})).toBe("1+1=2,2")
     expect(replaceVars("{a}+{b}={c}",{a:1,b:1,c:{x:1,y:2}})).toBe("1+1=x=1,y=2")
     expect(replaceVars("{a}+{b}={c}",{a:1,b:1,c:2})).toBe("1+1=2")
     expect(replaceVars("{<#>a}+{ b<%>}={<c>}",{a:1,b:1,c:2})).toBe("#1+1%=")
-    expect(replaceVars("{<#> a}+{ b <%>}={c}",{a:1,b:1,c:2})).toBe("#1+1%=2")
     expect(replaceVars("{a}+{b}={c}",{a:()=>1,b:()=>1,c:()=>2})).toBe("1+1=2")
     expect(replaceVars("{a}+{b}={c}",{a:1,b:1})).toBe("1+1=")
     expect(replaceVars("{a}+{b}={<c>}",{a:1,b:1})).toBe("1+1=")
@@ -96,6 +96,19 @@ test("replaceVars遍历插值变量", ()=>{
     })
     expect(vars.length).toEqual(7)
     expect(vars).toEqual(["a","b","c","d","","",""]) 
+})
+test("replaceVars遍历替换", ()=>{
+    let vars={a:1,b:2,c:3,d:4,e:5,f:6,g:7,h:8,i:9,j:10}
+    const result = "{a/b/c}{a}{b}{c}{d}{}{}{}".params({
+        $forEach:(name,value,prefix,suffix)=>{
+            if(name in vars){
+                return vars[name]
+            }else{
+                return value
+            }
+        }
+    }) 
+    expect(result).toEqual("1234") 
 })
 
 

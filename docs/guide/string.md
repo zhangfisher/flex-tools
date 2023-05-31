@@ -160,7 +160,7 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
         "{a}".params({a:{x:1,y:2}})   // =="x=1,y=2"
         "{a}".params({a:{x:1,y:2}},{$delimiter:"#"})   // =="x=1#y=2"
     ```
-- `$forEach:(name:string,value:string,prefix:string,suffix:string)=>[string,string,string ]`: 提供一个函数对插值变量进行遍历。如果该函数返回`[string,string,string]`,则代表返回`prefix,value,suffix`
+- `$forEach:(name:string,value:string,prefix:string,suffix:string)=>[string,string,string ]`: 提供一个函数对插值变量进行遍历。如果该函数返回`[string,string,string]`或`string`,可用替换`prefix,value,suffix`或`value`
 
     ```typescript
         "{a}{b}{<#>c<#>}".params(
@@ -169,6 +169,7 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
                 $forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,string ]=>{
                     console.log(name,value,prefix,suffix)
                     return [prefix,value,suffix]            // 分别返回前缀，变量值，后缀
+                    //return value                            // 返回变量值 
                 }
            }
         ) 
@@ -177,6 +178,7 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
         // b 2 
         // c 3 # # 
     ```
+### 示例
 
     利用`$forEach`的机制，可以实现一些比较好玩的特性，比如以下例子，
     
@@ -207,6 +209,30 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
     })
     expect(vars.length).toEqual(7)
     expect(vars).toEqual(["a","b","c","d","","",""]) 
+    ```
+
+    - **遍历字符串中的所有插值变量**
+
+    ```typescript
+    // 输出出错时的模块名称、函数名称、行号
+    const template = "Error while execute method<{method}>({<(>module/func/lineno<)>})"
+    const errInfo = {module:"auth",func:"login",lineno:123}
+    const opts = {
+        $forEach:(name,value,prefix,suffix)=>{
+            if(name=='method'){
+                return "hello"
+            }else if(name=='module/func/lineno'){
+                return `${errInfo.module}/${errInfo.func ? : errInfo.func:'unknow'}/${errInfo.lineno}`
+            }
+        }
+    }
+    let text = template.params(opts)
+    expect(text).toEqual("Error while execute method<hello>(auth/login/123)")
+
+    text = template.params(opts)
+    errorInfo.func = undefined
+    expect(text).toEqual("Error while execute method<hello>(auth/unknow/123)")
+
     ```
 
 ### 特别注意 
