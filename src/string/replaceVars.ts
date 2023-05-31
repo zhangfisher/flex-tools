@@ -48,6 +48,9 @@ function getInterpVar(this:string,value:any,{empty,delimiter=","}:ReplaceVarsOpt
 const VAR_MATCHER = /\{(\<(.*?)\>)?\s*([^\{\}\>\<]*)(?<!\s)\s*(\<(.*?)\>)?\}/gm
 
 export type VarReplacer = (name:string,prefix:string,suffix:string,matched:string) => string
+
+// forEach方法的返回值类型
+export type ForEachReturnType = [string,string,string ] | string | void | null | undefined
 /**
  *   empty:  当插值变量为空(undefined|null)时的替代值，默认''，如果empty=null则整个变量均不显示包括前后缀字符
  *   delimiter: 当变量是数组或对象时使用delimiter进行连接
@@ -58,7 +61,7 @@ export interface ReplaceVarsOptions{
     default?:string                 // 如果变量不存在时的默认值
     delimiter?:string
     // 遍历所有插值变量的回调函数，必须返回[prefix,value,suffix]或value
-    forEach?:(name:string,value:string,prefix:string,suffix:string)=>[string,string,string ] | string
+    forEach?:(name:string,value:string,prefix:string,suffix:string)=>ForEachReturnType
 }
 
 export function replaceVars(text:string,vars:any,options?:ReplaceVarsOptions):string {
@@ -106,15 +109,17 @@ export function replaceVars(text:string,vars:any,options?:ReplaceVarsOptions):st
         }
         // 如果指定了forEach则调用，并且使用返回值作为插值变量的值
         if(typeof(opts.forEach)=='function'){
-            const r = opts.forEach(name,varValue,prefix,suffix)            
-            if(Array.isArray(r) && r.length==3){                            
-                prefix=r[0]
-                varValue = r[1]
-                suffix=r[2]
-            }else if(!isNothing(r)){
-                varValue = String(r)
-            }
-            isEmpty= isNothing(varValue)
+            const r = opts.forEach(name,varValue,prefix,suffix)        
+            if(r!==undefined){
+                if(Array.isArray(r) && r.length==3){                            
+                    prefix=r[0]
+                    varValue = r[1]
+                    suffix=r[2]
+                }else if(!isNothing(r)){
+                    varValue = String(r)
+                }
+                isEmpty= isNothing(varValue)
+            }    
         }
         // 为空时使用empty替换
         if(isEmpty){

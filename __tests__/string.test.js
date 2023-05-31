@@ -109,6 +109,35 @@ test("replaceVars遍历替换", ()=>{
         }
     }) 
     expect(result).toEqual("1234") 
+    const template = "Error while execute method{<(>module/func/lineno<)>}"
+    let errInfo = {
+        module:"auth",
+        func:"login",
+        lineno:123
+    }
+    const opts = {
+        $forEach:(name,value,prefix,suffix)=>{
+            if(name=='module/func/lineno'){
+                if(!(errInfo.module || errInfo.func || errInfo.lineno)){
+                    return ['','','']
+                }else{
+                    return `${errInfo.module}/${errInfo.func ? errInfo.func : 'unknow'}/${errInfo.lineno}`
+                }
+            }
+        }
+    }
+    let text = template.params(opts)
+    expect(text).toEqual("Error while execute method(auth/login/123)")
+
+    errInfo.func = undefined
+    text = template.params(opts)
+    expect(text).toEqual("Error while execute method(auth/unknow/123)")
+    //
+    errInfo={}
+    text = template.params(opts)
+    expect(text).toEqual("Error while execute method")
+
+
 })
 
 

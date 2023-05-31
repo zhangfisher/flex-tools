@@ -147,10 +147,19 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
 - 如果`$empty`参数也为`null`，则前缀和后缀内容会被忽略。
 - 如果`$empty`参数不为`null`，则原样输出前缀和后缀内容。
 
+### 配置参数
 
-### 控制参数
+为了避免参数与插值变量冲突，约定当`params`的最后一个参数是`{...}`,并且包含`$empty`,`$delimiter`,`$forEach`中的任何一个成员时，则代表该参数是配置参数而不是插值变量。
+配置参数用来控制一些插值行为。
 
-`params`方法支持传入一些控制参数：
+```typescript
+
+"{a}{b}".params({a:1,b:2})   // {a:1,b:2}是变量字典
+"{a}{b}".params({$empty:"空",a:1,b:2})   // 传入的不是变量字典，而是一个配置对象
+"{a}{b}".params({$forEach:()=>{},a:1,b:2})   // 传入的不是变量字典，而是一个配置对象
+
+
+```
 
 - `$empty:string | null`: 当变量值为空时`(undefined,null,[],{})`显示的内容，如果为`null`则不显示.
 - `$delimiter:string`: 当变量值是`[]`或`{}`时，使用该分割来连接内容，默认值是`,`。如:
@@ -160,27 +169,36 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
         "{a}".params({a:{x:1,y:2}})   // =="x=1,y=2"
         "{a}".params({a:{x:1,y:2}},{$delimiter:"#"})   // =="x=1#y=2"
     ```
-- `$forEach:(name:string,value:string,prefix:string,suffix:string)=>[string,string,string ]`: 提供一个函数对插值变量进行遍历。如果该函数返回`[string,string,string]`或`string`,可用替换`prefix,value,suffix`或`value`
+- `$forEach:(name:string,value:string,prefix:string,suffix:string)`: 用来遍历插值变量
 
-    ```typescript
-        "{a}{b}{<#>c<#>}".params(
-           {a:1,b:2,c:3}, 
-           {
-                $forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,string ]=>{
-                    console.log(name,value,prefix,suffix)
-                    return [prefix,value,suffix]            // 分别返回前缀，变量值，后缀
-                    //return value                            // 返回变量值 
-                }
-           }
-        ) 
-        // 控制台输出： 
-        // a 1 
-        // b 2 
-        // c 3 # # 
-    ```
-### 示例
+### 遍历插值变量
 
-    利用`$forEach`的机制，可以实现一些比较好玩的特性，比如以下例子，
+`$forEach`控制参数可以指定一个函数用来遍历字符串中的插值变量并进行替换。
+
+```typescript
+$forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,string] | string | void | undefined | null
+
+"{a}{b}{<#>c<#>}".params(
+        {a:1,b:2,c:3}, 
+        {
+            $forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,string] | string | void | undefined | null=>{
+                console.log(name,value,prefix,suffix)
+                return [prefix,value,suffix]            // 分别返回前缀，变量值，后缀
+                //return value                            // 返回变量值 
+            }
+        }
+    ) 
+    // 控制台输出： 
+    // a 1 
+    // b 2 
+    // c 3 # # 
+```
+
+- 当`$forEach`返回[string,string,string]代表插值变量的值为`prefix,value,suffix`
+- 当`$forEach`返回`string`代表插值变量的值为`value`
+- 如果`$forEach`没有返回值，则不会对插值变量做任何变更。
+
+**利用`$forEach`的机制，可以实现一些比较好玩的特性，比如以下例子，**
     
     - **可以为插值变量值添加终端着色，从而使得在终端输出时插值变量显示为不同的颜色。**
 
@@ -211,7 +229,9 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
     expect(vars).toEqual(["a","b","c","d","","",""]) 
     ```
 
-    - **遍历字符串中的所有插值变量**
+    - **特殊的插值变量**
+
+    在进行日志输出时，我们需要根据插值变量`module`,`func`,`lineno`输出`Error while execute method(auth/login/13)`，并且当`module`,`func`,`lineno`三个变量均为空时，就输出`Error while execute method`，不显示未尾的`(...)`。
 
     ```typescript
     // 输出出错时的模块名称、函数名称、行号
@@ -222,7 +242,11 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
             if(name=='method'){
                 return "hello"
             }else if(name=='module/func/lineno'){
-                return `${errInfo.module}/${errInfo.func ? : errInfo.func:'unknow'}/${errInfo.lineno}`
+                if(errInfo.module==undefined || errInfo.func || errInfo.lineno){
+                    return ['','','']
+                }else{
+                    return `${errInfo.module}/${errInfo.func ? errInfo.func:'unknow'}/${errInfo.lineno}`
+                }
             }
         }
     }
@@ -232,15 +256,14 @@ import { trimEndChars } from "flex-tools/string/trimEndChars"
     text = template.params(opts)
     errorInfo.func = undefined
     expect(text).toEqual("Error while execute method<hello>(auth/unknow/123)")
+    //
+    errorInfo={}
+    text = template.params(opts)
+    expect(text).toEqual("Error while execute method<hello>")
 
     ```
-
-### 特别注意 
-
-- 为了避免参数与插值变量冲突，约定当`params`的最后一个参数是`{...}`,并且包含`$empty`,`$delimiter`,`$forEach`中的任何一个成员时，则代表该参数是控制参数而不是插值变量。
-
  
-
+ 
 ## replaceVars
 
 `replaceVars`是`String.prototype.params`的内部实现，功能一样，如果您不想将`params`函数注入到`string.prototype`则可以使用`replaceVars`函数。
