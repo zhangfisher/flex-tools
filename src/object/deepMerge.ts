@@ -1,6 +1,5 @@
 import { isPlainObject } from "../typecheck/isPlainObject"
 import { assignObject } from "./assignObject"
-
  
 /**
  * 简单进行对象深度合并
@@ -14,45 +13,51 @@ import { assignObject } from "./assignObject"
  * @returns 合并后的对象
  */
 export interface DeepMergeOptions{
-    array?:'replace' | 'merge' | 'uniqueMerge',                          // 数组合并策略，0-替换，1-合并，2-去重合并
     ignoreUndefined?: boolean                                            // 忽略undefined项不进行合并
-    newObject?:boolean                                                   // 是否返回新对象或者合并
+    // 声明同名项的合并策略，数组默认为uniqueMerge，{}默认为merge
+    merge: 'replace' | 'merge' | 'uniqueMerge' | ((fromValue:any,toValue:any,ctx:{key:string,from:any,to:any})=>any)                                                
 }
-export function deepMerge(toObj:any,formObj:any,options?:DeepMergeOptions){
-    let opts = assignObject({
-        array:"uniqueMerge",
-        ignoreUndefined:true,
-        newObject:true
-    },options)
-    let results:any =opts.newObject ?  Object.assign({},toObj) : toObj
-    Object.entries(formObj).forEach(([key,value])=>{
-        let result 
-        if(key in results){
-            if(value !== null){            
-                if(Array.isArray(value) && Array.isArray(results[key])){
-                    if(opts.array === 'replace' ){
-                        result = value
-                    }else if(opts.array === 'merge'){
-                        result = [...(Array.isArray(results[key]) ? results[key] : []),...value]
-                    }else if(opts.array === 'uniqueMerge'){
-                        result= [...new Set([...(Array.isArray(results[key]) ? results[key] : []),...value])]
+
+function hasMergeOptions(obj:Record<string | symbol,any>){
+    return ["$merge","$ignoreUndefined"].some(key=>key in obj)
+}
+export function deepMerge(...objs:Record<string | symbol,any>[]){
+    if(objs.length<2) throw new Error("deepMerge函数至少需要两个参数")
+    const hasOptions = objs.length >0 ? hasMergeOptions(objs[objs.length-1]) : false
+    // 读取配置参数对象
+    const {$merge,$ignoreUndefined} = assignObject({
+        $ignoreUndefined:true,
+        $merge:"uniqueMerge"
+    },hasOptions ? objs[objs.length-1] : {} )   
+    function deepMergeItem(fromObj:Record<string | symbol,any>,toObj:Record<string | symbol,any>){   
+        Object.entries(fromObj).forEach(([key,fromValue]:[string,any])=>{
+            let toValue:any 
+            if(key in toObj){
+                if(Array.isArray(fromValue) && Array.isArray(toObj[key])){
+                    if($merge === 'replace' ){
+                        toValue = fromValue
+                    }else if($merge === 'merge'){
+                        toValue = [...toObj[key],...fromValue]
+                    }else if($merge === 'uniqueMerge'){
+                        toValue= [...new Set([...toObj[key],...fromValue])]
+                    }else if(typeof($merge) === 'function'){
+                        toValue = $merge(toObj[key],fromValue,{key,from:fromObj,to:toObj})
                     }
-                }else if(isPlainObject(value) && isPlainObject(results[key])){
-                    result= deepMerge(results[key],value,opts)
+                    toObj[key] =$ignoreUndefined && fromValue===undefined ? toObj[key] : toValue
+                }else if(isPlainObject(fromValue) && isPlainObject(toObj[key])){
+                    deepMergeItem(fromValue,toObj[key])
                 }else{
-                    result = value  
+                    toObj[key] =$ignoreUndefined && fromValue===undefined ? toObj[key] : fromValue
                 }
-            }else{      
-                result = value                     
-            }
-        }else{ 
-            result = value 
-        }
-        if(opts.ignoreUndefined){
-            if(result!==undefined) results[key] = result
-        }else{
-            results[key] = result
-        }     
-    })
-    return results
+            }else{ 
+                toObj[key] = fromValue
+            }             
+        })
+    }
+    return objs.reduce((pre,cur,index)=>{
+        if(index==0) return pre
+        if(hasOptions && index === objs.length-1) return pre
+        deepMergeItem(cur,pre)
+        return pre
+    },objs[0])
 }

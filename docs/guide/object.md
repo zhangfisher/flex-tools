@@ -160,32 +160,33 @@ function test(options){
 
 ## deepMerge
 
-深度合并两个对象。
+深度合并多个对象到第一个对象参数中，功能类似`lodash/merge`，但是对数组的合并策略不同。
 
 ```typescript
-deepMerge(toObj:any,formObj:any,options:DeepMergeOptions)
+deepMerge(...objs:Record<string|symbol,any>[],options?:DeepMergeOptions):Record<string|symbol,any>;
 
 interface DeepMergeOptions{
     // 数组合并策略，0-替换，1-合并，2-去重合并
-    array?:'replace' | 'merge' | 'uniqueMerge',    
+    $merge: 'replace' | 'merge' | 'uniqueMerge' | ((fromValue:any,toValue:any,ctx:{key:string,from:any,to:any})=>any)                                                
     // 忽略undefined项不进行合并
-    ignoreUndefined?: boolean     
-    // 是否返回新对象或者合并
-    newObject?:boolean            
+    $ignoreUndefined?: boolean             
 }
 ```
 
-deepMerge支持以下参数:
+当`deepMerge`的最后一个为`Record<string|symbol,any>`，且包含`DeepMergeOptions`中的任一个属性时代表是一个配置项，而不是一个待合并的对象。
+  
+`deepMerge`支持以下参数:
 
-- `array`
-决定如何合并数组,与`lodash/merge`的区别在于对数组成员的合并处理机制不同,`array`参数可以指定如何对数据进行合并。
-    - `array='replace'`: 替换原始数据项
-    - `array='merge'`:  合并数组数据项
-    - `array='noDupMerge'`:  合并数组数据项，并且进行去重
-- `ignoreUndefined`
-忽略掉`fromObj`中的`undefined`项。
-- `newObject`
-默认情况下，`deepMerge`不会改变原始值，而是生成一个新的对象。如果需要直接修改`toObj`值，则应该设置`newObject=false`。
+- `$merge`
+决定如何合并数组,与`lodash/merge`的区别在于对数组成员的合并处理机制不同,`merge`参数可以指定如何对数据进行合并。
+    - `$merge='replace'`: 替换原始数据项
+    - `$merge='merge'`:  合并数组数据项
+    - `$merge='uniqueMerge'`:  合并数组数据项，并且进行去重
+    - `$merge`也可以是一个函数，用来自定义合并策略
+- `$ignoreUndefined`
+忽略掉`fromObj`中的`undefined`项。 
+
+
 
 ## getPropertyNames
 
