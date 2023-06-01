@@ -180,8 +180,8 @@ interface DeepMergeOptions{
 - `$merge`
 决定如何合并数组,与`lodash/merge`的区别在于对数组成员的合并处理机制不同,`merge`参数可以指定如何对数据进行合并。
     - `$merge='replace'`: 替换原始数据项
-    - `$merge='merge'`:  合并数组数据项
-    - `$merge='uniqueMerge'`:  合并数组数据项，并且进行去重
+    - `$merge='append'`:  合并追加到原数组
+    - `$merge='unique`:  合并数组，并且进行去重
     - `$merge`也可以是一个函数，用来自定义合并策略
 - `$ignoreUndefined`
 忽略掉`fromObj`中的`undefined`项。 

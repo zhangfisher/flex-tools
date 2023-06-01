@@ -13,9 +13,9 @@ import { assignObject } from "./assignObject"
  * @returns 合并后的对象
  */
 export interface DeepMergeOptions{
-    ignoreUndefined?: boolean                                            // 忽略undefined项不进行合并
-    // 声明同名项的合并策略，数组默认为uniqueMerge，{}默认为merge
-    merge: 'replace' | 'merge' | 'uniqueMerge' | ((fromValue:any,toValue:any,ctx:{key:string,from:any,to:any})=>any)                                                
+    $ignoreUndefined?: boolean                                            // 忽略undefined项不进行合并
+    // 声明同名项的合并策略，数组默认为unique，{}默认为append
+    $merge: 'replace' | 'append' | 'unique' | ((fromValue:any,toValue:any,ctx:{key:string,from:any,to:any})=>any)                                                
 }
 
 function hasMergeOptions(obj:Record<string | symbol,any>){
@@ -36,9 +36,9 @@ export function deepMerge(...objs:Record<string | symbol,any>[]){
                 if(Array.isArray(fromValue) && Array.isArray(toObj[key])){
                     if($merge === 'replace' ){
                         toValue = fromValue
-                    }else if($merge === 'merge'){
+                    }else if($merge === 'append'){
                         toValue = [...toObj[key],...fromValue]
-                    }else if($merge === 'uniqueMerge'){
+                    }else if($merge === 'append'){
                         toValue= [...new Set([...toObj[key],...fromValue])]
                     }else if(typeof($merge) === 'function'){
                         toValue = $merge(toObj[key],fromValue,{key,from:fromObj,to:toObj})
