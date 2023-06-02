@@ -19,9 +19,13 @@ export interface DeepMergeOptions{
 }
 
 function hasMergeOptions(obj:Record<string | symbol,any>){
-    return ["$merge","$ignoreUndefined"].some(key=>key in obj)
+    if(typeof(obj)=='object'){
+        return ["$merge","$ignoreUndefined"].some(key=>key in obj)
+    }else{
+        return false
+    }    
 }
-export function deepMerge(...objs:Record<string | symbol,any>[]){
+export function deepMerge(...objs:any[]){
     if(objs.length<2) throw new Error("deepMerge函数至少需要两个参数")
     const hasOptions = objs.length >0 ? hasMergeOptions(objs[objs.length-1]) : false
     // 读取配置参数对象
@@ -56,6 +60,7 @@ export function deepMerge(...objs:Record<string | symbol,any>[]){
     }
     return objs.reduce((pre,cur,index)=>{
         if(index==0) return pre
+        if(!isPlainObject(cur)) return pre        
         if(hasOptions && index === objs.length-1) return pre
         deepMergeItem(cur,pre)
         return pre
