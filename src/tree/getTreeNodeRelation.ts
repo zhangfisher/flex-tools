@@ -25,7 +25,7 @@ export enum TreeNodeRelation{
 }
 
 export function getTreeNodeRelation<Node extends TreeNode = TreeNode,IdKey extends string = 'id'>(treeObj:Node | Node[],nodeId:Node[IdKey],refNodeId:Node[IdKey],options?:GetTreeNodeRelationOptions):TreeNodeRelation{
-    let relation:TreeNodeRelation = 9;
+    let relation:any = 9;
 
     const opts= Object.assign({}, DefaultTreeOptions ,options || {}) as Required<GetTreeNodeRelationOptions>     
     const { idKey } = opts
@@ -61,5 +61,5 @@ export function getTreeNodeRelation<Node extends TreeNode = TreeNode,IdKey exten
         if(relation == TreeNodeRelation.Descendants) relation = TreeNodeRelation.Ancestors 
         if(relation == TreeNodeRelation.Child) relation = TreeNodeRelation.Parent
     }
-    return relation
+    return relation as TreeNodeRelation
 }
