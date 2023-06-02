@@ -515,3 +515,23 @@ isLikeObject({a:1,b:2,c:3},{b:2,a:1},{strict:true}) // false
 - 两个对象的键名称相同，但值的类型不同也认为是相似的
 - 默认`strict=false`代表不进行严格比较
 - `deep=true`则当对象的值均是对象时进行递归比较，否则只进行一层比较，默认值为`false`
+
+## hasKey
+
+判断对象中是否指定的键值.
+
+```typescript
+const obj = {
+  a: {
+    b: {
+      c: "hello",
+    },
+  },
+};
+console.log(hasKey(obj, "a.b.c")); // true
+console.log(hasKey(obj, "a.b.d")); // false
+console.log(hasKey(obj, "a.b")); // true
+console.log(hasKey(obj, "a")); // true
+console.log(hasKey(obj, "b")); // false
+```
+
