@@ -108,6 +108,37 @@ export interface getByPathOptions{
 - `defaultValue`参数可以用来指定一个默认值，当输入一个无效的路径时返回该默认值
 - 如果`ignoreInvalidPath=false`，则当输入一个无效的路径时会触发错误`InvalidPathError`，而不是返回默认值。
 - 当输入路径成功匹配到时会调用`matched`函数。 以下`set`函数就是利用此回调来实现的。
+- `get`支持两个可选泛型参数，第一个参数`R`为返回值类型，第二个参数`P`为路径名称类型。
+
+```typescript
+
+import type {ObjectPath} from "flex-tools"
+import { get} from "flex-tools/object/get"
+
+const obj = {
+    x: {
+        a: {
+            b1: '1',
+            b2: '1',
+            b3: 1
+        },
+        b: 1,
+        c:1
+    },
+    y:1
+    z:[1,2,3]
+} 
+ 
+
+// 第二个参数使用ObjectKeyPath来生成路径类型
+//  'x' | 'x.a' | 'x.a.b1' | 'x.a.b2' | 'x.a.b3' | 'x.b' | 'x.c' | 'y' | 'z' | `z[${number}]`
+const b1 = get<any,ObjectPath<typeof obj>>(obj,"x.a.b1") 
+const b1 = get<any,ObjectPath<typeof obj>>(obj,"z") 
+const b1 = get<any,ObjectPath<typeof obj>>(obj,"z[12]") 
+
+// 注意：ObjectPath用来生成路径强类型约束，但是其有一定的限制，请参阅types/ObjectPath说明
+
+```
 
 ## set
 
@@ -119,7 +150,7 @@ interface setByPathOptions{
     onlyUpdateUndefined?:boolean            // 仅在原值为undefined时更新
     allowUpdateNullPath?:boolean            // 当路径不存在时，是否允许更新
 }
-function set(obj:object,path:string,value:any,options?:setByPathOptions):object;
+function set<P extends string = string>(obj:object,path:P,value:any,options?:setByPathOptions):object;
 
     const obj = {
         a:{
@@ -157,6 +188,36 @@ function test(options){
 }
 ```
 -  `allowUpdateNullPath`指定当路径不存在时，是否允许更新，默认为`true`。
+- 泛型参数可以配合`ObjectPath`类型来指定路径类型参数。
+
+```typescript
+
+import type {ObjectPath} from "flex-tools"
+import { get} from "flex-tools/object/get"
+
+const obj = {
+    x: {
+        a: {
+            b1: '1',
+            b2: '1',
+            b3: 1
+        },
+        b: 1,
+        c:1
+    },
+    y:1
+    z:"1"
+} 
+ 
+
+// 第二个参数使用ObjectKeyPath来生成路径类型
+//  'x' | 'x.a' | 'x.a.b1' | 'x.a.b2' | 'x.a.b3' | 'x.b' | 'x.c' | 'y' | 'z'
+
+set<any,ObjectPath<typeof obj>>(obj,"x.a.b1") 
+set<any,ObjectPath<typeof obj>>(obj,"x.xxx")   // ERROR: 不能设置不存在的路径
+
+```
+
 
 ## deepMerge
 

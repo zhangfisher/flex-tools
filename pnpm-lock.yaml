@@ -20,7 +20,7 @@ devDependencies:
     version: 17.4.4(@swc/core@1.3.24)(commitizen@4.3.0)(inquirer@8.2.5)
   '@modern-js/module-tools':
     specifier: ^2.10.0
-    version: 2.10.0(typescript@4.9.5)
+    version: 2.10.0(typescript@5.1.3)
   '@swc/core':
     specifier: ^1.3.24
     version: 1.3.24
@@ -44,16 +44,16 @@ devDependencies:
     version: 8.0.3
   ts-node:
     specifier: ^10.9.1
-    version: 10.9.1(@swc/core@1.3.24)(@types/node@18.11.17)(typescript@4.9.5)
+    version: 10.9.1(@swc/core@1.3.24)(@types/node@18.11.17)(typescript@5.1.3)
   tsup:
     specifier: ^6.6.3
-    version: 6.6.3(@swc/core@1.3.24)(ts-node@10.9.1)(typescript@4.9.5)
+    version: 6.6.3(@swc/core@1.3.24)(ts-node@10.9.1)(typescript@5.1.3)
   type-fest:
     specifier: ^3.6.0
     version: 3.6.0
   typescript:
-    specifier: ^4.9.5
-    version: 4.9.5
+    specifier: ^5.1.3
+    version: 5.1.3
   vitest:
     specifier: ^0.26.2
     version: 0.26.2
@@ -1313,7 +1313,7 @@ packages:
       '@formily/validator': 2.2.21
     dev: true
 
-  /@formily/json-schema@2.2.21(typescript@4.9.5):
+  /@formily/json-schema@2.2.21(typescript@5.1.3):
     resolution: {integrity: sha512-hkpO/+JfhDyNAS/DX/DfKEI7HwONUHsJVr4vRDXFVnTkWxwF3Rrol1+jCQ/hySZxL40GdRt2c2RKTCcRtXfJ5w==}
     engines: {npm: '>=3.0.0'}
     peerDependencies:
@@ -1322,7 +1322,7 @@ packages:
       '@formily/core': 2.2.21
       '@formily/reactive': 2.2.21
       '@formily/shared': 2.2.21
-      typescript: 4.9.5
+      typescript: 5.1.3
     dev: true
 
   /@formily/path@2.2.21:
@@ -1447,13 +1447,13 @@ packages:
       read-yaml-file: 1.1.0
     dev: true
 
-  /@modern-js/codesmith-formily@2.0.5(@modern-js/codesmith@2.0.5)(typescript@4.9.5):
+  /@modern-js/codesmith-formily@2.0.5(@modern-js/codesmith@2.0.5)(typescript@5.1.3):
     resolution: {integrity: sha512-qm3qA98WdSMeA910UZxbD32nLzT/Cg0wNauRQGvwesX/XAgc6fUu4rB63cimIxblDcsxvYc2c8E3XGhoRL8daA==}
     peerDependencies:
       '@modern-js/codesmith': ^2.0.5
     dependencies:
       '@babel/runtime': 7.21.0
-      '@formily/json-schema': 2.2.21(typescript@4.9.5)
+      '@formily/json-schema': 2.2.21(typescript@5.1.3)
       '@formily/validator': 2.2.21
       '@modern-js/codesmith': 2.0.5
       '@modern-js/utils': 1.22.8
@@ -1485,11 +1485,11 @@ packages:
       - react-router-dom
     dev: true
 
-  /@modern-js/generator-common@3.1.0(@modern-js/codesmith@2.0.5)(typescript@4.9.5):
+  /@modern-js/generator-common@3.1.0(@modern-js/codesmith@2.0.5)(typescript@5.1.3):
     resolution: {integrity: sha512-GsWm3BvdkEpTC/Hs/dOeF0NZCgJ+eX8dQzF3QtaZvb1w41+lcOiBPgUPBhWJu0ISY23YnvWHxLKl+5cY8oGotA==}
     dependencies:
       '@babel/runtime': 7.21.0
-      '@modern-js/codesmith-formily': 2.0.5(@modern-js/codesmith@2.0.5)(typescript@4.9.5)
+      '@modern-js/codesmith-formily': 2.0.5(@modern-js/codesmith@2.0.5)(typescript@5.1.3)
       '@modern-js/plugin-i18n': 2.10.0
     transitivePeerDependencies:
       - '@modern-js/codesmith'
@@ -1499,11 +1499,11 @@ packages:
       - typescript
     dev: true
 
-  /@modern-js/generator-utils@3.1.0(@modern-js/codesmith@2.0.5)(typescript@4.9.5):
+  /@modern-js/generator-utils@3.1.0(@modern-js/codesmith@2.0.5)(typescript@5.1.3):
     resolution: {integrity: sha512-sLwBBaJUOyOw3FmKRgMkBlMmvEnFenpnKn9pNRl864sI5ceE2sMlqun/hqD5o+jQ5c0zWRGcMk47hfOG5ENJsw==}
     dependencies:
       '@babel/runtime': 7.21.0
-      '@modern-js/generator-common': 3.1.0(@modern-js/codesmith@2.0.5)(typescript@4.9.5)
+      '@modern-js/generator-common': 3.1.0(@modern-js/codesmith@2.0.5)(typescript@5.1.3)
       '@modern-js/plugin-i18n': 2.10.0
       '@modern-js/utils': 2.10.0
     transitivePeerDependencies:
@@ -1545,7 +1545,7 @@ packages:
       terser: 5.15.0
     dev: true
 
-  /@modern-js/module-tools@2.10.0(typescript@4.9.5):
+  /@modern-js/module-tools@2.10.0(typescript@5.1.3):
     resolution: {integrity: sha512-7XZRtBPcxViqu+XNbp2eGlOOeEJQ3xBHKpaBPCQblvfuJS1xIbGKneDaZt/ybT6alo96H0jyhAHJJChFg6IIZA==}
     hasBin: true
     peerDependencies:
@@ -1558,14 +1558,14 @@ packages:
       '@modern-js/libuild': 0.11.6
       '@modern-js/libuild-plugin-svgr': 0.11.6
       '@modern-js/libuild-plugin-swc': 0.11.6
-      '@modern-js/new-action': 2.10.0(typescript@4.9.5)
+      '@modern-js/new-action': 2.10.0(typescript@5.1.3)
       '@modern-js/plugin': 2.10.0
       '@modern-js/plugin-changeset': 2.10.0
       '@modern-js/plugin-i18n': 2.10.0
       '@modern-js/plugin-lint': 2.10.0
       '@modern-js/upgrade': 2.10.0
       '@modern-js/utils': 2.10.0
-      typescript: 4.9.5
+      typescript: 5.1.3
     transitivePeerDependencies:
       - debug
       - react
@@ -1574,14 +1574,14 @@ packages:
       - supports-color
     dev: true
 
-  /@modern-js/new-action@2.10.0(typescript@4.9.5):
+  /@modern-js/new-action@2.10.0(typescript@5.1.3):
     resolution: {integrity: sha512-286tU3g4bMx2+3V0ZNDwbs1U4QdyNH7DZnOxibriUDj7K/PqY4Ca1fVQiJkQMJ3zk7lSZO1qR/G4k7CAOuw1sw==}
     dependencies:
       '@babel/runtime': 7.21.0
       '@modern-js/codesmith': 2.0.5
-      '@modern-js/codesmith-formily': 2.0.5(@modern-js/codesmith@2.0.5)(typescript@4.9.5)
-      '@modern-js/generator-common': 3.1.0(@modern-js/codesmith@2.0.5)(typescript@4.9.5)
-      '@modern-js/generator-utils': 3.1.0(@modern-js/codesmith@2.0.5)(typescript@4.9.5)
+      '@modern-js/codesmith-formily': 2.0.5(@modern-js/codesmith@2.0.5)(typescript@5.1.3)
+      '@modern-js/generator-common': 3.1.0(@modern-js/codesmith@2.0.5)(typescript@5.1.3)
+      '@modern-js/generator-utils': 3.1.0(@modern-js/codesmith@2.0.5)(typescript@5.1.3)
       '@modern-js/utils': 2.10.0
     transitivePeerDependencies:
       - debug
@@ -4872,7 +4872,7 @@ packages:
         optional: true
     dependencies:
       lilconfig: 2.0.6
-      ts-node: 10.9.1(@swc/core@1.3.24)(@types/node@18.11.17)(typescript@4.9.5)
+      ts-node: 10.9.1(@swc/core@1.3.24)(@types/node@18.11.17)(typescript@5.1.3)
       yaml: 1.10.2
     dev: true
 
@@ -5624,11 +5624,43 @@ packages:
       yn: 3.1.1
     dev: true
 
+  /ts-node@10.9.1(@swc/core@1.3.24)(@types/node@18.11.17)(typescript@5.1.3):
+    resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
+    hasBin: true
+    peerDependencies:
+      '@swc/core': '>=1.2.50'
+      '@swc/wasm': '>=1.2.50'
+      '@types/node': '*'
+      typescript: '>=2.7'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      '@swc/wasm':
+        optional: true
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@swc/core': 1.3.24
+      '@tsconfig/node10': 1.0.9
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.3
+      '@types/node': 18.11.17
+      acorn: 8.8.1
+      acorn-walk: 8.2.0
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 5.1.3
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+    dev: true
+
   /tslib@2.5.0:
     resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==}
     dev: true
 
-  /tsup@6.6.3(@swc/core@1.3.24)(ts-node@10.9.1)(typescript@4.9.5):
+  /tsup@6.6.3(@swc/core@1.3.24)(ts-node@10.9.1)(typescript@5.1.3):
     resolution: {integrity: sha512-OLx/jFllYlVeZQ7sCHBuRVEQBBa1tFbouoc/gbYakyipjVQdWy/iQOvmExUA/ewap9iQ7tbJf9pW0PgcEFfJcQ==}
     engines: {node: '>=14.18'}
     hasBin: true
@@ -5659,7 +5691,7 @@ packages:
       source-map: 0.8.0-beta.0
       sucrase: 3.29.0
       tree-kill: 1.2.2
-      typescript: 4.9.5
+      typescript: 5.1.3
     transitivePeerDependencies:
       - supports-color
       - ts-node
@@ -5735,6 +5767,12 @@ packages:
   /typescript@4.9.5:
     resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
     engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: true
+
+  /typescript@5.1.3:
+    resolution: {integrity: sha512-XH627E9vkeqhlZFQuL+UsyAXEnibT0kWR2FWONlr4sTjvxyJYnyefgrkyECLzM5NenmKzRAy2rR/OlYLA1HkZw==}
+    engines: {node: '>=14.17'}
     hasBin: true
     dev: true
 

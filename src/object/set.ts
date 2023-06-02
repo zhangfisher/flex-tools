@@ -27,7 +27,7 @@ export interface setByPathOptions{
     allowUpdateNullPath?:boolean            // 当路径不存在时，是否允许更新
 }
 
-export function set(obj:object,path:string,value:any,options?:setByPathOptions):object{
+export function set<P extends string = string>(obj:object,path:P,value:any,options?:setByPathOptions):object{
     const {onlyUpdateUndefined,allowUpdateNullPath} = assignObject({
         onlyUpdateUndefined:false,
         allowUpdateNullPath:true

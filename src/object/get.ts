@@ -33,13 +33,13 @@ function parseArrayPath(pathItem:string):[string,number] | undefined{
 }
 
 
-export function get<R=any>(obj:Record<string,any>,path:string,options?:getByPathOptions):R{
+export function get<R=any,P extends string=string>(obj:Record<string,any>,path:P,options?:getByPathOptions):R{
     const { defaultValue,matched,ignoreInvalidPath} = assignObject({
         ignoreInvalidPath:true,
         defaultValue:undefined
     },options)
     while(path.includes("][")){
-        path = path.replace("][","].[")
+        path = path.replace("][","].[") as P
     }
     let paths = path.split('.')
     let result = obj
