@@ -1,5 +1,5 @@
 
-export * from "./types"
+export * from "./types/index"
 
 declare global {
     interface String {
