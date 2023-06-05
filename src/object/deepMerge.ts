@@ -27,7 +27,7 @@ export function deepMerge(...objs:Record<string | symbol,any>[]){
     // 读取配置参数对象
     const {$merge,$ignoreUndefined} = assignObject({
         $ignoreUndefined:true,
-        $merge:"uniqueMerge"
+        $merge:"replace"
     },hasOptions ? objs[objs.length-1] : {} )   
     function deepMergeItem(fromObj:Record<string | symbol,any>,toObj:Record<string | symbol,any>){   
         Object.entries(fromObj).forEach(([key,fromValue]:[string,any])=>{
