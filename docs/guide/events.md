@@ -142,6 +142,15 @@ const events =  new FlexEvent<Message,'a' | 'b' | 'c'>()
 events.on("aaa") // ERROR
 events.on("a")  // OK
 ```
+## LiteEvent
+
+`LiteEvent`是`FlexEvent`的简化版本，代码量减少约一半，主要差别在于：
+
+- 不支持通配符
+- `waitFor`只能支持单个事件
+- 不支持`emitAsync`方法
+- 移除了一些不常用的方法，如`getListeners`等
+
 ## FlexEventBus
 
 基于`FlexEvent`实现的简单的事件总线,用来提供一个应用模块之间通讯的机制。
