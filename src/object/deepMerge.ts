@@ -18,10 +18,10 @@ export interface DeepMergeOptions{
     $merge: 'replace' | 'append' | 'unique' | ((fromValue:any,toValue:any,ctx:{key:string,from:any,to:any})=>any)                                                
 }
 
-function hasMergeOptions(obj:Record<string | symbol,any>){
-    return ["$merge","$ignoreUndefined"].some(key=>key in obj)
+function hasMergeOptions(obj:Record<string | symbol,any> | undefined | null){    
+    return isPlainObject(obj) ? ["$merge","$ignoreUndefined"].some(key=>key in obj!) : false
 }
-export function deepMerge(...objs:Record<string | symbol,any>[]){
+export function deepMerge(...objs:(Record<string | symbol,any> | undefined | null)[]){
     if(objs.length<2) throw new Error("deepMerge函数至少需要两个参数")
     const hasOptions = objs.length >0 ? hasMergeOptions(objs[objs.length-1]) : false
     // 读取配置参数对象
@@ -29,8 +29,9 @@ export function deepMerge(...objs:Record<string | symbol,any>[]){
         $ignoreUndefined:true,
         $merge:"replace"
     },hasOptions ? objs[objs.length-1] : {} )   
-    function deepMergeItem(fromObj:Record<string | symbol,any>,toObj:Record<string | symbol,any>){   
-        Object.entries(fromObj).forEach(([key,fromValue]:[string,any])=>{
+    function deepMergeItem(fromObj:Record<string | symbol,any> | undefined | null,toObj:Record<string | symbol,any>){   
+        if(!isPlainObject(fromObj)) return
+        Object.entries(fromObj!).forEach(([key,fromValue]:[string,any])=>{
             let toValue:any 
             if(key in toObj){
                 if(Array.isArray(fromValue) && Array.isArray(toObj[key])){
@@ -55,9 +56,9 @@ export function deepMerge(...objs:Record<string | symbol,any>[]){
         })
     }
     return objs.reduce((pre,cur,index)=>{
-        if(index==0) return pre
+        if(index==0) return pre || {}
         if(hasOptions && index === objs.length-1) return pre
-        deepMergeItem(cur,pre)
+        deepMergeItem(cur,pre || {})
         return pre
     },objs[0])
 }
