@@ -18,8 +18,12 @@ export interface DeepMergeOptions{
     $merge: 'replace' | 'append' | 'unique' | ((fromValue:any,toValue:any,ctx:{key:string,from:any,to:any})=>any)                                                
 }
 
-function hasMergeOptions(obj:Record<string | symbol,any> | undefined | null){    
-    return isPlainObject(obj) ? ["$merge","$ignoreUndefined"].some(key=>key in obj!) : false
+function hasMergeOptions(obj:Record<string | symbol,any> | undefined | null){
+    if(isPlainObject(obj)){
+        return ["$merge","$ignoreUndefined"].some(key=>key in obj!)
+    }else{
+        return false
+    }    
 }
 export function deepMerge(...objs:(Record<string | symbol,any> | undefined | null)[]){
     if(objs.length<2) throw new Error("deepMerge函数至少需要两个参数")
@@ -57,6 +61,7 @@ export function deepMerge(...objs:(Record<string | symbol,any> | undefined | nul
     }
     return objs.reduce((pre,cur,index)=>{
         if(index==0) return pre || {}
+        if(!isPlainObject(cur)) return pre        
         if(hasOptions && index === objs.length-1) return pre
         deepMergeItem(cur,pre || {})
         return pre

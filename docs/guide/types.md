@@ -5,6 +5,43 @@ import type { <函数名称> } from "flex-tools"
 import type { <函数名称> } from "flex-tools/types"
 ```
 
+普通的`Json`对象类型
+## ObjectPath
+
+用来提取对象的键名路径字面量，可以用在`object/get`函数中，来约束路径参数。也可以用在`lodash/get`函数中。
+
+```typescript
+ 
+const obj = {
+    x: {
+        a: {
+            b1: '1',
+            b2: '1',
+            b3: [1,2,3,{foo:1,bar:2}]
+        },
+        b: 1,
+        c:1
+    },
+    y:1
+    z:[1,2,3]
+} 
+
+type paths = ObjectPath<typeof obj>
+
+//type paths == 'x' | 'x.a' | 'x.a.b1' | 'x.a.b2' | 'x.a.b3' | `x.a.b3[${number}]` | 'x.b' | 'x.c' | 'y' | 'z' | `z[${number}]`
+
+import { get} from "flex-tools/object/get"
+
+get<any,paths>(obj,"x.a.b1")  // 可以约束路径的类型
+get<any,paths>(obj,"x.a.xx")  // ERROR
+get<any,paths>(obj,"x.a.b3]")  
+get<any,paths>(obj,"x.a.b3[1]") 
+
+``` 
+
+-  `ObjectPath`支持数组路径，如`x.a.b3[1]`，`z[1]`等，但不能展开数组成员类型，如`x.a.b3[1][2]`,`x.a.b3[3].foo`这种嵌套数组路径类型是不支持的，而`flextools/object/get`和`lodash/get`均支持这种嵌套数组路径类型。
+
+
 ## Class
 
 类类型
@@ -29,13 +66,21 @@ export type ArrayMember<T> = T extends (infer T)[] ? T : never
 ```typescript
 export type AsyncFunction = (...args: any[]) => Awaited<Promise<any>>;
 ```
- 
-## ReturnValueType
 
-提取函数的返回值类型
+## FirstArgument
+
+获取函数的第一个参数类型
 
 ```typescript
-export type ReturnValueType<T> = T extends (...args: any) => any ? ReturnType<T> : any;
+export type FirstArgument<T extends (...args:any[])=>any> = Parameters<T>[0]
+```
+
+## LastArgument
+
+获取函数的最后一个参数类型
+
+```typescript
+export type LastArgument<T> = T extends (...args:infer Args) => any ? (Args extends [...infer _,infer L] ? L :never) : never
 ```
 
 ## AllowEmpty
@@ -271,40 +316,3 @@ type Merged = Merge<[Foo, Bar, Baz]>;
 ```
 
 ## JsonObject
-
-普通的`Json`对象类型
-## ObjectPath
-
-用来提取对象的键名路径字面量，可以用在`object/get`函数中，来约束路径参数。也可以用在`lodash/get`函数中。
-
-```typescript
- 
-const obj = {
-    x: {
-        a: {
-            b1: '1',
-            b2: '1',
-            b3: [1,2,3,{foo:1,bar:2}]
-        },
-        b: 1,
-        c:1
-    },
-    y:1
-    z:[1,2,3]
-} 
-
-type paths = ObjectPath<typeof obj>
-
-//type paths == 'x' | 'x.a' | 'x.a.b1' | 'x.a.b2' | 'x.a.b3' | `x.a.b3[${number}]` | 'x.b' | 'x.c' | 'y' | 'z' | `z[${number}]`
-
-import { get} from "flex-tools/object/get"
-
-get<any,paths>(obj,"x.a.b1")  // 可以约束路径的类型
-get<any,paths>(obj,"x.a.xx")  // ERROR
-get<any,paths>(obj,"x.a.b3]")  
-get<any,paths>(obj,"x.a.b3[1]") 
-
-``` 
-
--  `ObjectPath`支持数组路径，如`x.a.b3[1]`，`z[1]`等，但不能展开数组成员类型，如`x.a.b3[1][2]`,`x.a.b3[3].foo`这种嵌套数组路径类型是不支持的，而`flextools/object/get`和`lodash/get`均支持这种嵌套数组路径类型。
-
