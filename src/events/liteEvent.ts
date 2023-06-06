@@ -226,5 +226,4 @@ export class LiteEvent<Message=any,Events extends string = string>{
          }
          return this.executeListeners(event,message)
      }
- }
- export * from "./types"
+ } 

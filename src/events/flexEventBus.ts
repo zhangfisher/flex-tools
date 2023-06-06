@@ -23,7 +23,8 @@
  * 
  */
 import { assignObject } from "../object/assignObject"
-import { FlexEvent,FlexEventListener,FlexEventOptions,FlexEventSubscriber } from "./flexEvent"
+import { FlexEvent } from "./flexEvent"
+import type { FlexEventListener,FlexEventOptions,FlexEventSubscriber } from "./types"
 
 
 export interface FlexEventLikeError{
