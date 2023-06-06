@@ -60,5 +60,5 @@ export function deepMerge(...objs:(Record<string | symbol,any> | undefined | nul
         if(hasOptions && index === objs.length-1) return pre
         deepMergeItem(cur,pre || {})
         return pre
-    },objs[0])
+    },objs[0]) as Record<string | symbol,any>
 }
