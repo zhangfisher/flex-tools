@@ -92,5 +92,4 @@ export function get<R=any,P extends string=string>(obj:Record<string,any>,path:P
     return result as R
 }
 
-
-export const getByPath = get
+ 
