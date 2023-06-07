@@ -70,3 +70,6 @@ export function set<P extends string = string>(obj:object,path:P,value:any,optio
     }    
     return obj
 }
+
+
+export const setByPath = set
