@@ -1,11 +1,33 @@
 /** 
 * 一个简单的事件触发器 
 */
-import type { FlexEventListener, FlexEventListenerRegistry, FlexEventSubscriber, FlexListenerRegistry, ForEachEventListenerCallback, SubscribeOptions } from "./types";
-  
+ 
+
+export interface LiteEventSubscribeOptions{
+    objectify?: boolean                 //  当调用时返回一个对象用来退订
+    count?:number                       // 触发几次
+}
+
+export interface LiteEventListener<Message=any>{
+    (message:Message):void 
+}
+
+
+export type ForEachLiteEventListenerCallback<Message,Events> = ({event,listenerId,listener,count,eventListeners}:{event:Events,listenerId:number,listener:LiteEventListener<Message>,count:number,eventListeners:LiteEventListenerRegistry<Message>})=>boolean | void
+
+
+export interface LiteEventSubscriber{
+    off():void
+}
+
+
+export type LiteEventListenerRegistry<M> = Map<number,[LiteEventListener<M>,number]>
+export type LiteListenerRegistry<M,E> = Map<E,LiteEventListenerRegistry<M>>
+
+
 export class LiteEvent<Message=any,Events extends string = string>{
      // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
-     #listeners:FlexListenerRegistry<Message,Events>= new Map()
+     #listeners:LiteListenerRegistry<Message,Events>= new Map()
      // 保留最后一次触发的消息,key=事件名称,value=消息
      #lastMessage:Record<string,any> = {}        
      static listenerSeqId:number = 0
@@ -18,13 +40,13 @@ export class LiteEvent<Message=any,Events extends string = string>{
       * @param options 
       * @returns 
       */
-     on(event:Events,callback:FlexEventListener<Message>,options?:SubscribeOptions):FlexEventSubscriber | number{
-         const { objectify = false,count=-1 } = options as Required<SubscribeOptions>        
+     on(event:Events,callback:LiteEventListener<Message>,options?:LiteEventSubscribeOptions):LiteEventSubscriber | number{
+         const { objectify = false,count=-1 } = options as Required<LiteEventSubscribeOptions>        
          if(!this.#listeners.has(event)){
              this.#listeners.set(event,new Map())        
          }
          const listenerId =  ++LiteEvent.listenerSeqId            
-         const eventListeners = this.#listeners.get(event) as FlexEventListenerRegistry<Message>
+         const eventListeners = this.#listeners.get(event) as LiteEventListenerRegistry<Message>
          eventListeners?.set(listenerId,[callback,count])        
          // 如果启用了retain,则应该马上触发最后保存的事件
          this.emitRetainEvent(event,listenerId,eventListeners)      
@@ -45,7 +67,7 @@ export class LiteEvent<Message=any,Events extends string = string>{
       * 如果事件已经有最近触发时保留的数据，则立即触发事件将最近的数据传递给侦听器
       * @param event 
       */
-     private emitRetainEvent(event:Events,listenerId:number,eventListeners:FlexEventListenerRegistry<Message>){
+     private emitRetainEvent(event:Events,listenerId:number,eventListeners:LiteEventListenerRegistry<Message>){
         this.executeListener(listenerId,eventListeners,this.#lastMessage[event])   
      }
      /**
@@ -55,7 +77,7 @@ export class LiteEvent<Message=any,Events extends string = string>{
       * @param options 
       * @returns 
       */
-     once(event:Events,callback:FlexEventListener<Message>,options?:SubscribeOptions){
+     once(event:Events,callback:LiteEventListener<Message>,options?:LiteEventSubscribeOptions){
          return this.on(event,callback,Object.assign({},options,{count:1}))        
      }  
  
@@ -64,7 +86,7 @@ export class LiteEvent<Message=any,Events extends string = string>{
       *   {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
       * @param callback  ={}
       */
-     private forEachListeners(callback:({event,listenerId,listener,count,eventListeners}:{event:Events,listenerId:number,listener:FlexEventListener<Message>,count:number,eventListeners:FlexEventListenerRegistry<Message>})=>boolean | void){
+     private forEachListeners(callback:({event,listenerId,listener,count,eventListeners}:{event:Events,listenerId:number,listener:LiteEventListener<Message>,count:number,eventListeners:LiteEventListenerRegistry<Message>})=>boolean | void){
          // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
          let isAbort = false
          for(let [event,eventListeners] of this.#listeners.entries()){
@@ -86,10 +108,10 @@ export class LiteEvent<Message=any,Events extends string = string>{
       * @param callback 
       * @returns 
       */
-     private forEachEventListeners(event:Events,callback:ForEachEventListenerCallback<Message,Events>){
+     private forEachEventListeners(event:Events,callback:ForEachLiteEventListenerCallback<Message,Events>){
          // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}        
          let isAbort = false        
-         let matchedListeners = [[event,this.#listeners.get(event)]] as [Events,FlexEventListenerRegistry<Message> | undefined][]       
+         let matchedListeners = [[event,this.#listeners.get(event)]] as [Events,LiteEventListenerRegistry<Message> | undefined][]       
          for(let [eventName,eventListeners] of matchedListeners){
              if(!eventListeners) continue
              for(let [listenerId,[listener,count]] of eventListeners){
@@ -116,9 +138,9 @@ export class LiteEvent<Message=any,Events extends string = string>{
       * @param callback 
       * @returns 
       */ 
-      off(listener:FlexEventListener<Message>):void;
+      off(listener:LiteEventListener<Message>):void;
       off(listenerId:number):void;
-      off(event:Events,listener:FlexEventListener<Message>):void;
+      off(event:Events,listener:LiteEventListener<Message>):void;
       off(){
          // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
         if(arguments.length==1){
@@ -188,7 +210,7 @@ export class LiteEvent<Message=any,Events extends string = string>{
       * @param message 
       * @returns 
       */
-     private executeListener(listenerId:number,listeners:FlexEventListenerRegistry<Message>,message?:Message){
+     private executeListener(listenerId:number,listeners:LiteEventListenerRegistry<Message>,message?:Message){
          if(!listeners) return 
          const listener = listeners!.get(listenerId)
          if(!listener) return 
