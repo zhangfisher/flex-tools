@@ -68,7 +68,9 @@ export class LiteEvent<Message=any,Events extends string = string>{
       * @param event 
       */
      private emitRetainEvent(event:Events,listenerId:number,eventListeners:LiteEventListenerRegistry<Message>){
-        this.executeListener(listenerId,eventListeners,this.#lastMessage[event])   
+        if(event in this.#lastMessage){
+            this.executeListener(listenerId,eventListeners,this.#lastMessage[event])   
+        }        
      }
      /**
       * 只订阅一次事件

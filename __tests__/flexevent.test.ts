@@ -1,6 +1,7 @@
 import { test, expect, vi, describe, afterEach, beforeEach } from "vitest"
 import { FlexEvent, FlexEventBus, FlexEventBusMessage, FlexEventBusNode, FlexEventListener, TimeoutError } from "../src"
 import { delay } from "../src/async"
+import { LiteEvent } from '../src/events/liteEvent';
 
 describe("事件触发器", () => {
 
@@ -420,5 +421,14 @@ describe("测试事件总线", async () => {
         })
     })
 
+    test("liteEvent",()=>{
+        return new Promise<void>((resolve) => {
+            let events = new LiteEvent()
+            events.once("loaded",()=>{
+                console.log("loaded")
+            })
+        
+        })
+    })
 
 })
