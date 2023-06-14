@@ -58,3 +58,11 @@ async function packageIsInstalled(packageName:string,checkGlobal:boolean=false):
 - `checkGlobal`参数用来指定是否在全局进行检查。
 
 
+# updatePackageJson
+
+更新当前工程的`package.json`
+
+```typescript
+
+
+```

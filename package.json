@@ -2,19 +2,25 @@
   "name": "flex-tools",
   "version": "1.2.8",
   "description": "modular utilities.",
-  "main": "src/index.js",
-  "module": "src/index.mjs",
-  "types": "src/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "homepage": "https://github.com/zhangfisher/flex-tools",
   "repository": "https://github.com/zhangfisher/flex-tools",
+  "files": [
+    "dist",
+    "README.md",
+    "package.json",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "modern build && cd dist && npm pkg set main=index.js && npm pkg set module=index.mjs && npm pkg set types=index.d.ts",
-    "release": "npm version patch  --commit-hooks=false && npm run build && cd dist && git init && npm publish",
+    "build:tsup": "tsup",
+    "release": "npm version patch --commit-hooks=false && npm run build && npm publish",
     "doc": "docsify serve docs",
     "prepare": "husky install",
     "commit": "git add . && git cz",
-    "build:test": "modern build",
     "sync": "cnpm sync flex-tools"
   },
   "keywords": [],
@@ -38,8 +44,6 @@
     "vitest": "^0.26.2"
   },
   "dependencies": {
-    "fs-extra": "^11.1.0",
-    "shelljs": "^0.8.5",
     "string.prototype.replaceall": "^1.0.7"
   },
   "config": {

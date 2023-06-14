@@ -12,5 +12,6 @@
     * [类型判断](/guide/typecheck)
     * [类](/guide/classs)
     * [异步](/guide/async)
+    * [包](/guide/package)
     * [杂项](/guide/misc)    
     * [TypeScript类型](/guide/types)
