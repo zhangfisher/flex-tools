@@ -177,3 +177,18 @@ function relativeTime(value:Date | number,baseTime?:Date | number,options?:Relat
     - `before`默认等于`{value}{unit}前`，可以自定义显示方式。
     - `after`默认等于`{value}{unit}后`，可以自定义显示方式。
 
+
+## execScript
+
+执行脚本命令
+
+```typescript
+interface ExecScriptOptions{
+    silent?:boolean
+    env?:NodeJS.ProcessEnv,
+    maxBuffer?:number
+    encoding?:string  
+}
+async function execScript(script:string,options?:ExecScriptOptions)
+```
+
