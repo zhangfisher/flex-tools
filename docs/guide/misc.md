@@ -180,15 +180,19 @@ function relativeTime(value:Date | number,baseTime?:Date | number,options?:Relat
 
 ## execScript
 
-执行脚本命令
+执行脚本命令并返回输出字符串
 
 ```typescript
 interface ExecScriptOptions{
-    silent?:boolean
+    silent?:boolean                     // 静默输出,即控制台输出不会显示
     env?:NodeJS.ProcessEnv,
     maxBuffer?:number
     encoding?:string  
 }
 async function execScript(script:string,options?:ExecScriptOptions)
+
+await execScript("npm info")
+const output = await execScript("npm info",{silent:true})          // 控制台不显示
+
 ```
 
