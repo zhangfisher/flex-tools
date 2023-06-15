@@ -41,7 +41,7 @@ export class LiteEvent<Message=any,Events extends string = string>{
       * @returns 
       */
      on(event:Events,callback:LiteEventListener<Message>,options?:LiteEventSubscribeOptions):LiteEventSubscriber | number{
-         const { objectify = false,count=-1 } = options as Required<LiteEventSubscribeOptions>        
+         const { objectify = false,count=-1 } = Object.assign({},options) as Required<LiteEventSubscribeOptions>        
          if(!this.#listeners.has(event)){
              this.#listeners.set(event,new Map())        
          }
