@@ -6,7 +6,7 @@ import { packageIsInstalled } from "./packageIsInstalled"
 
 export interface installPackageOptions{
     silent?: boolean                                // 执行安装时静默输出
-    type?: 'prod' | 'dev' | 'peer' | 'optional'     // 安装开发依赖
+    type?: 'prod' | 'dev' | 'peer' | 'optional'     // 安装开发依赖 
     global?: boolean                                // 安装为全局依赖
     upgrade?: boolean                               // 当依赖已经安装时是否进行升级 
     use?:"auto" | string                            // 使用哪一个包工具
@@ -25,7 +25,7 @@ export async function installPackage(packageName:string,options?:installPackageO
     },options)
     const packageTool =use =='auto' ? getPackageTool() : use
     let args = []
-    
+    let hasInstalled = false
     const isInstalled = await packageIsInstalled(packageName)
     if(isInstalled && upgrade){
         if(packageTool.includes('pnpm')){           
@@ -37,7 +37,8 @@ export async function installPackage(packageName:string,options?:installPackageO
         }else{
             await execScript(`${packageTool} upgrade ${packageName}`,{silent})        
         }
-    }else{
+        hasInstalled =true
+    }else if(!isInstalled){
         if(packageTool.includes('pnpm')){
             if(isGlobal) args.push("-g")
             if(type=='dev') args.push("-D")
@@ -63,5 +64,7 @@ export async function installPackage(packageName:string,options?:installPackageO
             if(type=='optional') args.push("-O")
             await execScript(`${packageTool} install  ${args.join(" ")} ${packageName}`,{silent}) 
         }
+        hasInstalled =true
     }    
+    return hasInstalled 
 } 
