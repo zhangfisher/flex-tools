@@ -144,7 +144,9 @@ events.on("a")  // OK
 ```
 ## LiteEvent
 
-`LiteEvent`是`FlexEvent`的简化版本，代码量减少约一半，主要差别在于：
+`LiteEvent`是`FlexEvent`的简化版本，代码量减少约一半，当需要一个简单的事件触发器时可以使用。
+
+与`FlexEvent`主要差别在于：
 
 - 不支持通配符
 - `waitFor`只能支持单个事件
