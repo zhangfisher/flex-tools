@@ -9,6 +9,7 @@ export interface installPackageOptions{
     type?: 'prod' | 'dev' | 'peer' | 'optional'     // 安装开发依赖
     global?: boolean                                // 安装为全局依赖
     upgrade?: boolean                               // 当依赖已经安装时是否进行升级 
+    use?:"auto" | string                            // 使用哪一个包工具
 }
 /**
  * 在当前项目下安装指定的包
@@ -16,12 +17,13 @@ export interface installPackageOptions{
  * @param param1 
  */
 export async function installPackage(packageName:string,options?:installPackageOptions){
-    const {silent,type,global:isGlobal,upgrade} = assignObject({
+    const {silent,type,global:isGlobal,upgrade,use} = assignObject({
         silent:true,
         type:'prod',
         upgrade:true,               // 当包已经安装时,是否升级到最新版本
+        use:"auto"
     },options)
-    const packageTool = getPackageTool()
+    const packageTool =use =='auto' ? getPackageTool() : use
     let args = []
     
     const isInstalled = await packageIsInstalled(packageName)
