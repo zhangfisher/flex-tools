@@ -32,9 +32,11 @@ export async function installPackage(packageName:string,options?:installPackageO
             await execScript(`pnpm upgrade  --latest ${packageName}`,{silent}) 
         }else if(packageTool.includes('yarn')){
             await execScript(`yarn upgrade --latest ${packageName}`,{silent})        
-        }else{
+        }else if(packageTool.includes('npm')){
             await execScript(`npm upgrade ${packageName}`,{silent})        
-        }  
+        }else{
+            await execScript(`${packageTool} upgrade ${packageName}`,{silent})        
+        }
     }else{
         if(packageTool.includes('pnpm')){
             if(isGlobal) args.push("-g")
@@ -48,12 +50,18 @@ export async function installPackage(packageName:string,options?:installPackageO
             if(type=='peer') args.push("-P")
             if(type=='optional') args.push("-O")
             await execScript(`yarn ${isGlobal ? 'global ' :''}add  ${args.join(" ")} ${packageName}`,{silent})        
-        }else{
+        }else if(packageTool.includes('npm')){
             if(isGlobal) args.push("-g")
             if(type=='dev') args.push("-D --save-dev")
             if(type=='peer') args.push("-P")
             if(type=='optional') args.push("-O")
             await execScript(`npm install  ${args.join(" ")} ${packageName}`,{silent})        
-        }  
+        }else{
+            if(isGlobal) args.push("-g")
+            if(type=='dev') args.push("-D --save-dev")
+            if(type=='peer') args.push("-P")
+            if(type=='optional') args.push("-O")
+            await execScript(`${packageTool} install  ${args.join(" ")} ${packageName}`,{silent}) 
+        }
     }    
 } 
