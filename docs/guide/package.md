@@ -63,6 +63,18 @@ async function packageIsInstalled(packageName:string,checkGlobal:boolean=false):
 更新当前工程的`package.json`
 
 ```typescript
+function updatePackageJson(data:Record<string,any>)
+```
 
+# initPackage
+
+初始化一个标准的nodejs包
+
+```typescript
+
+async function initPackage(packageName:string,location?:string)
 
 ```
+
+- `packageName`：包名
+- `location`：包的存放位置，默认为当前目录下
