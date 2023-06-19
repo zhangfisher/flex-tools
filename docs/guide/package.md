@@ -37,14 +37,19 @@ function getPackageTool():('pnpm' | 'npm' | 'yarn')[]
 
 ```typescript
 interface installPackageOptions{
+    location?:string                                // 安装位置
     silent?: boolean                                // 执行安装时静默输出
-    type?: 'prod' | 'dev' | 'peer' | 'optional'     // 安装开发依赖
+    type?: 'prod' | 'dev' | 'peer' | 'optional'     // 安装开发依赖 
     global?: boolean                                // 安装为全局依赖
     upgrade?: boolean                               // 当依赖已经安装时是否进行升级 
+    use?:"auto" | string                            // 使用哪一个包工具
 }
 async function installPackage(packageName:string,options?:installPackageOptions)
 
 ```
+
+- `location`：安装位置，默认为当前工程根目录下。`location`可以是任意的路径，安装时会向上查找`package.json`文件，然后进行安装
+- 如果安装成功则返回`true`,否则返回`false`
 
 # packageIsInstalled
 

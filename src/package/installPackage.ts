@@ -5,6 +5,7 @@ import { packageIsInstalled } from "./packageIsInstalled"
 
 
 export interface installPackageOptions{
+    location?:string                                // 安装位置
     silent?: boolean                                // 执行安装时静默输出
     type?: 'prod' | 'dev' | 'peer' | 'optional'     // 安装开发依赖 
     global?: boolean                                // 安装为全局依赖
@@ -17,7 +18,9 @@ export interface installPackageOptions{
  * @param param1 
  */
 export async function installPackage(packageName:string,options?:installPackageOptions){
-    const {silent,type,global:isGlobal,upgrade,use} = assignObject({
+    const {silent,type,global:isGlobal,upgrade,use,location} = assignObject({
+        location:process.cwd(),
+        global:false,
         silent:true,
         type:'prod',
         upgrade:true,               // 当包已经安装时,是否升级到最新版本
@@ -26,45 +29,52 @@ export async function installPackage(packageName:string,options?:installPackageO
     const packageTool =use =='auto' ? getPackageTool() : use
     let args = []
     let hasInstalled = false
-    const isInstalled = await packageIsInstalled(packageName)
-    if(isInstalled && upgrade){
-        if(packageTool.includes('pnpm')){           
-            await execScript(`pnpm upgrade  --latest ${packageName}`,{silent}) 
-        }else if(packageTool.includes('yarn')){
-            await execScript(`yarn upgrade --latest ${packageName}`,{silent})        
-        }else if(packageTool.includes('npm')){
-            await execScript(`npm upgrade ${packageName}`,{silent})        
-        }else{
-            await execScript(`${packageTool} upgrade ${packageName}`,{silent})        
-        }
-        hasInstalled =true
-    }else if(!isInstalled){
-        if(packageTool.includes('pnpm')){
-            if(isGlobal) args.push("-g")
-            if(type=='dev') args.push("-D")
-            if(type=='peer') args.push("-P")
-            if(type=='optional') args.push("-O")
-            await execScript(`pnpm add ${args.join(" ")} ${packageName}`,{silent}) 
-        }else if(packageTool.includes('yarn')){
-            if(isGlobal) args.push("-g")
-            if(type=='dev') args.push("-D")
-            if(type=='peer') args.push("-P")
-            if(type=='optional') args.push("-O")
-            await execScript(`yarn ${isGlobal ? 'global ' :''}add  ${args.join(" ")} ${packageName}`,{silent})        
-        }else if(packageTool.includes('npm')){
-            if(isGlobal) args.push("-g")
-            if(type=='dev') args.push("-D --save-dev")
-            if(type=='peer') args.push("-P")
-            if(type=='optional') args.push("-O")
-            await execScript(`npm install  ${args.join(" ")} ${packageName}`,{silent})        
-        }else{
-            if(isGlobal) args.push("-g")
-            if(type=='dev') args.push("-D --save-dev")
-            if(type=='peer') args.push("-P")
-            if(type=='optional') args.push("-O")
-            await execScript(`${packageTool} install  ${args.join(" ")} ${packageName}`,{silent}) 
-        }
-        hasInstalled =true
-    }    
+    const cwd = process.cwd()
+    const isInstalled = await packageIsInstalled(packageName,{location})
+    await execScript(`cd ${location}`,{silent})
+    try{
+    
+        if(isInstalled && upgrade){
+            if(packageTool.includes('pnpm')){           
+                await execScript(`pnpm upgrade  --latest ${packageName}`,{silent}) 
+            }else if(packageTool.includes('yarn')){
+                await execScript(`yarn upgrade --latest ${packageName}`,{silent})        
+            }else if(packageTool.includes('npm')){
+                await execScript(`npm upgrade ${packageName}`,{silent})        
+            }else{
+                await execScript(`${packageTool} upgrade ${packageName}`,{silent})        
+            }
+            hasInstalled =true
+        }else if(!isInstalled){
+            if(packageTool.includes('pnpm')){
+                if(isGlobal) args.push("-g")
+                if(type=='dev') args.push("-D")
+                if(type=='peer') args.push("-P")
+                if(type=='optional') args.push("-O")
+                await execScript(`pnpm add ${args.join(" ")} ${packageName}`,{silent}) 
+            }else if(packageTool.includes('yarn')){
+                if(isGlobal) args.push("-g")
+                if(type=='dev') args.push("-D")
+                if(type=='peer') args.push("-P")
+                if(type=='optional') args.push("-O")
+                await execScript(`yarn ${isGlobal ? 'global ' :''}add  ${args.join(" ")} ${packageName}`,{silent})        
+            }else if(packageTool.includes('npm')){
+                if(isGlobal) args.push("-g")
+                if(type=='dev') args.push("-D --save-dev")
+                if(type=='peer') args.push("-P")
+                if(type=='optional') args.push("-O")
+                await execScript(`npm install  ${args.join(" ")} ${packageName}`,{silent})        
+            }else{
+                if(isGlobal) args.push("-g")
+                if(type=='dev') args.push("-D --save-dev")
+                if(type=='peer') args.push("-P")
+                if(type=='optional') args.push("-O")
+                await execScript(`${packageTool} install  ${args.join(" ")} ${packageName}`,{silent}) 
+            }
+            hasInstalled =true
+        }    
+    }finally{        
+        await execScript(`cd ${cwd}`,{silent})
+    }
     return hasInstalled 
 } 
