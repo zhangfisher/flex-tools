@@ -33,6 +33,9 @@ export async function initPackage(packageNameOrInfo:string | PackageInfo,locatio
     const packageJson = typeof(packageNameOrInfo) == "string" ? {
         name:packageNameOrInfo,
     } : packageNameOrInfo
+    if(!packageJson.name || packageJson.name.trim()===""){
+        throw new Error("package name is required")
+    }
     try{
         if(typeof(location)!='string') location= cwd
         if(!path.isAbsolute(location!)) location = path.join(cwd, location)

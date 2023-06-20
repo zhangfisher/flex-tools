@@ -2,9 +2,9 @@ import path from "node:path"
 import { InvalidProjectPathError } from "../errors"
 import fs from "node:fs"
 
-export function getPackageRootPath(entryPath:string="./",exclueCurrent:boolean=false):string | null{
+export function getPackageRootPath(entryPath:string="./",exclueCurrent:boolean=false):string | null{            
     if(!path.isAbsolute(entryPath)){
-        entryPath = path.join(process.cwd(),entryPath)
+        entryPath = path.join(process.cwd(),entryPath || "./")
     }
     try{ 
         const pkgFile =exclueCurrent ? 

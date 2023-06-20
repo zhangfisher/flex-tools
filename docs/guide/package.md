@@ -68,8 +68,13 @@ async function packageIsInstalled(packageName:string,checkGlobal:boolean=false):
 更新当前工程的`package.json`
 
 ```typescript
-function updatePackageJson(data:Record<string,any>)
+interface UpdatePackageJsonOptions{
+    location:string                 // 指定入口文件夹，如果不指定则使用当前工作目录
+}
+function updatePackageJson(data:Record<string,any>,options?:UpdatePackageJsonOptions)
 ```
+- `location`用来指定入口文件夹，如果不指定则使用当前工作目录。当没有指定时会以当前文件夹为起点查找`package.json`文件。如果有指定则会以指定的文件夹为起点查找`package.json`文件。
+
 
 # initPackage
 
@@ -77,9 +82,9 @@ function updatePackageJson(data:Record<string,any>)
 
 ```typescript
 
-async function initPackage(packageName:string,location?:string)
+async function initPackage(packageNameOrInfo:string | PackageInfo,location?:string)
 
 ```
 
-- `packageName`：包名
+- `packageNameOrInfo`：包名或者包信息JSON对象
 - `location`：包的存放位置，默认为当前目录下
