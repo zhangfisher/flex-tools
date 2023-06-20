@@ -49,6 +49,6 @@ export async function initPackage(packageNameOrInfo:string | PackageInfo,locatio
         }
         return packageJson
     }finally{
-        await execScript(`cd ${cwd}`)
+        process.chdir(cwd)
     }
 }

@@ -31,7 +31,7 @@ export async function installPackage(packageName:string,options?:installPackageO
     let hasInstalled = false
     const cwd = process.cwd()
     const isInstalled = await packageIsInstalled(packageName,{location})
-    await execScript(`cd ${location}`,{silent})
+    process.chdir(location)
     try{
     
         if(isInstalled && upgrade){
@@ -74,7 +74,7 @@ export async function installPackage(packageName:string,options?:installPackageO
             hasInstalled =true
         }    
     }finally{        
-        await execScript(`cd ${cwd}`,{silent})
+        process.chdir(cwd)
     }
     return hasInstalled 
 } 
