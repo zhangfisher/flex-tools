@@ -24,7 +24,7 @@ export async function installPackage(packageName:string,options?:installPackageO
         silent:true,
         type:'prod',
         upgrade:true,               // 当包已经安装时,是否升级到最新版本
-        use:"auto"
+        use:"pnpm"
     },options)
     const packageTool =use =='auto' ? getPackageTool() : use
     let args = []
