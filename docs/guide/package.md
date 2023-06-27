@@ -43,6 +43,7 @@ interface installPackageOptions{
     global?: boolean                                // 安装为全局依赖
     upgrade?: boolean                               // 当依赖已经安装时是否进行升级 
     use?:"auto" | string                            // 使用哪一个包工具
+    ignoreError?:boolean                            // 忽略错误
 }
 async function installPackage(packageName:string,options?:installPackageOptions)
 
@@ -50,6 +51,7 @@ async function installPackage(packageName:string,options?:installPackageOptions)
 
 - `location`：安装位置，默认为当前工程根目录下。`location`可以是任意的路径，安装时会向上查找`package.json`文件，然后进行安装
 - 如果安装成功则返回`true`,否则返回`false`
+- `use`默认使用`pnpm`
 
 # packageIsInstalled
 
@@ -81,10 +83,61 @@ function updatePackageJson(data:Record<string,any>,options?:UpdatePackageJsonOpt
 初始化一个标准的nodejs包
 
 ```typescript
+export type DependencieType = 'dev' | 'prod' | 'peer' | 'optional'  | 'bundle'
+export interface InitPackageOptions{
+    location?:string                                        // 初始化位置路径
+    src?:string                                             // 源文件路径,默认是当前目录
+    // 是否使用typescript,true=使用默认配置,字符串=tsconfig.json文件内容，"file:tsconfig.json"=使用指定的tsconfig.json文件
+    typescript?:boolean | string                           
+    git?:boolean                                            // 是否初始化git              
+    dependencies?:(string | [string,DependencieType])[]     // 依赖包, [包名,依赖类型]
+    // 安装依赖前的回调函数
+    onBeforeInstallDependent :(packageName:string,installType:DependencieType)=>void
+    // 安装依赖后的回调函数
+    onAfterInstallDependent:(error:null | Error,packageName:string,installType:DependencieType)=>void
+    installTool?: "auto" | "npm" | "yarn" | "pnpm"          // 包安装工具
+    files:(string | [string,string])[]                      // 需要复制的文件
+    // 当复制文件后的回调函数
+    onBeforeCopyFile:(src:string,desc:string)=>void
+    onAfterCopyFile:(error:null | Error,src:string,desc:string)=>void
+}
 
-async function initPackage(packageNameOrInfo:string | PackageInfo,location?:string)
+async function initPackage(packageNameOrInfo:string | PackageInfo,options?:InitPackageOptions)
 
 ```
 
 - `packageNameOrInfo`：包名或者包信息JSON对象
 - `location`：包的存放位置，默认为当前目录下
+- `src`：创建一个`src`源文件夹
+- `typescript`：是否使用`typescript`
+    - 如果为`true`则使用`tsc --init`生成`tsconfog.json`; 
+    - 字符串：`typescript=<tsconfog.json内容字符串>`
+    - 模板文件：`typescript=file:<tsconfog.json模板文件路径>`    
+- `git`：是否初始化`git`
+- `dependencies`：安装依赖包
+- `onBeforeInstallDependent`和`onAfterInstallDependent`：安装依赖包前后的回调函数,当需要显示安装进度时可以使用这两个回调函数。
+- `onBeforeCopyFile`和`onAfterCopyFile`：复制文件前后的回调函数,当需要显示复制进度时可以使用这两个回调函数。
+
+
+**示例：**
+
+```typescript
+    await initPackage({
+        name:"test",
+        version:"1.0.0"
+    },{
+        location:"./apps",
+        typescript:true,
+        git:true,
+        dependencies:[
+            "lodash",
+            ["@types/lodash","dev"]
+        ],
+        files:[
+            "a.js",              // 复制当前目录下的a.js文件到apps/test目录下
+            ["b.ts","./src"]    // 复制当前目录下的b.js文件到apps/test/src目录下
+            ["c://test.ts","./tests"]
+        ]
+    })
+```
+

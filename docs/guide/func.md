@@ -140,3 +140,37 @@ await safeCall(asyncFn,(e)=>1)  //  相当于 try{ await asyncFn()}catch(e){retu
 
 
 ``` 
+
+
+## promisify
+
+用来将一个依赖回调异步函数转换为一个返回`promise`的异步函数。
+
+类似功能的库很多，比如`util.promisify`,`pify`,`thenify`等等。
+
+- **包装nodejs标准库的异步函数**
+
+nodejs标准库的异步函数特点是callback的最后一个参数是一个回调函数，该回调函数的第一个参数是错误对象，如果没有错误则为`null`。
+
+```typescript
+import fs from "node:fs"
+const readFile = promisify(fs.readFile)
+readFile("./timer.ts").then((content)=>{
+    console.log("content:",String(content))
+})
+
+```
+- **包装任意函数**
+
+任意异步函数指的是
+
+    - 函数的`callback`参数不限定在最后一个参数，也可以是任意一个参数。甚至可以是入参对象的一个属性。
+    - `callback`的第一个参数不一定是错误对象，也可以是任意一个参数。甚至可以是入参对象的一个属性。
+
+```typescript
+
+
+```
+
+
+

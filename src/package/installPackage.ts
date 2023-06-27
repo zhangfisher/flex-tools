@@ -7,10 +7,11 @@ import { packageIsInstalled } from "./packageIsInstalled"
 export interface installPackageOptions{
     location?:string                                // 安装位置
     silent?: boolean                                // 执行安装时静默输出
-    type?: 'prod' | 'dev' | 'peer' | 'optional'     // 安装开发依赖 
+    type?:'prod' | 'dev' | 'peer' | 'optional' | 'bundle'    // 安装开发依赖 
     global?: boolean                                // 安装为全局依赖
     upgrade?: boolean                               // 当依赖已经安装时是否进行升级 
     use?:"auto" | string                            // 使用哪一个包工具
+    ignoreError?:boolean                            // 忽略错误
 }
 /**
  * 在当前项目下安装指定的包
@@ -18,13 +19,14 @@ export interface installPackageOptions{
  * @param param1 
  */
 export async function installPackage(packageName:string,options?:installPackageOptions){
-    const {silent,type,global:isGlobal,upgrade,use,location} = assignObject({
+    const {silent,type,global:isGlobal,upgrade,use,location,ignoreError} = assignObject({
         location:process.cwd(),
         global:false,
         silent:true,
         type:'prod',
         upgrade:true,               // 当包已经安装时,是否升级到最新版本
-        use:"pnpm"
+        use:"pnpm",
+        ignoreError:true
     },options)
     const packageTool =use =='auto' ? getPackageTool() : use
     let args = []
@@ -32,8 +34,7 @@ export async function installPackage(packageName:string,options?:installPackageO
     const cwd = process.cwd()
     const isInstalled = await packageIsInstalled(packageName,{location})
     process.chdir(location)
-    try{
-    
+    try{    
         if(isInstalled && upgrade){
             if(packageTool.includes('pnpm')){           
                 await execScript(`pnpm upgrade  --latest ${packageName}`,{silent}) 
@@ -61,6 +62,7 @@ export async function installPackage(packageName:string,options?:installPackageO
             }else if(packageTool.includes('npm')){
                 if(isGlobal) args.push("-g")
                 if(type=='dev') args.push("-D --save-dev")
+                if(type=='bundle') args.push("--save-bundle")                
                 if(type=='peer') args.push("-P")
                 if(type=='optional') args.push("-O")
                 await execScript(`npm install  ${args.join(" ")} ${packageName}`,{silent})        
@@ -73,6 +75,8 @@ export async function installPackage(packageName:string,options?:installPackageO
             }
             hasInstalled =true
         }    
+    }catch(e){
+        if(!ignoreError) throw e
     }finally{        
         process.chdir(cwd)
     }

@@ -5,5 +5,5 @@ export * from "./reliable"
 export * from "./memorize"
 export * from "./applyParams"
 export * from "./safeCall"
-  
+export * from "./promisify"
   
