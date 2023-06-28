@@ -16,7 +16,7 @@
  * 
  * 
  * promisedFunc = promiseify(myfunc,{
- *      handleArgs:(...args:any[],callback)=>{  // 将callback放到最后一个参数
+ *      buildArgs:(...args:any[],callback)=>{  // 将callback放到最后一个参数
  *          return [args[0],callback,args[1]]
  *      }
  * })
@@ -26,10 +26,10 @@
  *  则需要自己实现handleCallback
  * 
  * promisedFunc = promiseify(myfunc,{
- *      handleArgs:(...args:any[],callback)=>{  // 将callback放到最后一个参数
+ *      buildArgs:(...args:any[],callback)=>{  // 将callback放到最后一个参数
  *          return [args[0],callback,args[1]]
  *      },
- *      handleCallback:(results:any[])=>{
+ *      parseCallback:(results:any[])=>{
  *          return [results[2],results[0],results[1],results[3]]
  *      })
  * })
@@ -44,27 +44,33 @@
  */ 
 
 
-export type HandleArgsFunction<Args> = (args:Args,callback:(...results:any[])=>void)=>any[] 
+export type BuildArgsFunction<Args> = (args:Args,callback:(...results:any[])=>void)=>any[] 
 
 export interface PromiseifyOptions<Args>{
     // 处理输入参数，返回最终异步函数的入参，以及callback函数参数
     // 例：nodejs的函数一般最后一个参数是callback,如fs.readFile(path,encoding,callback)
-    // handleArgs:(...args:any[])=>{
+    // buildArgs:(...args:any[])=>{
     //     return [...args,callback]   // 将参数添加到最后一个
     //}
-    handleArgs?:HandleArgsFunction<Args>
-    handleCallback?:((results:any[])=>[ undefined| null | Error,...any[]])
+    buildArgs?:BuildArgsFunction<Args>
+    parseCallback?:(results:any[])=>any
 }
 
 export interface IncludeCallbackFunction {
 
 }
  
-const nodejsHandleArgs = (args:any[],callback:Function)=>{
+const buildNodejsArgs = (args:any[],callback:Function)=>{
     return [...args,callback]
 }
-const nodejsHandleCallback = (results:any[])=>{
-    return [results[0],...results.slice(1)]
+const parseNodejsCallback = (results:any[])=>{
+    if(results.length===0) return undefined
+    if(results.length>0 && results[0]){
+        throw results[0]
+    }else{
+        if(results.length==2) return results[1]
+        return results.slice(1)
+    }
 }
 
 
@@ -78,18 +84,18 @@ const nodejsHandleCallback = (results:any[])=>{
  * @returns 
  */
 export function promisify<Result=any,Args extends any[]=any[]>(fn:(...args:any)=>any,options?:PromiseifyOptions<Args>){
-    const { handleArgs,handleCallback } = Object.assign({
-        handleArgs:nodejsHandleArgs,
-        handleCallback:nodejsHandleCallback
+    const { buildArgs,parseCallback } = Object.assign({
+        buildArgs:buildNodejsArgs,
+        parseCallback:parseNodejsCallback
     },options) as Required<PromiseifyOptions<Args>>
     return function(...args:Args){
         return new Promise<Result>((resolve,reject)=>{
-            let callArgs = handleArgs(args,(...results:any[])=>{
-                const [err,...rest]  = handleCallback(results)
-                if(err){
-                    reject(err)
-                }else{
-                    resolve((rest.length==1 ?  rest[0] :  rest )as Result)
+            let callArgs = buildArgs(args,(...results:any[])=>{
+                try{
+                    const result = parseCallback(results)
+                    resolve(result as Result)
+                }catch(e){
+                    reject(e)
                 }
             }) 
             try{
@@ -104,30 +110,34 @@ export function promisify<Result=any,Args extends any[]=any[]>(fn:(...args:any)=
 
 
 
-import fs from "node:fs"
-const readFile = promisify<string>(fs.readFile)
+// import fs from "node:fs"
+// const readFile = promisify<string>(fs.readFile)
 
-readFile("./timer.ts").then((content)=>{
-    console.log("content:",String(content))
-})
+// readFile("./retry.ts").then((content)=>{
+//     console.log("content:",String(content))
+// })
 
 
-function sum(callback:({result}:{result:number})=>void,a:number,b:number){
-    console.log(`${a}+${b}=`,a+b)
-    callback({result:a+b})
-}
+// function sum(callback:(x:number,y:number,z:number)=>void,a:number,b:number){
+//     if(a==0 && b==0) throw new Error("a and b can not be 0")
+//     callback(a,b,a+b)
+// }
 
-const promisifySum = promisify(sum,{
-    handleArgs:(args:any[],callback)=>{
-        return [callback,...args]
-    },
-    handleCallback:(...results:any[])=>{
-        return [null,results]
-    }
-})
+// const promisifySum = promisify(sum,{
+//     buildArgs:(args:any[],callback)=>{
+//         return [callback,...args]
+//     },
+//     parseCallback:(results:any[])=>{
+//         return results
+//     }
+// })
 
-promisifySum(1,2).then((result)=>{
-    console.log("sum result:",result)
-}).catch(e=>{
-    console.log("sum error:",e.message)
-})
+// promisifySum(1,2).then((result)=>{
+//     console.log("sum result:",result)
+// })  
+
+
+// promisifySum(0,0).catch((e:Error)=>{
+//     console.log("sum error:",e.message)
+// }) 
+

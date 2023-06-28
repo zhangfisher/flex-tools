@@ -150,7 +150,7 @@ await safeCall(asyncFn,(e)=>1)  //  相当于 try{ await asyncFn()}catch(e){retu
 
 - **包装nodejs标准库的异步函数**
 
-nodejs标准库的异步函数特点是callback的最后一个参数是一个回调函数，该回调函数的第一个参数是错误对象，如果没有错误则为`null`。
+nodejs标准库的异步函数特点是`callback`的最后一个参数是一个回调函数，该回调函数的第一个参数是错误对象，如果没有错误则为`null`。
 
 ```typescript
 import fs from "node:fs"
@@ -158,19 +158,63 @@ const readFile = promisify(fs.readFile)
 readFile("./timer.ts").then((content)=>{
     console.log("content:",String(content))
 })
-
 ```
+
+
 - **包装任意函数**
 
-任意异步函数指的是
+支持包括任意异步函数。需要提供`buildArgs`和`parseCallback`两个函数来处理参数和回调。
 
-    - 函数的`callback`参数不限定在最后一个参数，也可以是任意一个参数。甚至可以是入参对象的一个属性。
-    - `callback`的第一个参数不一定是错误对象，也可以是任意一个参数。甚至可以是入参对象的一个属性。
 
 ```typescript
+function sum(callback:(x:number,y:number,z:number)=>void,a:number,b:number){
+    if(a==0 && b==0) throw new Error("a and b can not be 0")
+    callback(a,b,a+b)
+}
 
+const promisifySum = promisify(sum,{
+    buildArgs:(args:any[],callback)=>{
+        return [callback,...args]
+    },
+    parseCallback:(results:any[])=>{
+        return results
+    }
+})
+console.log(await promisifySum(1,2)) // [ 1, 2, 3 ]
 
+try{
+    await promisifySum(0,0) 
+}catch(e){
+    console.log(e.message) // a and b can not be 0
+}
 ```
 
+- `buildArgs(args:any[],callback)`参数用来指定一个函数将异步函数的参数转换为原始函数的参数。比如上例中，sum函数的原始签名是`sum(callback:(x:number,y:number,z:number)=>void,a:number,b:number)`，但是我们希望`promisifySum`的签名是`promisifySum(a:number,b:number):Promise<[number,number,number]>`，所以需要通过`buildArgs`将`promisifySum`的参数转换为`sum`的参数。
+    当没有提供`buildArgs`参数时，默认值为：
 
+    ```typescript
+        (args:any[],callback:Function)=>{
+            return [...args,callback]
+        }
+    ```
+    将`callback`放在参数的最后，这是`nodejs`标准库的异步函数的参数形式。所以当我们没有提供`buildArgs`参数时，`promisify`可以直接用来包装`nodejs`标准库的异步函数。
+    而当我们要包装非`nodejs`标准库的异步函数时，需要提供`buildArgs`参数。
 
+- `parseCallback(results:any[])`参数用来指定一个函数将原始函数的回调函数的入参转换为`promise`的返回结果。比如上例中，`sum`函数的原始回调是`callback(a,b,a+b)`，但是我们希望`promisifySum`的返回结果是`[a,b,a+b]`，所以需要通过`parseCallback`将`sum`的回调结果转换为`promisifySum`的结果。
+
+    当没有提供`parseCallback`参数时，默认值为：
+
+    ```typescript
+        const parseNodejsCallback = (results:any[])=>{
+            if(results.length===0) return undefined
+            if(results.length>0 && results[0]){
+                throw results[0]
+            }else{
+                if(results.length==2) return results[1]
+                return results.slice(1)
+            }
+        }
+    ```
+    该函数用来处理`nodejs`标准库的异步函数的回调结果。
+
+- 错误处理行为: 在`nodejs`标准库的异步函数中，如果回调函数的第一个参数不为`null`，则表示发生了错误，此时`promisify`会将该错误作为`promise`的`reject`结果。而对于非`nodejs`标准库的异步函数, 错误并不一定是通过`callback`传递，也可能是直接`throw error`。为了处理这种情况，在`parseCallback`中，当出错时是通过`throw error`抛出的，`promisify`会将该错误作为`promise`的`reject`结果。
