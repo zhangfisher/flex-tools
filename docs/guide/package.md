@@ -96,7 +96,7 @@ export interface InitPackageOptions{
     // 安装依赖后的回调函数
     onAfterInstallDependent:(error:null | Error,packageName:string,installType:DependencieType)=>void
     installTool?: "auto" | "npm" | "yarn" | "pnpm"          // 包安装工具
-    files:(string | [string,string])[]                      // 需要复制的文件
+    files:(string | [string,string] | [string,string,Record<string,any>])[]                      // 需要复制的文件
     // 当复制文件后的回调函数
     onBeforeCopyFile:(src:string,desc:string)=>void
     onAfterCopyFile:(error:null | Error,src:string,desc:string)=>void
@@ -117,7 +117,13 @@ async function initPackage(packageNameOrInfo:string | PackageInfo,options?:InitP
 - `dependencies`：安装依赖包
 - `onBeforeInstallDependent`和`onAfterInstallDependent`：安装依赖包前后的回调函数,当需要显示安装进度时可以使用这两个回调函数。
 - `onBeforeCopyFile`和`onAfterCopyFile`：复制文件前后的回调函数,当需要显示复制进度时可以使用这两个回调函数。
-
+- `files`：指定需要复制的文件,暂不支持通配符,也不支持文件夹。
+    - `files=["c:/temp/a.js"]`表示复制`a.js`到目标文件夹下
+    - `files=[["c:/temp/a.js","src/"]]`表示复制`a.js`到目标文件夹`src`下
+    - `files=[["c:/temp/a.js","b.js"]]`表示复制`a.js`到目标文件夹下的`b.js`文件
+    - `files=[["c:/temp/a.js","src/b.js"]]`表示复制`a.js`到目标文件夹下的`src/b.js`文件
+    - `files=[["c:/temp/a.js","src/b.js",{x:1,y:2}]]`表示读取`a.js`并对文件内容执行插值变量替换，然后复制到目标文件夹下的`src/b.js`文件.
+- 复制文件时允许对原始文件内容进行插值变量替换。方法是指定`files=[["c:/temp/a.js","src/b.js",{x:1,y:2}]]`，然后在`原始`文件中使用`{{x}}`和`{{y}}`表示变量。
 
 **示例：**
 

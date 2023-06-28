@@ -9,6 +9,7 @@ import path from "node:path"
 import fs from "node:fs"
 import { installPackage } from "./installPackage";
 import { promisify } from "../func/promisify";
+import { replaceVars } from "../string";
 
 export interface  PackageInfo{
     name:string
@@ -41,7 +42,9 @@ export interface InitPackageOptions{
     // 安装依赖后的回调函数
     onAfterInstallDependent?:(error:null | Error,packageName:string,installType:DependencieType)=>void
     installTool?: "auto" | "npm" | "yarn" | "pnpm"          // 包安装工具
-    files?:(string | [string,string])[]                      // 需要复制的文件
+    // 需要复制的文件
+    // 源文件 , [源文件,目标文件或文件夹] , [源文件,目标文件,{插值变量}]
+    files?:(string | [string,string] | [string,string,Record<string,any>])[]                      
     // 当复制文件后的回调函数
     onBeforeCopyFile?:(src:string,desc:string)=>void
     onAfterCopyFile?:(error:null | Error,src:string,desc:string)=>void
@@ -119,7 +122,7 @@ export async function initPackage(packageNameOrInfo:string | PackageInfo,options
         }
         if(Array.isArray(files)){
             for(let file of files){                
-                const [src,dest] = Array.isArray(file) ? file : [file,"./"]                
+                const [src,dest,vars] = Array.isArray(file) ? file : [file,"./",undefined]                
                 const srcFile =path.isAbsolute(src) ? src : path.join(cwd,src)                
                 const destFile = dest.trim().endsWith("/") ? path.join(packagePath,dest.trim(),path.basename(srcFile)) : path.join(packagePath,dest.trim())
                 options?.onBeforeCopyFile?.(srcFile,destFile)
@@ -129,7 +132,13 @@ export async function initPackage(packageNameOrInfo:string | PackageInfo,options
                         if(!fs.existsSync(destPath)){
                             fs.mkdirSync(destPath,{recursive:true})
                         }                                   
-                        await copyFile(srcFile,destFile)
+                        if(vars && typeof(vars)=="object"){ // 有插值变量时，需要读取文件内容，替换插值变量后再写入
+                            const srcContext = await promisify(fs.readFile)(srcFile)
+                            const destContext = replaceVars(srcContext.toString(),vars)
+                            await promisify(fs.writeFile)(destFile,destContext)
+                        }else{
+                            await copyFile(srcFile,destFile)
+                        }
                     }
                     options?.onAfterCopyFile?.(null,srcFile,destFile)
                 }catch(e:any){
@@ -145,39 +154,40 @@ export async function initPackage(packageNameOrInfo:string | PackageInfo,options
 }
 
 
-
-// const args = process.argv.slice(2)
-// initPackage({
-//     name:args[0],
-//     version:"1.0.0",
-// },{
-//     location:"c://temp//initpackages",
-//     dependencies:[
-//         "nanoid",
-//         ["lodash",'dev']
-//     ],
-//     files:[
-//         ['./index.ts','./src/index.ts'],
-//         'getPackageTool.ts'
-//     ],
-//     onBeforeInstallDependent(packageName,installType){
-//         console.log(`安装依赖包${packageName}(${installType})...`)
-//     },
-//     onAfterInstallDependent(error,packageName,installType){
-//         if(error){
-//             console.error(`安装依赖包${packageName}(${installType})失败,错误信息:${error.message}`)
-//         }else{
-//             console.log(`安装依赖包${packageName}(${installType})成功`)
-//         }
-//     },
-//     onBeforeCopyFile(src,desc){
-//         console.log(`复制文件${src}...`)
-//     },
-//     onAfterCopyFile(error,src,desc){
-//         if(error){
-//             console.error(`复制文件${src}失败,错误信息:${error.message}`)
-//         }else{
-//             console.log(`复制文件${src}成功`)
-//         }
-//     }
-// })
+// {a} {b}
+const args = process.argv.slice(2)
+initPackage({
+    name:args[0],
+    version:"1.0.0",
+},{
+    location:"c://temp//initpackages",
+    dependencies:[
+        "nanoid",
+        ["lodash",'dev']
+    ],
+    files:[
+        ['./index.ts','./src/index.ts'],
+        'getPackageTool.ts',
+        ['initPackage.ts','./',{a:111,b:222}],
+    ],
+    onBeforeInstallDependent(packageName,installType){
+        console.log(`安装依赖包${packageName}(${installType})...`)
+    },
+    onAfterInstallDependent(error,packageName,installType){
+        if(error){
+            console.error(`安装依赖包${packageName}(${installType})失败,错误信息:${error.message}`)
+        }else{
+            console.log(`安装依赖包${packageName}(${installType})成功`)
+        }
+    },
+    onBeforeCopyFile(src,desc){
+        console.log(`复制文件${src}...`)
+    },
+    onAfterCopyFile(error,src,desc){
+        if(error){
+            console.error(`复制文件${src}失败,错误信息:${error.message}`)
+        }else{
+            console.log(`复制文件${src}成功`)
+        }
+    }
+})
