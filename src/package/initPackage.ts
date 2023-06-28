@@ -155,39 +155,39 @@ export async function initPackage(packageNameOrInfo:string | PackageInfo,options
 
 
 // {a} {b}
-const args = process.argv.slice(2)
-initPackage({
-    name:args[0],
-    version:"1.0.0",
-},{
-    location:"c://temp//initpackages",
-    dependencies:[
-        "nanoid",
-        ["lodash",'dev']
-    ],
-    files:[
-        ['./index.ts','./src/index.ts'],
-        'getPackageTool.ts',
-        ['initPackage.ts','./',{a:111,b:222}],
-    ],
-    onBeforeInstallDependent(packageName,installType){
-        console.log(`安装依赖包${packageName}(${installType})...`)
-    },
-    onAfterInstallDependent(error,packageName,installType){
-        if(error){
-            console.error(`安装依赖包${packageName}(${installType})失败,错误信息:${error.message}`)
-        }else{
-            console.log(`安装依赖包${packageName}(${installType})成功`)
-        }
-    },
-    onBeforeCopyFile(src,desc){
-        console.log(`复制文件${src}...`)
-    },
-    onAfterCopyFile(error,src,desc){
-        if(error){
-            console.error(`复制文件${src}失败,错误信息:${error.message}`)
-        }else{
-            console.log(`复制文件${src}成功`)
-        }
-    }
-})
+// const args = process.argv.slice(2)
+// initPackage({
+//     name:args[0],
+//     version:"1.0.0",
+// },{
+//     location:"c://temp//initpackages",
+//     dependencies:[
+//         "nanoid",
+//         ["lodash",'dev']
+//     ],
+//     files:[
+//         ['./index.ts','./src/index.ts'],
+//         'getPackageTool.ts',
+//         ['initPackage.ts','./',{a:111,b:222}],
+//     ],
+//     onBeforeInstallDependent(packageName,installType){
+//         console.log(`安装依赖包${packageName}(${installType})...`)
+//     },
+//     onAfterInstallDependent(error,packageName,installType){
+//         if(error){
+//             console.error(`安装依赖包${packageName}(${installType})失败,错误信息:${error.message}`)
+//         }else{
+//             console.log(`安装依赖包${packageName}(${installType})成功`)
+//         }
+//     },
+//     onBeforeCopyFile(src,desc){
+//         console.log(`复制文件${src}...`)
+//     },
+//     onAfterCopyFile(error,src,desc){
+//         if(error){
+//             console.error(`复制文件${src}失败,错误信息:${error.message}`)
+//         }else{
+//             console.log(`复制文件${src}成功`)
+//         }
+//     }
+// })
