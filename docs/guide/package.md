@@ -122,22 +122,40 @@ async function initPackage(packageNameOrInfo:string | PackageInfo,options?:InitP
 **示例：**
 
 ```typescript
-    await initPackage({
-        name:"test",
-        version:"1.0.0"
+const args = process.argv.slice(2)
+    initPackage({
+        name:args[0],
+        version:"1.0.0",
     },{
-        location:"./apps",
-        typescript:true,
-        git:true,
+        location:"c://temp//initpackages",
         dependencies:[
-            "lodash",
-            ["@types/lodash","dev"]
+            "nanoid",
+            ["lodash",'dev']
         ],
         files:[
-            "a.js",              // 复制当前目录下的a.js文件到apps/test目录下
-            ["b.ts","./src"]    // 复制当前目录下的b.js文件到apps/test/src目录下
-            ["c://test.ts","./tests"]
-        ]
+            ['./index.ts','./src/index.ts'],
+            'getPackageTool.ts'
+        ],
+        onBeforeInstallDependent(packageName,installType){
+            console.log(`安装依赖包${packageName}(${installType})...`)
+        },
+        onAfterInstallDependent(error,packageName,installType){
+            if(error){
+                console.error(`安装依赖包${packageName}(${installType})失败,错误信息:${error.message}`)
+            }else{
+                console.log(`安装依赖包${packageName}(${installType})成功`)
+            }
+        },
+        onBeforeCopyFile(src,desc){
+            console.log(`复制文件${src}...`)
+        },
+        onAfterCopyFile(error,src,desc){
+            if(error){
+                console.error(`复制文件${src}失败,错误信息:${error.message}`)
+            }else{
+                console.log(`复制文件${src}成功`)
+            }
+        }
     })
 ```
 

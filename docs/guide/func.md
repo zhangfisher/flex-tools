@@ -207,7 +207,9 @@ try{
     ```typescript
         const parseNodejsCallback = (results:any[])=>{
             if(results.length===0) return undefined
-            if(results.length>0 && results[0]){
+            // 因为nodejs标准库的异步函数的回调函数的第一个参数是错误对象
+            // 当检测到错误时，则抛出错误，将错误作为promise的reject结果
+            if(results.length>0 && results[0]){  
                 throw results[0]
             }else{
                 if(results.length==2) return results[1]
@@ -217,4 +219,5 @@ try{
     ```
     该函数用来处理`nodejs`标准库的异步函数的回调结果。
 
-- 错误处理行为: 在`nodejs`标准库的异步函数中，如果回调函数的第一个参数不为`null`，则表示发生了错误，此时`promisify`会将该错误作为`promise`的`reject`结果。而对于非`nodejs`标准库的异步函数, 错误并不一定是通过`callback`传递，也可能是直接`throw error`。为了处理这种情况，在`parseCallback`中，当出错时是通过`throw error`抛出的，`promisify`会将该错误作为`promise`的`reject`结果。
+- 错误处理行为: 在`nodejs`标准库的异步函数中，如果回调函数的第一个参数不为`null`，则表示发生了错误，此时`promisify`会将该错误作为`promise`的`reject`结果。
+    而对于非`nodejs`标准库的异步函数, 错误并不一定是通过`callback`传递，也可能是直接`throw error`。为了处理这种情况，在`parseCallback`中，当出错时是通过`throw error`抛出的，`promisify`会将该错误作为`promise`的`reject`结果。

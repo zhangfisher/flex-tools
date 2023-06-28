@@ -1,12 +1,11 @@
 import { InvalidProjectPathError } from "../errors"
 import { getPackageRootPath } from "./getPackageRootPath"
-import path from "path"
-import { execScript } from "../misc/execScript"
-import { assignObject } from '../object/assignObject';
+import path from "node:path"
+import fs from "node:fs"
+import { assignObject } from '../object/assignObject'; 
 
 
 export interface PackageIsInstalledOptions{
-    checkGlobal?:boolean
     location?:string            // 指定一个位置，未指定则使用当前项目的位置
 }
 
@@ -15,27 +14,15 @@ export interface PackageIsInstalledOptions{
  * @param packageName
  */
 export async function packageIsInstalled(packageName:string,options?:PackageIsInstalledOptions):Promise<boolean>{
-    const {location,checkGlobal} = assignObject({
+    const {location} = assignObject({
         checkGlobal:false
     },options)
     const packageRoot = getPackageRootPath(location)
     if(!packageRoot) throw new InvalidProjectPathError()
-    let installed:boolean = false
-    //
+    let installed:boolean = false 
     try{
-        require.resolve(packageName)
-        installed = true
-    }catch{
-        return false
-    }
-    if(checkGlobal){
-        try{
-            const npmRootPath = await execScript("npm root") as  string
-            if(npmRootPath){
-                require(path.join(npmRootPath,`node_modules/${packageName}/package.json`))
-                installed = true
-            }            
-        }catch(e){}        
-    }
+        const pkgJsonFile = path.join(packageRoot,"node_modules",packageName,"package.json")        
+        installed = fs.existsSync(pkgJsonFile)
+    }catch(e){}
     return installed
 }

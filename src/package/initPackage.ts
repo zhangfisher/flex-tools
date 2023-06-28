@@ -8,6 +8,7 @@ import { execScript } from "../misc";
 import path from "node:path"
 import fs from "node:fs"
 import { installPackage } from "./installPackage";
+import { promisify } from "../func/promisify";
 
 export interface  PackageInfo{
     name:string
@@ -34,19 +35,22 @@ export interface InitPackageOptions{
     typescript?:boolean | string                            // 是否使用typescript,true=使用默认配置,字符串=tsconfig.json文件内容，"file:tsconfig.json"=使用指定的tsconfig.json文件
     git?:boolean                                            // 是否初始化git              
     dependencies?:(string | [string,DependencieType])[]     // 依赖包, [包名,依赖类型]
+    silent?:boolean                                         // 是否静默输出
     // 安装依赖前的回调函数
-    onBeforeInstallDependent :(packageName:string,installType:DependencieType)=>void
+    onBeforeInstallDependent? :(packageName:string,installType:DependencieType)=>void
     // 安装依赖后的回调函数
-    onAfterInstallDependent:(error:null | Error,packageName:string,installType:DependencieType)=>void
+    onAfterInstallDependent?:(error:null | Error,packageName:string,installType:DependencieType)=>void
     installTool?: "auto" | "npm" | "yarn" | "pnpm"          // 包安装工具
-    files:(string | [string,string])[]                      // 需要复制的文件
+    files?:(string | [string,string])[]                      // 需要复制的文件
     // 当复制文件后的回调函数
-    onBeforeCopyFile:(src:string,desc:string)=>void
-    onAfterCopyFile:(error:null | Error,src:string,desc:string)=>void
+    onBeforeCopyFile?:(src:string,desc:string)=>void
+    onAfterCopyFile?:(error:null | Error,src:string,desc:string)=>void
 }
 
+const copyFile = promisify(fs.copyFile)
+
 export async function initPackage(packageNameOrInfo:string | PackageInfo,options?:InitPackageOptions){        
-    let {location,src='src',git=false,typescript=true,dependencies=[],installTool='pnpm',files=[]} = Object.assign({},options)
+    let {location,src='src',silent=true,git=false,typescript=true,dependencies=[],installTool='pnpm',files=[]} = Object.assign({},options)
     const cwd = process.cwd()
     const packageJson = typeof(packageNameOrInfo) == "string" ? {
         name:packageNameOrInfo,
@@ -75,13 +79,13 @@ export async function initPackage(packageNameOrInfo:string | PackageInfo,options
                     if(fs.existsSync(tsconfigFile)){
                         fs.copyFileSync(tsconfigFile,path.join(packagePath,"tsconfig.json"))
                     }else{
-                        await execScript("tsc --init")
+                        await execScript("tsc --init",{silent})
                     }
                 }else{
                     fs.writeFileSync(path.join(packagePath,"tsconfig.json"),typescript,{encoding:"utf-8"})
                 }
             }else{
-                await execScript("tsc --init")
+                await execScript("tsc --init",{silent})
             }            
         }
         // 创建src目录
@@ -98,8 +102,9 @@ export async function initPackage(packageNameOrInfo:string | PackageInfo,options
                 if(packageName){
                     let hasError = null
                     try{
-                        options?.onBeforeInstallDependent(packageName,dependencieType)
+                        options?.onBeforeInstallDependent?.(packageName,dependencieType)
                         await installPackage(packageName,{
+                            silent,
                             use:installTool,
                             location:packagePath,
                             type:dependencieType,
@@ -108,23 +113,29 @@ export async function initPackage(packageNameOrInfo:string | PackageInfo,options
                     }catch(e:any){
                         hasError = e
                     }
-                    options?.onAfterInstallDependent(hasError,packageName,dependencieType)
+                    options?.onAfterInstallDependent?.(hasError,packageName,dependencieType)
                 }            
             }
         }
         if(Array.isArray(files)){
-            for(let file of files){
+            for(let file of files){                
                 const [src,dest] = Array.isArray(file) ? file : [file,"./"]                
                 const srcFile =path.isAbsolute(src) ? src : path.join(cwd,src)                
-                const destFile = path.join(packagePath,dest)
-                if(fs.existsSync(srcFile)){
-                    const destPath = path.dirname(destFile)
-                    if(!fs.existsSync(destPath)){
-                        fs.mkdirSync(destPath,{recursive:true})
-                    }           
-                    
-                    fs.copyFileSync(srcFile,destFile)
-                }
+                const destFile = dest.trim().endsWith("/") ? path.join(packagePath,dest.trim(),path.basename(srcFile)) : path.join(packagePath,dest.trim())
+                options?.onBeforeCopyFile?.(srcFile,destFile)
+                try{
+                    if(fs.existsSync(srcFile)){
+                        const destPath = path.dirname(destFile)
+                        if(!fs.existsSync(destPath)){
+                            fs.mkdirSync(destPath,{recursive:true})
+                        }                                   
+                        await copyFile(srcFile,destFile)
+                    }
+                    options?.onAfterCopyFile?.(null,srcFile,destFile)
+                }catch(e:any){
+                    options?.onAfterCopyFile?.(e,srcFile,destFile)
+                }                
+                
             }
         }
         return packageJson
@@ -132,3 +143,41 @@ export async function initPackage(packageNameOrInfo:string | PackageInfo,options
         process.chdir(cwd)
     }
 }
+
+
+
+const args = process.argv.slice(2)
+initPackage({
+    name:args[0],
+    version:"1.0.0",
+},{
+    location:"c://temp//initpackages",
+    dependencies:[
+        "nanoid",
+        ["lodash",'dev']
+    ],
+    files:[
+        ['./index.ts','./src/index.ts'],
+        'getPackageTool.ts'
+    ],
+    onBeforeInstallDependent(packageName,installType){
+        console.log(`安装依赖包${packageName}(${installType})...`)
+    },
+    onAfterInstallDependent(error,packageName,installType){
+        if(error){
+            console.error(`安装依赖包${packageName}(${installType})失败,错误信息:${error.message}`)
+        }else{
+            console.log(`安装依赖包${packageName}(${installType})成功`)
+        }
+    },
+    onBeforeCopyFile(src,desc){
+        console.log(`复制文件${src}...`)
+    },
+    onAfterCopyFile(error,src,desc){
+        if(error){
+            console.error(`复制文件${src}失败,错误信息:${error.message}`)
+        }else{
+            console.log(`复制文件${src}成功`)
+        }
+    }
+})
