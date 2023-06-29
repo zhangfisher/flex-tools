@@ -11,6 +11,32 @@ import { installPackage } from "./installPackage";
 import { promisify } from "../func/promisify";
 import { replaceVars } from "../string";
 
+const gitignore = `
+node_modules
+logs
+*.log
+.idea
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+*.pid
+*.seed
+*.pid.lock
+coverage 
+.nyc_output
+.grunt
+bower_components
+node_modules/
+jspm_packages/
+*.tsbuildinfo
+.npm
+dist/
+.eslintcache
+`
+
 export interface  PackageInfo{
     name:string
     version?:string
@@ -94,10 +120,12 @@ export async function initPackage(packageNameOrInfo:string | PackageInfo,options
         // 创建src目录
         if(src){
             fs.mkdirSync(path.join(packagePath,src),{recursive:true})            
+            fs.mkdirSync(path.join(packagePath,src,"__tests__"),{recursive:true})    
         }
         // 初始化git
         if(git){
             await execScript("git init",{silent:true})
+            fs.writeFileSync(path.join(packagePath,".gitignore"),gitignore)
         }
         if(Array.isArray(dependencies)){
             for(let depend of dependencies){
