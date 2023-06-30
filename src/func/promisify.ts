@@ -141,3 +141,31 @@ export function promisify<Result=any,Args extends any[]=any[]>(fn:(...args:any)=
 //     console.log("sum error:",e.message)
 // }) 
 
+
+
+
+// import fs from "node:fs"
+// import path from "node:path"
+
+// const fileExists = promisify(fs.exists,{
+//     parseCallback(results) {
+//         return results[0]
+//     },
+// })
+// const readFile = promisify(fs.readFile)
+// const writeFile = promisify(fs.writeFile)
+// const mkdir = promisify(fs.mkdir)
+
+// async function main(){
+//     console.log("-------------------")
+//     const file = path.join(__dirname,"promisify.ts")
+//     console.log("promisify.ts is exists: ",await fileExists(file))
+//     console.log("promisify.ts content: ",await readFile(file))
+//     console.log("mkdir: ",await mkdir("dir"))
+
+// }
+
+// main().then(()=>{}).catch((e)=>{
+//     console.log(e.stack)
+// })
+
