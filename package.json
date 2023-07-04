@@ -37,9 +37,6 @@
     "typescript": "^5.1.3",
     "vitest": "^0.26.2"
   },
-  "dependencies": {
-    "string.prototype.replaceall": "^1.0.7"
-  },
   "config": {
     "commitizen": {
       "path": "@commitlint/cz-commitlint"

@@ -7,4 +7,4 @@ export * from "./rjust"
 export * from "./trimBeginChars"
 export * from "./trimEndChars"
 export * from "./replaceVars"
- 
+export * from "./replaceAll"

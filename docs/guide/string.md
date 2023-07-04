@@ -355,3 +355,12 @@ console.log(replaceVars("{a}+{b}={c}",{a:1,b:1,c:2})) // Output: "1+1=2"
 "123".reverse() // == "321" 
 
 ```
+
+## replaceAll
+
+替换所有匹配的字符串，使用方法与标准的`String.prototype.replaceAll`函数一样。
+
+这个函数用于低版本的不支持`String.prototype.replaceAll`函数的nodejs或浏览器。
+
+导入此函数时，如果`String.prototype.replaceAll`不存在则会自动注入
+ 
