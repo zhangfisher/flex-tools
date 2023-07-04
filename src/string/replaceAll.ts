@@ -16,6 +16,9 @@
         }        
     }else{
         let m:RegExpExecArray | null
+        if(!search.global){
+            throw new Error("The search parameter must be enabled '/g' option")
+        }
         while ((m = search.exec(str)) !== null) {
             // 这对于避免零宽度匹配的无限循环是必要的
             if (m.index === search.lastIndex) {

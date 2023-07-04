@@ -2,9 +2,7 @@ import { assignObject } from "../object/assignObject";
 import { canIterable } from "../typecheck";
 import { isNothing } from "../typecheck/isNothing";
 import { isPlainObject } from "../typecheck/isPlainObject";   
-// @ts-ignore 
-import replaceAll from "string.prototype.replaceall"  
-replaceAll.shim()
+import "./replaceAll"
 
 function getInterpVar(this:string,value:any,{empty,delimiter=","}:ReplaceVarsOptions):string{
     let finalValue  = value

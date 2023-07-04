@@ -35,17 +35,12 @@
 
 */
 
-import { assignObject } from "../object/assignObject"
-//@ts-ignore
-import replaceAll from "string.prototype.replaceall"
-replaceAll.shim()
- 
+import { assignObject } from "../object/assignObject" 
+import "../string/replaceAll"
+
 export interface FormatDateTimeOptions {
     language?: 'cn' | 'en',
-}
- 
- 
-
+} 
 
 const dateDict={
     en:{

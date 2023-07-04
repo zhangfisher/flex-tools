@@ -4,11 +4,9 @@
  * 
  */
 
-import { assignObject } from "../object"
-// @ts-ignore 
-import replaceAll from "string.prototype.replaceall"
+import { assignObject } from "../object" 
 import { TimeoutError } from '../func/timeout';
-replaceAll.shim()
+import "../string/replaceAll"
 
 import { remove } from "../array/remove"
 
