@@ -43,16 +43,17 @@
  * 
  */ 
 
+ import type { AsyncFunction } from '../types/asyncFunction';
 
 export type BuildArgsFunction<Args> = (args:Args,callback:(...results:any[])=>void)=>any[] 
 
-export interface PromiseifyOptions<Args>{
+export interface PromiseifyOptions<Func extends (...args: any) => any>{
     // 处理输入参数，返回最终异步函数的入参，以及callback函数参数
     // 例：nodejs的函数一般最后一个参数是callback,如fs.readFile(path,encoding,callback)
     // buildArgs:(...args:any[])=>{
     //     return [...args,callback]   // 将参数添加到最后一个
     //}
-    buildArgs?:BuildArgsFunction<Args>
+    buildArgs?:BuildArgsFunction<Parameters<Func>>
     parseCallback?:(results:any[])=>any
 }
 
@@ -76,24 +77,23 @@ const parseNodejsCallback = (results:any[])=>{
 
 /**
  * 
- * Args: 指的是异步函数的参数类型， 不是原始函数的参数类型
- * Result: 指的是异步函数的返回值类型
  * 
  * @param fn  
  * @param options 
  * @returns 
  */
-export function promisify<Result=any,Args extends any[]=any[]>(fn:(...args:any)=>any,options?:PromiseifyOptions<Args>){
+
+export function promisify<PromisedFunc extends (...args:any[])=>any = AsyncFunction>(fn:(...args:any)=>any,options?:PromiseifyOptions<PromisedFunc>){
     const { buildArgs,parseCallback } = Object.assign({
         buildArgs:buildNodejsArgs,
         parseCallback:parseNodejsCallback
-    },options) as Required<PromiseifyOptions<Args>>
-    return function(...args:Args){
-        return new Promise<Result>((resolve,reject)=>{
-            let callArgs = buildArgs(args,(...results:any[])=>{
+    },options) as Required<PromiseifyOptions<PromisedFunc>>
+    const promisifyed = function(...args:any[]){
+        return new Promise<any>((resolve,reject)=>{
+            let callArgs = buildArgs(args as any,(...results:any[])=>{
                 try{
                     const result = parseCallback(results)
-                    resolve(result as Result)
+                    resolve(result as ReturnType<PromisedFunc>)
                 }catch(e){
                     reject(e)
                 }
@@ -105,10 +105,10 @@ export function promisify<Result=any,Args extends any[]=any[]>(fn:(...args:any)=
             }
         })
     }
+    
+    return  promisifyed as PromisedFunc
 }
-
-
-
+ 
 
 // import fs from "node:fs"
 // const readFile = promisify<string>(fs.readFile)

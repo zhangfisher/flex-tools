@@ -31,7 +31,7 @@ const ModulePlugin = (): CliPlugin<ModuleTools> => ({
         c.entryNames = '[dir]/[name]'
         c.chunkNames = '[name]-[hash]';
         if (config.format === 'esm') {
-          c.outExtension = { '.js': '.mjs' }
+          c.outExtension = { '.js': '.esm.js' }
         }
         return c;
       };
