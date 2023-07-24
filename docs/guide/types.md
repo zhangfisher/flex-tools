@@ -316,3 +316,27 @@ type Merged = Merge<[Foo, Bar, Baz]>;
 ```
 
 ## JsonObject
+
+支持嵌套的JSON对象类型
+
+## Overloads
+
+用来获取函数的重载类型
+ 
+ 当一个函数具有多个重载时，我们可以使用`Overloads<T>`来获取函数的重载类型
+ 
+```typescript
+
+function foo(a: string): string;
+function foo(a: number): number;
+function foo(a: any): any 
+ 
+typeof foo    // (a: string)=>string, 只能返回第一个重载的类型 
+ 
+//  可以返回所有重载的类型
+Overloads<typeof foo>  == (a: string)=>string | (a: number)=>number | (a: any)=>any
+ 
+```
+
+- `Overloads<T>` 只能获取最多8个重载的类型。
+

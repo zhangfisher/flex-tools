@@ -81,3 +81,19 @@ findUp(['tsconfig.json','tsconfig.ts']) // = ["d:/code/myapp/tsconfig.json","d:/
 // console.log(inPath(p3,base)) // false
 
 ```
+
+
+
+## fs
+
+对`fs`模块的`promise`包装,对标准的使用`callback`的异步函数全部进行了`promise`包装。
+
+```typescript
+import {fs} from 'flex-tools/fs/fs'
+
+await fs.mkdir('d:/temp/a/b/c',{recursive:true})
+await fs.writeFile('d:/temp/a/b/c.txt','hello world')
+await fs.readFile('d:/temp/a/b/c.txt','utf-8')
+//.....
+
+```

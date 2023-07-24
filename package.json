@@ -41,5 +41,9 @@
     "commitizen": {
       "path": "@commitlint/cz-commitlint"
     }
+  },
+  "dependencies": {
+    "art-template": "^4.13.2",
+    "glob": "^10.3.3"
   }
 }
