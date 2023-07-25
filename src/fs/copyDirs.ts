@@ -14,18 +14,28 @@
 
 import { glob} from "glob";
 import { assignObject } from "../object/assignObject";
-import {copyFile,mkdir,existsSync,readFile,writeFile} from "./nodefs";
+import {copyFile,mkdir,existsSync,writeFile} from "./nodefs";
 import artTemplate from "art-template";
+import { ABORT } from "../consts";
+import path from "node:path"
+import { cleanDir } from "./cleanDir";
+export interface CopyFileInfo{
+    file?:string                                            // 相对于源文件夹的文件路径
+    source?:string                                          // 源文件路径
+    target?:string                                          // 目标文件路径
+    vars?:null | undefined | Record<string,any>             // 模板变量
+}
+
 export interface CopyDirsOptions {
 	vars?: Record<string, any>;         // 传递给模板的变量
 	pattern?: string;                   // 匹配的文件或文件夹，支持通配符
 	ignore?: string[];                  // 忽略的文件或文件夹，支持通配符
     clean?:boolean                      // 是否清空目标文件夹
-	before?: (source: string, options?: CopyDirsOptions) => void; // 复制前的回调
-	after?: (source: string, target: string, options?: CopyDirsOptions) => void; // 复制后的回调
-    error?:(error:Error,{source,target}:{source: string, target: string})=>void // 复制出错的回调
+	before?: (info:CopyFileInfo) => void | typeof ABORT; // 复制前的回调
+	after?: (info:CopyFileInfo) => void | typeof ABORT; // 复制后的回调
+    error?:(error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
 }
- 
+
 export async function copyDirs(
 	srcDir: string,
 	targetDir: string,
@@ -46,7 +56,7 @@ export async function copyDirs(
 	}
 
     if (opts.clean) {
-        
+        try{await cleanDir(targetDir)}catch{}
     }
 
 
@@ -56,29 +66,38 @@ export async function copyDirs(
 			cwd: srcDir,
 		}).then(async (files) => {
 			for (let file of files) {
-				let srcFile = path.join(srcDir, file);
-				let targetFile = path.join(targetDir, file);
-				let targetFileDir = path.dirname(targetFile);
+                const fileInfo:Required<CopyFileInfo> = {
+                    file,
+                    source:path.join(srcDir, file),
+                    target:path.join(targetDir, file),
+                    vars:null
+                } 
+				let targetFileDir = path.dirname(fileInfo.target);
 				if (!existsSync(targetFileDir)) {
 					await mkdir(targetFileDir, { recursive: true }); // 创建目录
 				}
 				if (typeof options?.before == "function") {
-					options.before(file, opts);
-				}
-				
+					if(options.before(fileInfo)===ABORT){
+                        break
+                    }
+				}				
 				try {
                     if (file.endsWith(".art")) {// 模板文件
-                        const template = artTemplate(srcFile,await readFile(srcFile,{encoding:"utf-8"}));   
-                        await writeFile(targetFile.replace(".art",""),template(vars),{encoding:"utf-8"}) 
+                        const template = artTemplate(fileInfo.source);   
+                        await writeFile(fileInfo.target.replace(".art",""),template(fileInfo.vars ? Object.assign({},vars,fileInfo.vars) : vars ),{encoding:"utf-8"}) 
                     }else{// 模板文件
-                        await copyFile(srcFile, targetFile);
+                        await copyFile(fileInfo.source, fileInfo.target);                        
                     }
                     if (typeof options?.after == "function") {
-                        options.after(file,targetFile,opts);
+                        if(options.after(fileInfo)===ABORT){
+                            break
+                        }
                     }
 				} catch (e: any) {                
                     if (typeof options?.error == "function") {
-                        options.error(e,{source:file,target:targetFile});
+                        if(options.error(e,fileInfo)===ABORT){
+                            break
+                        }
                     }                    
                 }
 				
@@ -89,12 +108,17 @@ export async function copyDirs(
 	});
 }
 
-import path from "node:path";
-copyDirs(path.join(__dirname, "../../src"), "c://temp//copydirs", {
-	after: (source,target,options) => {
-		console.log("copy: ", source);
-	},
-    error:(error,{source,target})=>{
-        console.log("copy error:",source,error.message)
-    }
-}).then(() => {});
+export { ABORT } from "../consts";
+
+
+// copyDirs(path.join(__dirname, "../../src"), "c://temp//copydirs", {
+//     vars:{
+//         count:"hello to flex-tools"
+//     },
+// 	after: ({source,target}) => {
+// 		console.log("copy: ", source);
+// 	},
+//     error:(error,{source,target})=>{
+//         console.error("copy error:",source,error.message)
+//     }
+// }).then(() => {});

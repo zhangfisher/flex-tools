@@ -89,11 +89,103 @@ findUp(['tsconfig.json','tsconfig.ts']) // = ["d:/code/myapp/tsconfig.json","d:/
 对`fs`模块的`promise`包装,对标准的使用`callback`的异步函数全部进行了`promise`包装。
 
 ```typescript
-import {fs} from 'flex-tools/fs/nodefs'
+import {mkdir,writeFile,readFile} from 'flex-tools/fs/nodefs'
 
-await fs.mkdir('d:/temp/a/b/c',{recursive:true})
-await fs.writeFile('d:/temp/a/b/c.txt','hello world')
-await fs.readFile('d:/temp/a/b/c.txt','utf-8')
+await mkdir('d:/temp/a/b/c',{recursive:true})
+await writeFile('d:/temp/a/b/c.txt','hello world')
+await readFile('d:/temp/a/b/c.txt','utf-8')
 //.....
 
 ```
+
+- 注意，生成的函数不支持类型提示。
+
+
+## cleanDir
+
+清空文件夹
+
+```typescript
+interface CleanDirOptions{
+    ignoreError?:boolean    
+}
+function cleanDir(dir:string,options?:CleanDirOptions)
+```
+
+## copyDirs
+
+**此特征可以用来生成项目模板。**
+
+复制文件夹内的所有文件(包括子文件夹)到指定的目标文件夹，并且保持源文件夹结构不变。
+不同于其他的复制文件夹的功能，`copyDirs`支持模板文件。
+引入`art-template`模板引擎，当源文件是`.art`文件时会进行模板渲染，然后再复制到目标文件夹。比如在源文件夹中有一个`package.json.art`文件，内容如下：
+
+```json
+{
+    "name":"{{name}}",
+    "version":"{{version}}"
+}
+```
+则会在目标文件夹中生成一个`package.json`文件，内容如下：
+
+```json
+{
+    "name":"myapp",
+    "version":"1.0.0"
+}
+```
+
+
+
+
+```typescript
+
+export interface CopyFileInfo{
+    file?:string                                            // 相对于源文件夹的文件路径
+    source?:string                                          // 源文件路径
+    target?:string                                          // 目标文件路径
+    vars?:null | undefined | Record<string,any>             // 模板变量
+}
+
+export interface CopyDirsOptions {
+	vars?: Record<string, any>;         // 传递给模板的变量
+	pattern?: string;                   // 匹配的文件或文件夹，支持通配符
+	ignore?: string[];                  // 忽略的文件或文件夹，支持通配符
+    clean?:boolean                      // 是否清空目标文件夹
+	before?: (info:CopyFileInfo) => void | typeof ABORT; // 复制前的回调
+	after?: (info:CopyFileInfo) => void | typeof ABORT; // 复制后的回调
+    error?:(error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
+}
+
+export async function copyDirs(
+	srcDir: string,
+	targetDir: string,
+	options?: CopyDirsOptions
+)
+```
+
+- `copyDirs`使用`glob`来匹配文件，所以`pattern`和`ignore`支持通配符。
+- `copyDirs`会保持源文件夹的结构不变，所以`targetDir`必须是一个文件夹,如果不存在则会自动创建。
+- `vars`参数会传递给模板引擎，用于渲染模板文件,对所有`.art`模板文件生效。如果需要对某个文件传入单独的模板变量，可以在`before`回调中设置`vars`参数。
+    
+    ```typescript
+    copyDirs("c://temp//myapp","d://temp/app",{
+        vars:{                          // 这个变量会传递给所有的模板文件
+            name:"myapp",
+            version:"1.0.0"
+        },
+        before(info){
+            if(info.file === "package.json.art"){
+                // 这里的变量会与全局变量合并后果传递给package.json.art模板文件
+                info.vars = {   
+                    name:"myapp",
+                    version:"1.0.0"
+                }
+            }
+        }
+    })
+    ```
+-  `before`回调会在复制文件前调用，可以在这里修改`vars`参数，或者返回`ABORT`来阻止复制。
+ 
+
+

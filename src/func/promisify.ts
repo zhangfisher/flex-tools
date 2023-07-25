@@ -93,7 +93,7 @@ export function promisify<PromisedFunc extends (...args:any[])=>any = AsyncFunct
             let callArgs = buildArgs(args as any,(...results:any[])=>{
                 try{
                     const result = parseCallback(results)
-                    resolve(result as ReturnType<PromisedFunc>)
+                    resolve(result)
                 }catch(e){
                     reject(e)
                 }

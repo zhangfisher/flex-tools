@@ -63,4 +63,13 @@ T extends {
     (...args: infer A1): infer R1
   } ?
   (...args: A1) => R1 :
-  any
+  T
+
+
+// function foo(a: string): string;
+// function foo(a: number): number;
+// function foo(a: any): any {}
+
+
+// type d= Overloads<typeof foo>  // (a: string) => string | (a: number) => number | (a: any) => any
+
