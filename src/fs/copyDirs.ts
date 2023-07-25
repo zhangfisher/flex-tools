@@ -14,7 +14,8 @@
 
 import { glob} from "glob";
 import { assignObject } from "../object/assignObject";
-import {copyFile,mkdir,existsSync,writeFile} from "./nodefs";
+import {copyFile,mkdir,writeFile} from "./nodefs";
+import { existsSync } from "node:fs";
 import artTemplate from "art-template";
 import { ABORT } from "../consts";
 import path from "node:path"

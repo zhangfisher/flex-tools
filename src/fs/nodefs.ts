@@ -29,10 +29,7 @@ import { promisify } from "../func/promisify";
 //   } ?
 //   NodejsFunc<(...args: A1) => R1> :
 //   T
-
-
-export * from "node:fs"
-
+ 
 export const readFile = promisify(fs.readFile) //as NodejsMethodOverloads<typeof fs.readFile> 
 export const copyFile = promisify(fs.copyFile) //as NodejsMethodOverloads<typeof fs.copyFile>; 
 export const mkdir = promisify(fs.mkdir) //as NodejsMethodOverloads<typeof fs.mkdir>;
