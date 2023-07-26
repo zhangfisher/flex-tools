@@ -14,7 +14,7 @@ import { isPlainObject } from "../typecheck/isPlainObject"
 // 冲突策略
 export type ConflictStrategy ='ignore' | 'replace' | 'merge' | 'error' | ((key:string, target:object, source:object)=>'ignore' | 'replace' | 'merge' | 'error' | undefined)
 
-export interface MixinPropertiesOptions{
+export interface MixinObjectOptions{
     excludes?: string[]                                             // 排除的字段名称列表
     injectStatic?:boolean                                           // 是否注入静态变量,当source是一个类时,确认如何处理静态变量
     conflict?: ConflictStrategy                                     // 冲突处理策略
@@ -116,8 +116,8 @@ export interface MixinPropertiesOptions{
  */
 
 
- export function mixinObject(target:any, source:any,  options?:MixinPropertiesOptions) {
-    const { excludes = [], conflict = 'merge',injectStatic=false }  = Object.assign({},options) as Required<MixinPropertiesOptions>
+ export function mixinObject(target:any, source:any,  options?:MixinObjectOptions) {
+    const { excludes = [], conflict = 'merge',injectStatic=false }  = Object.assign({},options) as Required<MixinObjectOptions>
     excludes.push(...['constructor', 'prototype', 'name', 'length'])
     for (let key of Reflect.ownKeys(source)) {
         if (excludes.includes(String(key))) continue

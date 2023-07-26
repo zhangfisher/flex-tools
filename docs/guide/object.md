@@ -488,7 +488,7 @@ selfUpdate(data,"f","y=1=>000"); assertEqual("y=1+000",{x:"abc",y:"d000ef"},data
 
 ```typescript
 function mixinObject(target:any, source:any,  options?:MixinPropertiesOptions)
- interface MixinPropertiesOptions{
+ interface MixinObjectOptions{
     excludes?: string[]                                             // 排除的字段名称列表
     injectStatic?:boolean                                           // 是否注入静态变量,当source是一个类时,确认如何处理静态变量
     conflict?: ConflictStrategy                                     // 冲突处理策略
