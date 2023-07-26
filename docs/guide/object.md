@@ -482,12 +482,12 @@ selfUpdate(data,"f","y=1=>000"); assertEqual("y=1+000",{x:"abc",y:"d000ef"},data
 ```
 
 
-## mixinProperties
+## mixinObject
 
 本方法可以用来为类或实例混入属性/方法等
 
 ```typescript
-function mixinProperties(target:any, source:any,  options?:MixinPropertiesOptions)
+function mixinObject(target:any, source:any,  options?:MixinPropertiesOptions)
  interface MixinPropertiesOptions{
     excludes?: string[]                                             // 排除的字段名称列表
     injectStatic?:boolean                                           // 是否注入静态变量,当source是一个类时,确认如何处理静态变量
