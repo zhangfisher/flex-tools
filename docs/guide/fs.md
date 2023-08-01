@@ -64,7 +64,7 @@ findUp(['tsconfig.json','tsconfig.ts']) // = ["d:/code/myapp/tsconfig.json","d:/
 - 如果找到文件，则返回文件路径列表
  
 
- ## inPath
+## inPath
 
 判断某个文件夹或文件是否在指定的文件夹下
 
