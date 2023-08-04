@@ -15,7 +15,7 @@ import { assignObject } from "./assignObject"
 export interface DeepMergeOptions{
     $ignoreUndefined?: boolean                                            // 忽略undefined项不进行合并
     // 声明同名项的合并策略，数组默认为unique，{}默认为append
-    $merge: 'replace' | 'append' | 'unique' | ((fromValue:any,toValue:any,ctx:{key:string,from:any,to:any})=>any)                                                
+    $merge: 'replace' | 'append' | 'unique' | ((fromValue:any,toValue:any,ctx:{key:string,from:any,to:any})=>any)      
 }
 
 function hasMergeOptions(obj:Record<string | symbol,any> | undefined | null){
@@ -29,7 +29,8 @@ export function deepMerge(...objs:(Record<string | symbol,any> | undefined | nul
     if(objs.length<2) throw new Error("deepMerge函数至少需要两个参数")
     const hasOptions = objs.length >0 ? hasMergeOptions(objs[objs.length-1]) : false
     // 读取配置参数对象
-    const {$merge,$ignoreUndefined} = assignObject({
+    const {$merge,$ignoreUndefined,skipKeys} = assignObject({
+        skipKeys:[],
         $ignoreUndefined:true,
         $merge:"replace"
     },hasOptions ? objs[objs.length-1] : {} )   
