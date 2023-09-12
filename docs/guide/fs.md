@@ -189,3 +189,12 @@ export async function copyDirs(
  
 
 
+## fs
+
+对`node:fs`的`promise`包装,对标准的使用`callback`的异步函数全部进行了`promise`包装。
+
+```typescript
+import {mkdir,writeFile,readFile} from 'flex-tools/fs/nodefs'
+await mkdir('d:/temp/a/b/c',{recursive:true})  // 创建文件夹
+
+```
