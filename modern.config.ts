@@ -1,5 +1,6 @@
 import moduleTools, { defineConfig } from '@modern-js/module-tools'
 import type { CliPlugin, ModuleTools } from '@modern-js/module-tools';
+// @ts-ignore
 import copy from "esbuild-copy-files-plugin";
 
 const esbuildOptions = {
