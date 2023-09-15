@@ -14,6 +14,9 @@ import { <函数名称> } from "flex-tools/object"
 ```typescript
 function safeParseJson(str:string)
 ```
+- `safeParseJson`内部也是调用`JSON.parse`
+- 能处理`key`没有用`"`包起来或使用`'...'`包起来的情况
+- 能处理`value`使用`'...'`包起来的情况
 
 ## assignObject
 
