@@ -37,15 +37,15 @@ export function safeParseJson(str:string){
  
 
 
-const str = `
-{
-    a:1,
-    "ds":'111',
-    "sss":'中文',x:'中文',y:2,
-    '中文':1,
-    中q文:2,
-    中文:3
-    }
-`
+// const str = `
+// {
+//     a:1,
+//     "ds":'111',
+//     "sss":'中文',x:'中文',y:2,
+//     '中文':1,
+//     中q文:2,
+//     中文:3
+//     }
+// `
 
-console.log(safeParseJson(str))
+// console.log(safeParseJson(str))
