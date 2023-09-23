@@ -22,7 +22,6 @@
         if(!search.global || !search.multiline){
             throw new Error("The search parameter must be enabled '/gm' option")
         }
-        let i=0,index:number
         while ((m = search.exec(str)) !== null) {
             // 这对于避免零宽度匹配的无限循环是必要的
             if (m.index === search.lastIndex) {

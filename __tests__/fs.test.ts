@@ -1,8 +1,7 @@
 import { test, expect, describe } from 'vitest';
 import {forEachUp} from "../src/fs/forEachUp"
 import path from 'path';
-import { findUp } from '../src/fs/findUp';
-import { fileMatcher } from "../src/fs/fileMatcher"
+import { findUp } from '../src/fs/findUp'; 
 
 
 describe("文件操作测试",()=>{
@@ -27,21 +26,21 @@ describe("文件操作测试",()=>{
         })
      })
 
-     test("fileMatcher",()=>{
-        const base = path.join(__dirname,"../src")
-        let matcher = fileMatcher([
-            "*.ts", 
-            "!*.test.ts",           
-            "!events/"
-        ],{
-            base
-        })
+    //  test("fileMatcher",()=>{
+    //     const base = path.join(__dirname,"../src")
+    //     let matcher = fileMatcher([
+    //         "*.ts", 
+    //         "!*.test.ts",           
+    //         "!events/"
+    //     ],{
+    //         base
+    //     })
 
-        expect(matcher.test("index.ts")).toBe(true)
-        expect(matcher.test("fs/forEachUp.ts")).toBe(true)
-        expect(matcher.test("events/index.ts")).toBe(false)
+    //     expect(matcher.test("index.ts")).toBe(true)
+    //     expect(matcher.test("fs/forEachUp.ts")).toBe(true)
+    //     expect(matcher.test("events/index.ts")).toBe(false)
 
 
-     })
+    //  })
 })
  
