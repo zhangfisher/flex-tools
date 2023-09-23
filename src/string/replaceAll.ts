@@ -10,22 +10,29 @@
  */
  export function replaceAll(str:string,search:string | RegExp,replacer:string |  ((substring: string, ...args: any[]) => string)):string{    
     if(typeof(search) === "string"){
-        while(str.indexOf(search) > -1){
+        let i=0,index:number
+        while((index=str.indexOf(search,i)) > -1){
             const replaceValue = typeof(replacer)=='function' ? replacer(search) : replacer
-            str = str.replace(search,replaceValue)
+            let oldLen = str.length
+            str = str.substring(0,index) + replaceValue + str.substring(index+search.length)
+            i = index + replaceValue.length + str.length - oldLen 
         }        
     }else{
         let m:RegExpExecArray | null
-        if(!search.global){
-            throw new Error("The search parameter must be enabled '/g' option")
+        if(!search.global || !search.multiline){
+            throw new Error("The search parameter must be enabled '/gm' option")
         }
+        let i=0,index:number
         while ((m = search.exec(str)) !== null) {
             // 这对于避免零宽度匹配的无限循环是必要的
             if (m.index === search.lastIndex) {
                 search.lastIndex++;
             }     
+            let oldLen = str.length
+            let matchLen = m[0].length
             const replaceValue = typeof(replacer)=='function' ? replacer(m[0],...m) : replacer
-            str = str.replace(m[0],replaceValue)
+            str = str.substring(0,m.index) + replaceValue + str.substring(m.index+matchLen)
+            search.lastIndex += str.length - oldLen 
         }
     }
     return str
