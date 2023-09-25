@@ -18,14 +18,29 @@
  * assignObject({a:1},{a:undefined,c:1},["!a","b"])
  * assignObject({a:1},{a:undefined,c:1},/^a/])
  * 
+ * assignObject({a:1},{a:undefined,c:1},(key:string)=>key.startsWith("a"))
+ * assignObject({a:1},{a:undefined,c:1},new Matcher(["a","b"])))
+ * assignObject({a:1},{a:undefined,c:1},/^a/g))
+ * 
  */
 
 import { isPlainObject } from "../typecheck/isPlainObject";
 
 
+
 export function assignObject<T= Record<any,any>>(target:T, ...sources: any[]): T{   
     if(sources.length === 0) return target;
     const lastArg = sources[sources.length-1] 
+    let hasFilter = true,filter:(key:string)=>boolean
+    if(lastArg instanceof RegExp){
+        filter = (key:string)=>lastArg.test(key)
+    }else if(typeof(lastArg) === "function" ){
+        filter = (key:string)=>lastArg(key)
+    }else if(typeof(lastArg) === "object" && typeof(lastArg['test'])==="function" && lastArg.__flags__ == 'flex-tools/matcher'){
+        filter = (key:string)=>lastArg.test(key)
+    }else{
+        hasFilter = false
+    }
     const hasKeys = Array.isArray(lastArg) || (lastArg instanceof RegExp)
     const keys = hasKeys ? sources[sources.length-1] : []
     let mapSources = sources.map((source,index) =>{
