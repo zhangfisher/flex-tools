@@ -8,46 +8,46 @@
  * 
  * 会忽略掉里面的undefined
  * 
+ *  当最后一参数是数组时，会把数组里面的字段排除掉
+ * 
+ * 
  * // 排除c字段
  * 
  * import { exclude } from "flex-tools/object"
- * assignObject({a:1},{a:undefined,c:1},{[exclude]:"c"})
- * assignObject({a:1},{a:undefined,c:1},{[exclude]:["c","a"]})
+ * assignObject({a:1},{a:undefined,c:1},["a","b"])
+ * assignObject({a:1},{a:undefined,c:1},["!a","b"])
+ * assignObject({a:1},{a:undefined,c:1},/^a/])
  * 
  */
 
 import { isPlainObject } from "../typecheck/isPlainObject";
 
-// 排除字段列表
-export const EXCLUDE = Symbol("EXCLUDE");
-// 只包括的字段
-export const INCLUDE = Symbol("INCLUDE");
 
-export function assignObject(target: object, ...sources: any[]): any{    
-    let mapSources = sources.map(source =>{
-        if(!isPlainObject(source)) return source;
+export function assignObject<T= Record<any,any>>(target:T, ...sources: any[]): T{   
+    if(sources.length === 0) return target;
+    const lastArg = sources[sources.length-1] 
+    const hasKeys = Array.isArray(lastArg) || (lastArg instanceof RegExp)
+    const keys = hasKeys ? sources[sources.length-1] : []
+    let mapSources = sources.map((source,index) =>{
+        if(!isPlainObject(source) && (hasKeys && index>=sources.length-1)) return source;
         const sourceEntries = Object.entries(source)
         if(sourceEntries.some(([k,v]) =>v ===undefined)){
             return sourceEntries.reduce((result:any,[k,v])=>{
-                if(v!==undefined) result[k] = v;
+                if(v!==undefined){
+                    if(keys.length>0){
+                        if(keys.some()){
+                        }
+                    }else{
+                        result[k] = v
+                    }
+                }
                 return result
             },{})
         }else{
             return source
         }
     })
-    let results = Object.assign(target,...mapSources);
-    if(INCLUDE in results){
-        const includeFields =typeof(results[INCLUDE]) === "string" ? results[INCLUDE].split(",") : (Array.isArray(results[INCLUDE]) ? results[INCLUDE] : [results[INCLUDE]])
-        Object.keys(results).forEach((key:string) =>{
-            if(!includeFields.includes(key)) delete results[key]
-        })
-        delete results[INCLUDE]
-    }
-    if(EXCLUDE in results) {
-        const excludeFields =typeof(results[EXCLUDE]) === "string" ? results[EXCLUDE].split(",") : (Array.isArray(results[EXCLUDE]) ? results[EXCLUDE] : [results[EXCLUDE]])
-        excludeFields.forEach((name:string) =>delete results[name])
-        delete results[EXCLUDE]
-    }
-    return results
+    return  Object.assign(target as any, ...mapSources);
 }
+
+ 
