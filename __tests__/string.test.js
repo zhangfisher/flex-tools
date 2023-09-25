@@ -1,6 +1,6 @@
 import { test,expect} from "vitest"
 
-import {  replaceVars } from "../src/string"
+import {  replaceAll, replaceVars } from "../src/string"
 
 
 test("replaceVars", ()=>{
@@ -155,7 +155,11 @@ test("params",() => {
 })
 
 
+test("replaceAll",() => {
+    expect(replaceAll("abc{z}","{z}","{z}")).toBe("abc{z}")
+    expect(replaceAll("{a}bc{z}","{a}","*")).toBe("*bc{z}")
 
-test("matcher",()=>{
+    expect(replaceAll("abc{z}",/\{z\}/gm,"{z}")).toBe("abc{z}")
+    expect(replaceAll("{a}bc{z}",/\{a\}/gm,"*")).toBe("*bc{z}")
 
 })

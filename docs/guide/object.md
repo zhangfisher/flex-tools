@@ -9,7 +9,7 @@ import { <函数名称> } from "flex-tools/object"
 
 ## safeParseJson
 
-使用`JSON.parse`解决JSON字符串时，对格式的要求比较严格，要求键名和字符串必须使用`"`包起来。比如`JSON.parse("{a:1}")`就会失败，`safeParseJson`方法能可以更好地兼容一些非标`JSON`字符串,当键名没有使用`"`包起来也可以解析。
+使用`JSON.parse`解决JSON字符串时，对格式的要求比较严格，要求键名和字符串必须使用`"`包起来。比如`JSON.parse("{a:1}")`就会失败，`safeParseJson`方法能可以更好地兼容一些非标`JSON`字符串,当键名没有使用`"`包起来也可以解析。原理很简单，就是在使用`JSON.parse`前先用正则表达式处理替换一下。
 
 ```typescript
 function safeParseJson(str:string)
@@ -17,6 +17,8 @@ function safeParseJson(str:string)
 - `safeParseJson`内部也是调用`JSON.parse`
 - 能处理`key`没有用`"`包起来或使用`'...'`包起来的情况
 - 能处理`value`使用`'...'`包起来的情况
+- 行未尾未添加,号的情况
+- 中文字符`“ ”，`替换
 
 ## assignObject
 

@@ -1,5 +1,5 @@
 import { test,expect, describe} from "vitest"
-import { EXCLUDE, INCLUDE,assignObject, deepMerge, getPropertyNames, isLikeObject } from "../src/object"
+import { EXCLUDE, INCLUDE,assignObject, deepMerge, getPropertyNames, isLikeObject, safeParseJson } from "../src/object"
 import { omit } from "../src/object/omit"
 import { pick } from "../src/object/pick"
 import { get } from "../src/object/get"
@@ -8,6 +8,7 @@ import { ABORT, forEachObject  } from "../src/object/forEachObject"
 import { forEachUpdateObject } from "../src/object/forEachUpdateObject"
 import {CircularRefError} from "../src/errors"
 import { objectIterator } from "../src/object/objectIterator"
+import { e } from "vitest/dist/index-40ebba2b"
 
 describe("forEachObject",()=>{
 
@@ -402,4 +403,24 @@ test('isLikeObject',()=>{
     expect(isLikeObject({a:1,b:2,c:{c1:1,c2:2,c3:3}},{b:1,a:3,c:{c1:1,c2:2}},{strict:true})).toEqual(true)
     expect(isLikeObject({a:1,b:2,c:{c1:1,c2:2,c3:3}},{b:1,a:3,c:{c1:1,c2:2}},{deep:true})).toEqual(true)
     expect(isLikeObject({a:1,b:2,c:{c1:1,c2:2,c3:3}},{b:1,a:3,c:{c1:1,c2:2}},{strict:true,deep:true})).toEqual(false)
+})
+
+
+test("safeParseJson",()=>{
+    const str = String.raw`{ 
+        b:'dd'
+        a:1,
+        "ds":'111',
+        "sss":'中文',x:'中文',y:2,
+        '中文':1,
+        中q文:2
+        中文:3,
+        online:true
+        prefix:'$ssd',suffix:'d元'
+    }
+`
+    expect(()=>safeParseJson(str)).not.toThrow()
+
+
+
 })
