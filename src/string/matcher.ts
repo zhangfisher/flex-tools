@@ -29,10 +29,8 @@ export interface MatcherOptions{
 }
 
 export class Matcher{
-    __flags__ = 'flex-tools/matcher'
     rules:[RegExp,boolean][] = []
     constructor(rules:string | (RegExp | string)[] | RegExp ,options?:MatcherOptions){
-        let finalRules:[RegExp,boolean][] = []  
         if(!Array.isArray(rules)){
             rules = [rules]
         }
@@ -47,16 +45,23 @@ export class Matcher{
 
         this.rules=rules.map(rule=>{
             if(typeof rule === "string"){
+                let  deny = false
+                if(rule.startsWith("!")){
+                    deny = true
+                    rule = rule.slice(1)
+                }                
+
+                rule = rule.replace(/(?<!\\)\?/g,charset)  
                 if(rule.includes("*")){            
                     if(divider){// 指定分割符时*匹配到分隔符为止                
-                        rule = rule.replace(/(?<!\\)\*/g,"(?<=(\\"+divider+"|^)).{1,}?(?=(\\"+divider+"|$))")
-                    }else{// 未指定分隔符时，*==**
-                        rule = rule.replace(/(?<!\\)\*/g,"**")    
-                    }
-                    rule = rule.replace(/(?<!\\)\*\*/g,".*")    // 任意字符串              
-                    rule = rule.replace(/(?<!\\)\?/g,charset)   // 单个字符
-                }
-                return [new RegExp(rule),rule.startsWith("!")]
+                        rule = rule.replace(/(?<!\\)\*\*/g,".*") 
+                        rule = rule.replace(/(?<![\\\.])\*/g,"(?<=(\\"+divider+"|^)).{1,}?(?=(\\"+divider+"|$))")
+                    }else{// 未指定分隔符时，*==**)   
+                        rule = rule.replace(/(?<!\\)\*\*/g,".*")  
+                    }                       
+                }                 // 单个字符
+                rule = `^${rule}$`
+                return [new RegExp(rule),deny]
             }else if(rule instanceof RegExp){
                 return [rule,false]
             }else{
@@ -74,14 +79,17 @@ export class Matcher{
         },[] ) 
     }
     test(str:string):boolean{
+        if(this.rules.length === 0) return true
+        let hasDeny = false
         for(const [rule,deny] of this.rules){
             let matched = rule.test(str)
-            if(deny && matched){
-                return false
-            }else if(!deny && matched){
-                return true
+            if(deny){
+                hasDeny = true
+                if(matched) return false
+            }else{
+                if(matched) return true
             }
-        }
-        return false
+        }        
+        return  hasDeny 
     }
 }

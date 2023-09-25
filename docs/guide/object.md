@@ -24,25 +24,13 @@ function safeParseJson(str:string)
 
 与`Object.assign`一样的功能，主要差别在于：
 
-- 对值为`undefined`的处理方式不同。
-- 排除掉一些字段,`assignObject({...},{...},{[EXCLUDE]:[字段列表]})`等效于`lodash/omit`
-- 只包括某些字段,`assignObject({...},{...},{[INCLUDE]:[字段列表]})`等效于`lodash/pick`
+- 对值为`undefined`的处理方式不同。 
 
 ```typescript
 
 Object.assign({a:1},{a:undefined}) // == {a:undefined})
 // 由于a==undefined所有不会被合并，这样就保留了a的值
 assignObject({a:1},{a:undefined}) // == {a:1})
-
-
-import { EXCLUDE,INCLUDE } from "flex-tools/object"
-// 排除a,b,c字段
-assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[EXCLUDE]:["a", "b", "c"]}) 
-// == {e:5,f:6}
-
-// 只包含a,b,c字段
-assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[INCLUDE]:["a", "b", "c"]},{a:1}) 
-// == {a:1,b:2,c:3}
 
 ```
 

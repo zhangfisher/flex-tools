@@ -1,7 +1,7 @@
 import { test,expect} from "vitest"
 
 import {  replaceAll, replaceVars } from "../src/string"
-
+import { Matcher } from "../src/string/matcher"
 
 test("replaceVars", ()=>{
 
@@ -161,5 +161,61 @@ test("replaceAll",() => {
 
     expect(replaceAll("abc{z}",/\{z\}/gm,"{z}")).toBe("abc{z}")
     expect(replaceAll("{a}bc{z}",/\{a\}/gm,"*")).toBe("*bc{z}")
+
+})
+
+test("Matcher",() => {
+    expect(new Matcher(["a","b","c"]).test("a")).toBe(true)
+    expect(new Matcher(["a","b","c"]).test("b")).toBe(true)
+    expect(new Matcher(["a","b","c"]).test("c")).toBe(true)
+    expect(new Matcher(["a","b","c"]).test("aa")).toBe(false)
+    // 
+    expect(new Matcher(["!a","b","c"]).test("a")).toBe(false)
+    expect(new Matcher(["!a","b","c"]).test("b")).toBe(true)
+    expect(new Matcher(["!a","b","c"]).test("c")).toBe(true)
+    expect(new Matcher(["!a","!b","c"]).test("b")).toBe(false)
+
+    expect(new Matcher([/^a/]).test("abcdefg")).toBe(true)
+    expect(new Matcher([/I\s*am\s*\w/]).test("I am tom")).toBe(true)
+    expect(new Matcher(["!I\\s\*am\\s\*\\w+"]).test("I am tom")).toBe(false)    
+    expect(new Matcher(["I\\s\*am\\s\*\\w+"]).test("I am tom")).toBe(true)    
+
+    expect(new Matcher("?+?=?").test("1+1=2")).toBe(true)
+    expect(new Matcher("ab*cd").test("ab1cd")).toBe(true)
+    expect(new Matcher("ab*cd").test("ab12cd")).toBe(true)
+    expect(new Matcher("ab*cd").test("ab123cd")).toBe(true)
+    expect(new Matcher("ab**cd").test("ab1cd")).toBe(true)
+    expect(new Matcher("ab**cd").test("ab12cd")).toBe(true)
+    expect(new Matcher("ab**cd").test("ab123cd")).toBe(true)
+    expect(new Matcher("ab**cd").test("ab123456789cd")).toBe(true)
+
+    expect(new Matcher("a/b/*/c/d",{divider:"/"}).test("a/b/1/c/d")).toBe(true)
+    expect(new Matcher("a/b/*/c/d",{divider:"/"}).test("a/b/2/c/d")).toBe(true)
+    expect(new Matcher("a/b/*/c/d",{divider:"/"}).test("a/b/3/c/d")).toBe(true)
+    expect(new Matcher("a/b/*/c/d",{divider:"/"}).test("a/b/123/c/d")).toBe(true)
+    expect(new Matcher("*/*/*/*/*",{divider:"/"}).test("a/b/123/c/d")).toBe(true)
+    expect(new Matcher("*/*/*/*/*",{divider:"/"}).test("1/2/2/3/4")).toBe(true)
+    expect(new Matcher("?/?/?/?/?",{divider:"/"}).test("1/2/2/3/4")).toBe(true)
+    
+
+    expect(new Matcher(["node_modules"],{divider:"/"}).test("node_modules")).toBe(true)
+    expect(new Matcher(["node_modules"],{divider:"/"}).test("node_modules/a/b")).toBe(false)
+    expect(new Matcher(["node_modules/*/*"],{divider:"/"}).test("node_modules/a/b")).toBe(true)
+    expect(new Matcher(["node_modules/**"],{divider:"/"}).test("node_modules/a")).toBe(true)
+    expect(new Matcher(["node_modules/**"],{divider:"/"}).test("node_modules/a/b")).toBe(true)
+    expect(new Matcher(["node_modules/**"],{divider:"/"}).test("node_modules/a/b/c")).toBe(true)
+
+
+    expect(new Matcher(["!node_modules"],{divider:"/"}).test("node_modules")).toBe(false)
+    expect(new Matcher(["!node_modules"],{divider:"/"}).test("node_modules/a/b")).toBe(true)
+    expect(new Matcher(["!node_modules","x"],{divider:"/"}).test("node_modules/a/b")).toBe(false)
+    expect(new Matcher(["!node_modules/*/*"],{divider:"/"}).test("node_modules/a/b")).toBe(false)
+    expect(new Matcher(["!node_modules/**"],{divider:"/"}).test("node_modules/a")).toBe(false)
+    expect(new Matcher(["!node_modules/**"],{divider:"/"}).test("node_modules/a/b")).toBe(false)
+    expect(new Matcher(["!node_modules/**"],{divider:"/"}).test("node_modules/a/b/c")).toBe(false)
+
+
+ 
+
 
 })

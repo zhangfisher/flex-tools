@@ -1,5 +1,5 @@
 import { test,expect, describe} from "vitest"
-import { EXCLUDE, INCLUDE,assignObject, deepMerge, getPropertyNames, isLikeObject, safeParseJson } from "../src/object"
+import { assignObject, deepMerge, getPropertyNames, isLikeObject, safeParseJson } from "../src/object"
 import { omit } from "../src/object/omit"
 import { pick } from "../src/object/pick"
 import { get } from "../src/object/get"
@@ -124,7 +124,7 @@ test("深度合并",() => {
     expect(deepMerge({a:1,b:2,c:{c1:1,c2:[1,1]}},{c:{c2:[1,2,3]}},{$merge:'uniqueMerge'})).toEqual({a:1,b:2,c:{c1:1,c2:[1,2,3]}})
     
 
-    expect(deepMerge({a:1,b:2,c:{c1:1,c2:[1,1]}},{c:{c2:[1,2,3]}},(from,to,ctx)=>{
+    expect(deepMerge({a:1,b:2,c:{c1:1,c2:[1,1]}},{c:{c2:[1,2,3]}},(from: any,to: any,ctx: any)=>{
         return from
     })).toEqual({a:1,b:2,c:{c1:1,c2:[1,2,3]}})
 
@@ -142,14 +142,7 @@ test("assignObject",() => {
         bufferSize:10,
         flushInterval:10 * 1000, 
         format: "xxx"
-    })
-
-    expect(assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[EXCLUDE]:["a", "b", "c"]})).toEqual({d:4,e:5,f:6,x:1})
-    expect(assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[EXCLUDE]:["a", "b", "c"]},{a:1})).toEqual({d:4,e:5,f:6,x:1})
-
-    expect(assignObject({a:1,b:2,c:3,d:4,e:5,f:6},{d:undefined,x:1},{[INCLUDE]:["a", "b", "c"]},{a:1})).toEqual({a:1,b:2,c:3})
-
-
+    })    
 })
 
 test("pick",() => {
