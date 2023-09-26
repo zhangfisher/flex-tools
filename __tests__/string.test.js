@@ -180,6 +180,10 @@ test("Matcher",() => {
     expect(new Matcher(["!I\\s\*am\\s\*\\w+"]).test("I am tom")).toBe(false)    
     expect(new Matcher(["I\\s\*am\\s\*\\w+"]).test("I am tom")).toBe(true)    
 
+    expect(new Matcher(["I am *"]).test("I am tom")).toBe(true)    
+    expect(new Matcher(["I am ?"]).test("I am tom")).toBe(false)    
+    expect(new Matcher(["I am ???"]).test("I am tom")).toBe(true)    
+
     expect(new Matcher("?+?=?").test("1+1=2")).toBe(true)
     expect(new Matcher("ab*cd").test("ab1cd")).toBe(true)
     expect(new Matcher("ab*cd").test("ab12cd")).toBe(true)
@@ -189,7 +193,19 @@ test("Matcher",() => {
     expect(new Matcher("ab**cd").test("ab123cd")).toBe(true)
     expect(new Matcher("ab**cd").test("ab123456789cd")).toBe(true)
 
+    expect(new Matcher("a/b/*/c/d").test("a/b/1/c/d")).toBe(true)
+    expect(new Matcher("a/b/*/c/d").test("a/b/1/2/c/d")).toBe(true)
+    expect(new Matcher("a/b/*/c/d").test("a/b/1/2/3/c/d")).toBe(true)
+    expect(new Matcher("a/b/*/c/d").test("a/b/1/2/3/4/c/d")).toBe(true)
+
+
     expect(new Matcher("a/b/*/c/d",{divider:"/"}).test("a/b/1/c/d")).toBe(true)
+    expect(new Matcher("a/b/*/c/d",{divider:"/"}).test("a/b/1/2/c/d")).toBe(false)
+    expect(new Matcher("a/b/*/c/d",{divider:"/"}).test("a/b/1/2/3/c/d")).toBe(false)
+    expect(new Matcher("a/b/*/c/d",{divider:"/"}).test("a/b/1/2/3/4/c/d")).toBe(false)
+
+
+
     expect(new Matcher("a/b/*/c/d",{divider:"/"}).test("a/b/2/c/d")).toBe(true)
     expect(new Matcher("a/b/*/c/d",{divider:"/"}).test("a/b/3/c/d")).toBe(true)
     expect(new Matcher("a/b/*/c/d",{divider:"/"}).test("a/b/123/c/d")).toBe(true)
@@ -215,7 +231,27 @@ test("Matcher",() => {
     expect(new Matcher(["!node_modules/**"],{divider:"/"}).test("node_modules/a/b/c")).toBe(false)
 
 
- 
+    expect(new Matcher(["*.js","*.ts","*.jsx","*.tsx","*.vue"]).test("a.js")).toBe(true)
+    expect(new Matcher(["*.js","*.ts","*.jsx","*.tsx","*.vue"]).test("x/y/a.js")).toBe(true)
+    expect(new Matcher(["*.js","*.ts","*.jsx","*.tsx","*.vue"]).test("xxa.ts")).toBe(true)
+    expect(new Matcher(["*.js","*.ts","*.jsx","*.tsx","*.vue"]).test("ffa.jsx")).toBe(true)
+    
+    expect(new Matcher(["*.js","*.ts","*.jsx","*.tsx","*.vue"],{divider:"/."}).test("a.js")).toBe(true)
+    expect(new Matcher(["*.js","*.ts","*.jsx","*.tsx","*.vue"],{divider:"/."}).test("x/y/a.js")).toBe(false)
+    expect(new Matcher(["*.js","*.ts","*.jsx","*.tsx","*.vue"],{divider:"/."}).test("xxa.ts")).toBe(true)
+    expect(new Matcher(["*.js","*.ts","*.jsx","*.tsx","*.vue"],{divider:"/."}).test("ffa.jsx")).toBe(true)
+
+    const matcher = new Matcher([
+        "myapp/src/test/*.js","myapp/src/*.js","myapp/src/*.ts","myapp/src/*.jsx","myapp/src/*.tsx","myapp/src/*.vue"]
+        ,{divider:"/."})
+
+    expect(matcher.test("myapp/src/a.js")).toBe(true)
+    expect(matcher.test("myapp/src/b.ts")).toBe(true)
+    expect(matcher.test("myapp/src/c.ts")).toBe(true)
+    expect(matcher.test("myapp/src/test/ss.ts")).toBe(false)
+    expect(matcher.test("myapp/src/test/ss.js")).toBe(true)
+
+
 
 
 })
