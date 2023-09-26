@@ -16,8 +16,8 @@
  * 
  */
 
-export function assignObject<T= Record<any,any>>(target:T, ...sources: any[]): T{   
-    if(sources.length === 0) return target;
+export function assignObject<T extends Record<any,any> = Record<any,any>>(target:object , ...sources: any[]): T{   
+    if(sources.length === 0) return target as any;
     let mapSources = sources.map((source,index) =>{
         const sourceEntries = Object.entries(source || {})
         if(sourceEntries.some(([k,v]) =>v ===undefined)){
