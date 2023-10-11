@@ -165,3 +165,15 @@ const args = process.argv.slice(2)
     })
 ```
 
+# getPackageEntry
+
+ 读取包的入口文件，即`main`字段值
+
+ ```js
+ 
+ getPackageEntry() // 返回当前包入口main值
+ getPackageEntry({absolute:true}) // 返回绝对路径
+ // 指定一个入口文件夹，获取该入口所在的包的main值
+ getPackageEntry({entry:"/usr/app"}) 
+
+ ```

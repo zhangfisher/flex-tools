@@ -6,3 +6,4 @@ export * from "./upgradePackage"
 export * from "./updatePackageJson"
 export * from "./packageIsInstalled"
 export * from "./initPackage"
+export * from './getPackageEntry'
