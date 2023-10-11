@@ -12,7 +12,7 @@ export interface GetPackageEntryOptions{
 }
 
 export function getPackageEntry(options:GetPackageEntryOptions){
-    const { entry=process.cwd(),absolute } = options
+    const { entry=process.cwd(),absolute } = options || {}
     let entryFile
     const packageJson = getPackageJson(entry)
     if(packageJson.main){
