@@ -211,7 +211,8 @@ test("getByPath的匹配回调",() => {
         },
         x:1,
         y:[1,2,3,4,5,{m:1,n:2}],
-        z:[1,2,3,new Set([1,2,3,4,5])]
+        z:[1,2,3,new Set([1,2,3,4,5])],
+        services:null
     }    
 
     get(obj,"a.b1.b11",{matched:({value,parent,indexOrKey})=>{
@@ -273,6 +274,9 @@ test("getByPath的匹配回调",() => {
         expect(parent).toEqual(new Set([1,2,3,4,5]))
         expect(indexOrKey).toEqual(0)
     }})
+
+    expect(get(obj,"services.count",{defaultValue:1})).toBe(1)
+
 
 })
 

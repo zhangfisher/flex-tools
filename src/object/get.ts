@@ -78,6 +78,10 @@ export function get<R=any,P extends string=string>(obj:Record<string,any>,path:P
         }else{   // 无效路径名称
             isInvalidPath = true        
         }
+        if(result==undefined){
+            if(i<paths.length) isInvalidPath = true
+            break
+        }
     }
     if(isInvalidPath){
         if(ignoreInvalidPath){
