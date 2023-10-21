@@ -340,3 +340,29 @@ Overloads<typeof foo>  == (a: string)=>string | (a: number)=>number | (a: any)=>
 
 - `Overloads<T>` 只能获取最多8个重载的类型。
 
+## Optional
+
+将类型中的所有属性变为可选属性，排除指定的键名。
+
+```typescript
+export interface SiteOptions{
+    id:string                           
+    icon:string                         
+    logo:string                         
+    title:string                        
+    path:string                         
+}
+
+type mysite = Optional<SiteOptions,'id' | 'path'>
+
+// type mysite == {
+//     id:string                           
+//     icon?:string                         
+//     logo?:string                         
+//     title?:string                        
+//     path:string 
+// }
+
+```
+
+- `Optional<SiteOptions>`等价于`Partial<SiteOptions>`，但`Optional`可以排除指定的键名。
