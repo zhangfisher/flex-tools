@@ -86,6 +86,20 @@ test("深度优先遍历树",()=>{
     },{pathKey:"title"})
     expect(ids.length).toBe(30)
     expect(titles.length).toBe(30)
+
+    ids= [];titles = [];paths= [];levels=[];parents=[];indexs = []
+
+    forEachTreeByDfs(books.children!,({node,level,parent,path,index})=>{
+        ids.push(node.id)
+        titles.push(node.title)
+        paths.push(path)
+        levels.push(level)
+        parents.push(parent)
+        indexs.push(index)
+    },{pathKey:"title"})
+    expect(ids.length).toBe(30)
+    expect(titles.length).toBe(30)
+    
 })
 
  

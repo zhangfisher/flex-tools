@@ -21,7 +21,7 @@ import type { ForEachTreeOptions, IForEachTreeCallback } from "./forEachTree";
     // 当指定startId时用来标识是否开始调用callback
     let isStart = startId == null ? true : (typeof (treeData) == 'object' ? String((treeData as Node)[idKey]) === String(startId) : false)
 
-    const stack = (isPlainObject(treeData) ? [treeData] : treeData as Node[]) as Node[]
+    const stack = (Array.isArray(treeData) ? [...treeData] : [treeData] ) as Node[]
     const levels: number[] = [];
     const paths:any[] = []
     const parents:Node[] = []
