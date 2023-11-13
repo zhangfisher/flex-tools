@@ -72,6 +72,20 @@ test("广度优先遍历树",()=>{
     },{pathKey:"title"})
     expect(ids.length).toBe(30)
     expect(titles.length).toBe(30)
+
+    ids= [];titles = [];paths= [];levels=[];parents=[];indexs = []
+
+    forEachTreeByBfs(books.children!,({node,level,parent,path,index})=>{
+        ids.push(node.id)
+        titles.push(node.title)
+        paths.push(path)
+        levels.push(level)
+        parents.push(parent)
+        indexs.push(index)
+    },{pathKey:"title"})
+    expect(ids.length).toBe(29)
+    expect(titles.length).toBe(29)
+
 })
 test("深度优先遍历树",()=>{
     let ids:any[]= [],titles:string[] = [],paths:string[] = [],levels:any[]=[],parents:any[]=[]
@@ -97,9 +111,9 @@ test("深度优先遍历树",()=>{
         parents.push(parent)
         indexs.push(index)
     },{pathKey:"title"})
-    expect(ids.length).toBe(30)
-    expect(titles.length).toBe(30)
-    
+    expect(ids.length).toBe(29)
+    expect(titles.length).toBe(29)
+    expect(books.children?.length).toBe(6)
 })
 
  
