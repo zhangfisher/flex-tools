@@ -5,7 +5,7 @@ import { getById } from "./getById";
 import { getTreeNodeInfo } from "./getTreeNodeInfo";
 import { moveTreeNode, MoveTreeNodePosition } from "./moveTreeNode";
 import { removeTreeNodes } from "./removeTreeNodes";
-import { serachTree, SerachTreeOptions } from "./searchTree";
+import { searchTree, SerachTreeOptions } from "./searchTree";
 import { TreeNode, TreeNodeOptions } from "./types";
 import { forEachTreeByDfs } from "./forEachTreeByDfs";
 
@@ -114,7 +114,7 @@ export class FlexTree<Node extends TreeNode = TreeNode,IdKey extends string = "i
      */
     search(matcher:IForEachTreeCallback<Node>,picker?:IForEachTreeCallback<Node>,options?:SerachTreeOptions){
         const { matchOne } = options as Required<SerachTreeOptions>
-        return serachTree<Node,Node[]>(this.#treeObj,matcher,picker,{
+        return searchTree<Node,Node[]>(this.#treeObj,matcher,picker,{
             matchOne,
             ...this.#options
         })

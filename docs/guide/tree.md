@@ -150,7 +150,7 @@ interface MapTreeOptions extends TreeNodeOptions{
 遍历树的每一个节点，执行`mather({node,level,parent,path,index})`，如果返回`true`，则调用`picker({node,level,parent,path,index})`函数返回结果
 
 ```typescript
-function serachTree<Node extends TreeNode=TreeNode,Returns=Node[]>(treeData:Node[] | Node,matcher:IForEachTreeCallback<Node>,picker?:IForEachTreeCallback<Node>,options?:SerachTreeOptions):Returns[]
+function searchTree<Node extends TreeNode=TreeNode,Returns=Node[]>(treeData:Node[] | Node,matcher:IForEachTreeCallback<Node>,picker?:IForEachTreeCallback<Node>,options?:SerachTreeOptions):Returns[]
 interface SerachTreeOptions extends TreeNodeOptions,ForEachTreeOptions {
     matchOne?:boolean               //   只匹配一个就退出搜索
 }

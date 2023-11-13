@@ -24,7 +24,7 @@ export interface SerachTreeOptions extends TreeNodeOptions,ForEachTreeOptions {
   * @param matchOne 只匹配一个就退出,匹配所有,默认只匹配一个
   * 
   */
-export function serachTree<Node extends TreeNode=TreeNode,Returns=Node[]>(treeData:Node[] | Node,matcher:IForEachTreeCallback<Node>,picker?:IForEachTreeCallback<Node>,options?:SerachTreeOptions):Returns[]{
+export function searchTree<Node extends TreeNode=TreeNode,Returns=Node[]>(treeData:Node[] | Node,matcher:IForEachTreeCallback<Node>,picker?:IForEachTreeCallback<Node>,options?:SerachTreeOptions):Returns[]{
     let result:Returns[] = []
     const pickerFunc = picker || (({node})=>node) as IForEachTreeCallback<Node>
     const opts = Object.assign({matchOne:true},options || {})   
