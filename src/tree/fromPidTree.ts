@@ -24,7 +24,7 @@ import { omit } from "../object/omit"
 
  export function fromPidTree<
     FromNode extends PidTreeNode = PidTreeNode,
-    ToNode extends TreeNode = TreeNode<Omit<FromNode,'pid'>>,
+    ToNode extends TreeNodeBase = TreeNode<Omit<FromNode,'pid'>>,
     IdKey extends string = 'id',
     ChildrenKey extends string = 'children'
     >(pidNodes:FromNode[],options?:FromPidTreeOptions<FromNode,ToNode,IdKey,ChildrenKey>):ToNode[]{

@@ -6,14 +6,14 @@
 import { ABORT } from "../object";
 import { DefaultTreeOptions } from "./consts";
 import { forEachTreeByDfs } from "./forEachTreeByDfs";
-import { TreeNode, TreeNodeOptions } from "./types";
+import { TreeNode, TreeNodeBase,TreeNodeOptions } from "./types";
  
   
  export interface GetTreeNodeOptions extends TreeNodeOptions{
      includeParent?:boolean         // 当指定时返回[Node,ParantNode]
  }  
  
- export function getTreeNode<Node extends TreeNode = TreeNode,IdKey extends string = 'id'>(treeObj:Node | Node[],nodeId: Node[IdKey],options?:GetTreeNodeOptions):Node | undefined {
+ export function getTreeNode<Node extends TreeNodeBase = TreeNode,IdKey extends string = 'id'>(treeObj:Node | Node[],nodeId: Node[IdKey],options?:GetTreeNodeOptions):Node | undefined {
      let result:Node | undefined;
      const opts = Object.assign({}, DefaultTreeOptions ,options || {}) as Required<GetTreeNodeOptions>     
      const { idKey } = opts

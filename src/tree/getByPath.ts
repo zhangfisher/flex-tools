@@ -10,14 +10,14 @@
 import { ABORT } from "../object";
 import { DefaultTreeOptions } from "./consts";
 import { forEachTreeByDfs } from "./forEachTreeByDfs";
-import { TreeNode, TreeNodeOptions } from "./types";
+import { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types";
 
  
 export interface GetByPathOptions extends TreeNodeOptions{
      
 }
 
-export function getByPath<Node extends TreeNode = TreeNode>(treeObj:Node | Node[],fullpath: string,options?:GetByPathOptions):Node | undefined {
+export function getByPath<Node extends TreeNodeBase = TreeNode>(treeObj:Node | Node[],fullpath: string,options?:GetByPathOptions):Node | undefined {
     let result:Node | undefined;
     let opts = Object.assign({}, DefaultTreeOptions ,options || {}) as Required<GetByPathOptions>     
     forEachTreeByDfs<Node>(treeObj,({node,path})=>{

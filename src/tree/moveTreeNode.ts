@@ -9,7 +9,7 @@
 import { DefaultTreeOptions } from "./consts";
 import { getTreeNodeInfo } from "./getTreeNodeInfo";
 import { getTreeNodeRelation, TreeNodeRelation } from "./getTreeNodeRelation";
-import { TreeNode, TreeNodeOptions } from "./types";
+import { TreeNode,TreeNodeBase, TreeNodeOptions } from "./types";
 
  
 export interface MoveTreeNodeOptions extends TreeNodeOptions{ 
@@ -22,7 +22,7 @@ export enum MoveTreeNodePosition{
     Previous = 3                             // 上一个兄弟
 }
 
-export function moveTreeNode<Node extends TreeNode = TreeNode,IdKey extends string = 'id'>(treeObj:Node | Node[],fromNodeId: Node[IdKey],toNodeId:Node[IdKey],pos:MoveTreeNodePosition=MoveTreeNodePosition.LastChild, options?:MoveTreeNodeOptions):void {
+export function moveTreeNode<Node extends TreeNodeBase = TreeNode,IdKey extends string = 'id'>(treeObj:Node | Node[],fromNodeId: Node[IdKey],toNodeId:Node[IdKey],pos:MoveTreeNodePosition=MoveTreeNodePosition.LastChild, options?:MoveTreeNodeOptions):void {
     const opts = Object.assign({}, DefaultTreeOptions ,options || {}) as Required<MoveTreeNodeOptions>     
     const  { childrenKey } = opts
     // 先检查是否允许移动
@@ -31,8 +31,8 @@ export function moveTreeNode<Node extends TreeNode = TreeNode,IdKey extends stri
         throw new Error("Move here is not allowed")
     }
     
-    let fromNode = getTreeNodeInfo<Node>(treeObj,fromNodeId)
-    let toNode = getTreeNodeInfo<Node>(treeObj,toNodeId)
+    let fromNode = getTreeNodeInfo<Node,IdKey>(treeObj,fromNodeId)
+    let toNode = getTreeNodeInfo<Node,IdKey>(treeObj,toNodeId)
 
     if(!(fromNode && toNode)) {
         throw new Error("Unable to read node data")

@@ -6,19 +6,19 @@ import { getTreeNodeInfo } from "./getTreeNodeInfo";
 import { moveTreeNode, MoveTreeNodePosition } from "./moveTreeNode";
 import { removeTreeNodes } from "./removeTreeNodes";
 import { searchTree, SerachTreeOptions } from "./searchTree";
-import { TreeNode, TreeNodeOptions } from "./types";
+import { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types";
 import { forEachTreeByDfs } from "./forEachTreeByDfs";
 
-export interface FlexTreeOptions<Node extends TreeNode = TreeNode,IdKey extends string = "id"> extends TreeNodeOptions {
+export interface FlexTreeOptions<Node extends TreeNodeBase = TreeNode,IdKey extends string = "id"> extends TreeNodeOptions {
     idGenerator(node:Partial<Node>):Node[IdKey]
 }
 
-export class FlexTree<Node extends TreeNode = TreeNode,IdKey extends string = "id",ChildrenKey extends string = "children">{
+export class FlexTree<Node extends TreeNodeBase = TreeNode,IdKey extends string = "id",ChildrenKey extends string = "children">{
     #treeObj:Node[] | Node
     #options:FlexTreeOptions<Node,IdKey>
     constructor(nodes:Node[] | Node,options?:FlexTreeOptions<Node,IdKey>){
         this.#treeObj = nodes
-        this.#options = Object.assign({},options) as Required<FlexTreeOptions>
+        this.#options = Object.assign({},options) as Required<FlexTreeOptions<Node,IdKey>>
     }
     get root(): Node | undefined {
         return Array.isArray(this.#treeObj) ? undefined : this.#treeObj

@@ -2,7 +2,7 @@
  * 获取指定的节点的关联节点
  */
 
-import { TreeNode, TreeNodeOptions } from "./types";
+import { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types";
 import { ABORT } from '../object/forEachObject';
 import { getTreeNodeInfo, TreeNodeInfo } from "./getTreeNodeInfo";
 import { forEachTreeByDfs } from "./forEachTreeByDfs";
@@ -17,9 +17,7 @@ export enum RelatedTreeNode{
     Previous = 3 
 }
 
-export function getRelatedTreeNode<Node extends TreeNode = TreeNode,
-    IdKey extends string = 'id' 
->(treeObj: Node | Node[],nodeId:Node[IdKey],pos:RelatedTreeNode , options?:GetRelatedTreeNodeOptions):Node | null {
+export function getRelatedTreeNode<Node extends TreeNodeBase = TreeNode,IdKey extends string = 'id'>(treeObj: Node | Node[],nodeId:Node[IdKey],pos:RelatedTreeNode , options?:GetRelatedTreeNodeOptions):Node | null {
     const opts = Object.assign({},options) as Required<GetRelatedTreeNodeOptions>
     const { idKey } = opts
     let result:Node | null | undefined = null

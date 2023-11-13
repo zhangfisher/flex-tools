@@ -11,7 +11,7 @@
  * 
  */
 
-import type { TreeNode, TreeNodeOptions } from "./types";
+import type { TreeNodeBase, TreeNode,TreeNodeOptions } from "./types";
 import { DefaultTreeOptions } from "./consts";
 import { forEachTree, IForEachTreeCallback } from "./forEachTree";
 import { ABORT } from "../object";
@@ -20,7 +20,7 @@ export interface RemoveTreeNodesOptions extends TreeNodeOptions {
     onlyRemoveOne?: boolean;                    // 只删除一个
 }
 
-export function removeTreeNodes<Node extends TreeNode>(treeObj:Node | Node[],matcher:IForEachTreeCallback<Node>,options?:RemoveTreeNodesOptions):void{
+export function removeTreeNodes<Node extends TreeNodeBase = TreeNode>(treeObj:Node | Node[],matcher:IForEachTreeCallback<Node>,options?:RemoveTreeNodesOptions):void{
     const opts= Object.assign({onlyRemoveOne:false}, DefaultTreeOptions ,options || {}) as Required<RemoveTreeNodesOptions>   
     const {childrenKey='children', idKey='id'} = opts
     forEachTree<Node>(treeObj,({node,level,parent,path,index})=>{

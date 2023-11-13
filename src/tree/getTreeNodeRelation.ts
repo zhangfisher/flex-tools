@@ -5,7 +5,7 @@
  */
 
 import { DefaultTreeOptions } from "./consts";
-import { TreeNode, TreeNodeOptions } from "./types";
+import { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types";
 import { ABORT } from '../object/forEachObject';
 import { forEachTreeByDfs } from "./forEachTreeByDfs";
 
@@ -24,7 +24,7 @@ export enum TreeNodeRelation{
     Unknown = 9                             // 未知
 }
 
-export function getTreeNodeRelation<Node extends TreeNode = TreeNode,IdKey extends string = 'id'>(treeObj:Node | Node[],nodeId:Node[IdKey],refNodeId:Node[IdKey],options?:GetTreeNodeRelationOptions):TreeNodeRelation{
+export function getTreeNodeRelation<Node extends TreeNodeBase = TreeNode,IdKey extends string = 'id'>(treeObj:Node | Node[],nodeId:Node[IdKey],refNodeId:Node[IdKey],options?:GetTreeNodeRelationOptions):TreeNodeRelation{
     let relation:any = 9;
 
     const opts= Object.assign({}, DefaultTreeOptions ,options || {}) as Required<GetTreeNodeRelationOptions>     

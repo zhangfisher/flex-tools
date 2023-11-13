@@ -73,7 +73,7 @@ export interface TreeNodeOptions{
 //     y:"a"
 // }
 
-// function test<T extends TreeNode = TreeNode>(node:T):T {  
+// function test<T extends TreeNodeBase = TreeNode>(node:T):T {  
 //     node["x"]=1
 //     node["children"]=[]
 //     node["id"]="2"
@@ -93,3 +93,6 @@ export interface TreeNodeOptions{
 // test<TreeNode<{id:'a' | 'b'}>>({id:'a'})
 // test<TreeNode<{id:'a' | 'b'}>>({id:'b'})
 // test<TreeNode<{id:'a' | 'b'}>>({id:'c'})
+// test<TreeNode<{key?:string}>>({id:'c'})
+// test<TreeNode<{key:string}>>({id:'c',key:"xxxx"})
+// test<TreeNode<{key:string},'key'>>({key:'c'})

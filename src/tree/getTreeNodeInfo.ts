@@ -6,7 +6,7 @@
 import { ABORT } from "../object";
 import { DefaultTreeOptions } from "./consts";
 import { forEachTreeByDfs } from "./forEachTreeByDfs";
-import { TreeNode, TreeNodeOptions } from "./types";
+import { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types";
  
   
  export interface GetTreeNodeInfoOptions extends TreeNodeOptions{
@@ -21,7 +21,7 @@ export interface TreeNodeInfo<Node>{
     index:number
 }
 
-export function getTreeNodeInfo<Node extends TreeNode = TreeNode,IdKey extends string = 'id'>(treeObj:Node | Node[],nodeId: Node[IdKey],options?:GetTreeNodeInfoOptions):TreeNodeInfo<Node> | undefined {
+export function getTreeNodeInfo<Node extends TreeNodeBase = TreeNode,IdKey extends string = 'id'>(treeObj:Node | Node[],nodeId: Node[IdKey],options?:GetTreeNodeInfoOptions):TreeNodeInfo<Node> | undefined {
      let result:TreeNodeInfo<Node> | undefined;     
      const opts =  Object.assign({}, DefaultTreeOptions ,options || {}) as Required<GetTreeNodeInfoOptions>     
      let { idKey } = opts

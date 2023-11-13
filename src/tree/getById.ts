@@ -10,12 +10,12 @@
 import { ABORT } from "../object";
 import { DefaultTreeOptions } from "./consts";
 import { forEachTreeByDfs } from "./forEachTreeByDfs";
-import { TreeNode, TreeNodeOptions } from "./types";
+import { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types";
 
  
 export interface GetByIdOptions extends TreeNodeOptions{}
 
-export function getById<Node extends TreeNode = TreeNode,IdKey extends string = "id">(treeObj:Node | Node[],nodeId:Node[IdKey],options?:GetByIdOptions):Node | null {
+export function getById<Node extends TreeNodeBase = TreeNode,IdKey extends string = "id">(treeObj:Node | Node[],nodeId:Node[IdKey],options?:GetByIdOptions):Node | null {
     let result:Node | null = null;
     const opts = Object.assign({}, DefaultTreeOptions ,options || {}) as Required<GetByIdOptions>     
     const { idKey } = opts
