@@ -27,11 +27,11 @@ export type LiteListenerRegistry<M,E> = Map<E,LiteEventListenerRegistry<M>>
 
 export class LiteEvent<Message=any,Events extends string = string>{
      // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
-     #listeners:LiteListenerRegistry<Message,Events>= new Map()
+     private _listeners:LiteListenerRegistry<Message,Events>= new Map()
      // 保留最后一次触发的消息,key=事件名称,value=消息
-     #lastMessage:Record<string,any> = {}        
+     private _lastMessage:Record<string,any> = {}        
      static listenerSeqId:number = 0
-     get listeners(){return this.#listeners}
+     get listeners(){return this._listeners}
      /**
       * 订阅事件并返回一个事件订阅ID
       * 
@@ -42,11 +42,11 @@ export class LiteEvent<Message=any,Events extends string = string>{
       */
      on(event:Events,callback:LiteEventListener<Message>,options?:LiteEventSubscribeOptions):LiteEventSubscriber | number{
          const { objectify = false,count=-1 } = Object.assign({},options) as Required<LiteEventSubscribeOptions>        
-         if(!this.#listeners.has(event)){
-             this.#listeners.set(event,new Map())        
+         if(!this._listeners.has(event)){
+             this._listeners.set(event,new Map())        
          }
          const listenerId =  ++LiteEvent.listenerSeqId            
-         const eventListeners = this.#listeners.get(event) as LiteEventListenerRegistry<Message>
+         const eventListeners = this._listeners.get(event) as LiteEventListenerRegistry<Message>
          eventListeners?.set(listenerId,[callback,count])        
          // 如果启用了retain,则应该马上触发最后保存的事件
          this.emitRetainEvent(event,listenerId,eventListeners)      
@@ -55,7 +55,7 @@ export class LiteEvent<Message=any,Events extends string = string>{
                  off:()=>{
                      eventListeners?.delete(listenerId)
                      if(eventListeners?.size==0){
-                         this.#listeners.delete(event)
+                         this._listeners.delete(event)
                      }
                  }
              }
@@ -68,8 +68,8 @@ export class LiteEvent<Message=any,Events extends string = string>{
       * @param event 
       */
      private emitRetainEvent(event:Events,listenerId:number,eventListeners:LiteEventListenerRegistry<Message>){
-        if(event in this.#lastMessage){
-            this.executeListener(listenerId,eventListeners,this.#lastMessage[event])   
+        if(event in this._lastMessage){
+            this.executeListener(listenerId,eventListeners,this._lastMessage[event])   
         }        
      }
      /**
@@ -91,7 +91,7 @@ export class LiteEvent<Message=any,Events extends string = string>{
      private forEachListeners(callback:({event,listenerId,listener,count,eventListeners}:{event:Events,listenerId:number,listener:LiteEventListener<Message>,count:number,eventListeners:LiteEventListenerRegistry<Message>})=>boolean | void){
          // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
          let isAbort = false
-         for(let [event,eventListeners] of this.#listeners.entries()){
+         for(let [event,eventListeners] of this._listeners.entries()){
              if(isAbort) break
              for(let [listenerId,[listener,count]] of eventListeners.entries()){
                  if(isAbort) break
@@ -113,7 +113,7 @@ export class LiteEvent<Message=any,Events extends string = string>{
      private forEachEventListeners(event:Events,callback:ForEachLiteEventListenerCallback<Message,Events>){
          // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}        
          let isAbort = false        
-         let matchedListeners = [[event,this.#listeners.get(event)]] as [Events,LiteEventListenerRegistry<Message> | undefined][]       
+         let matchedListeners = [[event,this._listeners.get(event)]] as [Events,LiteEventListenerRegistry<Message> | undefined][]       
          for(let [eventName,eventListeners] of matchedListeners){
              if(!eventListeners) continue
              for(let [listenerId,[listener,count]] of eventListeners){
@@ -150,7 +150,7 @@ export class LiteEvent<Message=any,Events extends string = string>{
                  this.forEachListeners(({listenerId,eventListeners,event})=>{
                      if(listenerId == arguments[0]){
                          eventListeners.delete(listenerId)
-                         if(this.#listeners.get(event)?.size==0) this.#listeners.delete(event)
+                         if(this._listeners.get(event)?.size==0) this._listeners.delete(event)
                          return false
                      }   
                  })
@@ -159,7 +159,7 @@ export class LiteEvent<Message=any,Events extends string = string>{
                  this.forEachListeners(({listenerId,listener,eventListeners,event})=>{
                      if(listener == callback){
                          eventListeners.delete(listenerId) 
-                         if(this.#listeners.get(event)?.size==0) this.#listeners.delete(event)
+                         if(this._listeners.get(event)?.size==0) this._listeners.delete(event)
                      }   
                  })
              }
@@ -168,7 +168,7 @@ export class LiteEvent<Message=any,Events extends string = string>{
                  this.forEachEventListeners(arguments[0] as Events,({event,listenerId,listener,eventListeners})=>{
                      if(event == arguments[0] && listener ==  arguments[1] ){
                          eventListeners.delete(listenerId) 
-                         if(this.#listeners.get(event)?.size==0) this.#listeners.delete(event)
+                         if(this._listeners.get(event)?.size==0) this._listeners.delete(event)
                      }
                  })
              }
@@ -199,9 +199,9 @@ export class LiteEvent<Message=any,Events extends string = string>{
     }
      offAll(event?:Events){
          if(event){
-             this.#listeners.delete(event)
+             this._listeners.delete(event)
          }else{
-             this.#listeners.clear()
+             this._listeners.clear()
          }        
      }
      /**    
@@ -234,7 +234,7 @@ export class LiteEvent<Message=any,Events extends string = string>{
              results.push(this.executeListener(listenerId,eventListeners,message))
              if(typeof(callback)=='function') callback(listenerId)
              if(eventListeners.size==0){
-                 this.#listeners.delete(eventName)
+                 this._listeners.delete(eventName)
              }
          })   
          return results
@@ -246,7 +246,7 @@ export class LiteEvent<Message=any,Events extends string = string>{
       */
      emit(event:Events,message?:Message,retain?:boolean){
          if(retain){
-             this.#lastMessage[event] = message
+             this._lastMessage[event] = message
          }
          return this.executeListeners(event,message)
      }

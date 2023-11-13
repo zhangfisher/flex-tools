@@ -364,6 +364,28 @@ type fn2 = ChangeReturns<fn,string>
 type A = ValueOf<Record<string,number>>
 // A == number
 ```
+## Optional
 
-export type ReactFC<Props=unknown> = React.FC<React.PropsWithChildren<
-    Pick<React.HTMLAttributes<HTMLElement>,'className' | 'style'> & Props>> 
+将类型中除指定属性外的所有属性变为可选属性，
+
+```typescript
+export interface SiteOptions{
+    id:string                           
+    icon:string                         
+    logo:string                         
+    title:string                        
+    path:string                         
+}
+
+type mysite = Optional<SiteOptions,'id' | 'path'>
+
+// type mysite == {
+//     id:string                           
+//     icon?:string                         
+//     logo?:string                         
+//     title?:string                        
+//     path:string 
+// }
+
+```
+ 

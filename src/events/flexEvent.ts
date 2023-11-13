@@ -42,26 +42,26 @@ export type FlexListenerRegistry<M,E> = Map<E,FlexEventListenerRegistry<M>>
 /**
  * Event: 指定一个通用事件类型
  */
-export class FlexEvent<Message=any,Events extends string = string>{
+export class FlexEvent<Message=any,Events extends string = string,Options extends Record<string,any>= Record<string,any>>{
     // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
-    #listeners:FlexListenerRegistry<Message,Events>= new Map()
-    #options:Required<FlexEventOptions> 
+    private _listeners:FlexListenerRegistry<Message,Events>= new Map()
+    private _options:Required<FlexEventOptions & Options> 
     // 保留最后一次触发的消息,key=事件名称,value=消息
-    #lastMessage:Record<string,any> = {}        
+    private _lastMessage:Record<string,any> = {}        
     static listenerSeqId:number = 0
     constructor(options:FlexEventOptions = {ignoreError:true,context:null}){
-        this.#options = assignObject({
+        this._options = assignObject({
             ignoreError:true,
             wildcard: true,
             delimiter:"/",
             context:null
-        },options) as Required<FlexEventOptions> 
+        },options) as Required<FlexEventOptions & Options> 
     }
-    get options(){return this.#options}
-    get delimiter(){return this.#options.delimiter}
+    get options(){return this._options}
+    get delimiter(){return this._options.delimiter}
     get context(){ return this.options.context}
-    get listeners(){return this.#listeners}
-    get retainedMessages(){return this.#lastMessage}
+    get listeners(){return this._listeners}
+    get retainedMessages(){return this._lastMessage}
     /**
      * 检测事件是否匹配
      * 
@@ -80,7 +80,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
      */
     private isEventMatched(pattern:string,event:string):boolean{
         if(pattern == event) return true
-        if(this.#options.wildcard && pattern.includes("*")){
+        if(this._options.wildcard && pattern.includes("*")){
             // 由于通配符**与*冲突，所以先将**替换成一个特殊的字符
             const regex =new RegExp("^"+pattern.replaceAll("**",`__###__`).replaceAll("*","[\\w\\*]*").replaceAll("__###__",`[\\w\\\\*${this.delimiter}]*`)+"$")
             return regex.test(event)
@@ -104,11 +104,11 @@ export class FlexEvent<Message=any,Events extends string = string>{
      */
     on(event:Events,callback:FlexEventListener<Message>,options?:SubscribeOptions):FlexEventSubscriber | number{
         const { objectify = false,count=-1 } =Object.assign({},options) as Required<SubscribeOptions>        
-        if(!this.#listeners.has(event)){
-            this.#listeners.set(event,new Map())        
+        if(!this._listeners.has(event)){
+            this._listeners.set(event,new Map())        
         }
         const listenerId =  ++ FlexEvent.listenerSeqId            
-        const eventListeners = this.#listeners.get(event) as FlexEventListenerRegistry<Message>
+        const eventListeners = this._listeners.get(event) as FlexEventListenerRegistry<Message>
         eventListeners?.set(listenerId,[callback,count])        
         // 如果启用了retain,则应该马上触发最后保存的事件
         this.emitRetainEvent(event,listenerId,eventListeners)      
@@ -117,7 +117,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
                 off:()=>{
                     eventListeners?.delete(listenerId)
                     if(eventListeners?.size==0){
-                        this.#listeners.delete(event)
+                        this._listeners.delete(event)
                     }
                 }
             }
@@ -131,12 +131,12 @@ export class FlexEvent<Message=any,Events extends string = string>{
      */
     private emitRetainEvent(event:Events,listenerId:number,eventListeners:FlexEventListenerRegistry<Message>){
         //setTimeout(()=>{
-            if(event in this.#lastMessage){                
-                this.executeListener(listenerId,eventListeners,this.#lastMessage[event])   
+            if(event in this._lastMessage){                
+                this.executeListener(listenerId,eventListeners,this._lastMessage[event])   
             }else if(this.options.wildcard){      // 检查是否有通配符                                
-                for(const [key] of Object.entries(this.#lastMessage)){                    
+                for(const [key] of Object.entries(this._lastMessage)){                    
                     if(this.isEventMatched(event,key) || this.isEventMatched(key,event) ){      
-                        this.executeListener(listenerId,eventListeners,this.#lastMessage[key])
+                        this.executeListener(listenerId,eventListeners,this._lastMessage[key])
                     }
                 }
             }            
@@ -161,7 +161,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
     private forEachListeners(callback:({event,listenerId,listener,count,eventListeners}:{event:Events,listenerId:number,listener:FlexEventListener<Message>,count:number,eventListeners:FlexEventListenerRegistry<Message>})=>boolean | void){
         // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
         let isAbort = false
-        for(let [event,eventListeners] of this.#listeners.entries()){
+        for(let [event,eventListeners] of this._listeners.entries()){
             if(isAbort) break
             for(let [listenerId,[listener,count]] of eventListeners.entries()){
                 if(isAbort) break
@@ -200,9 +200,9 @@ export class FlexEvent<Message=any,Events extends string = string>{
      */
     private getMatchedListeners(event:Events):[Events,FlexEventListenerRegistry<Message> | undefined][] {
         if(this.options.wildcard){ // 启用通配符
-            return [...this.#listeners.entries()].filter(([eventName])=>(this.isEventMatched(eventName,event)) || this.isEventMatched(event,eventName))             
+            return [...this._listeners.entries()].filter(([eventName])=>(this.isEventMatched(eventName,event)) || this.isEventMatched(event,eventName))             
         }else{
-            return [[event,this.#listeners.get(event)]]   
+            return [[event,this._listeners.get(event)]]   
         }
     }
 
@@ -234,7 +234,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
                 this.forEachListeners(({listenerId,eventListeners,event})=>{
                     if(listenerId == arguments[0]){
                         eventListeners.delete(listenerId)
-                        if(this.#listeners.get(event)?.size==0) this.#listeners.delete(event)
+                        if(this._listeners.get(event)?.size==0) this._listeners.delete(event)
                         return false
                     }   
                 })
@@ -243,7 +243,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
                 this.forEachListeners(({listenerId,listener,eventListeners,event})=>{
                     if(listener == callback){
                         eventListeners.delete(listenerId) 
-                        if(this.#listeners.get(event)?.size==0) this.#listeners.delete(event)
+                        if(this._listeners.get(event)?.size==0) this._listeners.delete(event)
                     }   
                 })
             }
@@ -252,7 +252,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
                 this.forEachEventListeners(arguments[0] as Events,({event,listenerId,listener,eventListeners})=>{
                     if(event == arguments[0] && listener ==  arguments[1] ){
                         eventListeners.delete(listenerId) 
-                        if(this.#listeners.get(event)?.size==0) this.#listeners.delete(event)
+                        if(this._listeners.get(event)?.size==0) this._listeners.delete(event)
                     }
                 })
             }
@@ -320,14 +320,14 @@ export class FlexEvent<Message=any,Events extends string = string>{
         })
     }
     clear(){
-        this.#lastMessage={}
+        this._lastMessage={}
         this.offAll()
     }
     offAll(event?:Events){
         if(event){
-            this.#listeners.delete(event)
+            this._listeners.delete(event)
         }else{
-            this.#listeners.clear()
+            this._listeners.clear()
         }        
     }
     /**
@@ -379,7 +379,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
             results.push(this.executeListener(listenerId,eventListeners,message))
             if(typeof(callback)=='function') callback(listenerId)
             if(eventListeners.size==0){
-                this.#listeners.delete(eventName)
+                this._listeners.delete(eventName)
             }
         })   
         return results
@@ -394,7 +394,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
      */
     emit(event:Events,message?:Message,retain?:boolean){
         if(retain){
-            this.#lastMessage[event] = message
+            this._lastMessage[event] = message
         }
         return this.executeListeners(event,message)
     }
@@ -408,7 +408,7 @@ export class FlexEvent<Message=any,Events extends string = string>{
     async emitAsync(event:Events,message?:Message,retain?:boolean){
         const listeners  = this.getListeners(event)        
         if(retain){
-            this.#lastMessage[event] = message
+            this._lastMessage[event] = message
         }
         let results = await Promise.allSettled(listeners.map((listener:Function) =>{
             return listener.call(this,message)
@@ -424,8 +424,8 @@ export class FlexEvent<Message=any,Events extends string = string>{
                     }
                 }                
             }
-            if(this.#listeners.get(eventName)?.size==0){
-                this.#listeners.delete(eventName)
+            if(this._listeners.get(eventName)?.size==0){
+                this._listeners.delete(eventName)
             }
             
         })
