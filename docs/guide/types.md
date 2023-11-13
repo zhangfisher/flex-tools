@@ -340,3 +340,30 @@ Overloads<typeof foo>  == (a: string)=>string | (a: number)=>number | (a: any)=>
 
 - `Overloads<T>` 只能获取最多8个重载的类型。
 
+
+## ChangeReturns
+
+改变函数的返回类型
+
+```typescript
+
+type fn = (a:number,b:boolean)=>void
+
+type fn2 = ChangeReturns<fn,string>
+
+// fn2 == (a:number,b:boolean)=>string
+
+
+```
+
+## ValueOf
+
+获取`Record`类型的值类型
+
+```typescript
+type A = ValueOf<Record<string,number>>
+// A == number
+```
+
+export type ReactFC<Props=unknown> = React.FC<React.PropsWithChildren<
+    Pick<React.HTMLAttributes<HTMLElement>,'className' | 'style'> & Props>> 
