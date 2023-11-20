@@ -84,7 +84,7 @@ function forEachTree<Node extends TreeNodeBase = TreeNode>(treeData:Node[] | Nod
 interface ForEachTreeOptions extends TreeNodeOptions{
     startId?:string | number | null                 // 从哪一个节点id开始进行遍历
  }
-type IForEachTreeCallback<Node> = ({node,level,parent,path,index}:{node:Node,level:number,parent:Node | null,path:string,index:number})=> any
+type IForEachTreeCallback<Node> = ({node,level,parent,path,index}:{node:Node,level:number,parent:Node | null,path:(string),index:number})=> any
 
 ```
 

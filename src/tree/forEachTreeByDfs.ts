@@ -1,7 +1,6 @@
 import { ABORT } from "../object/forEachObject"
 import { DefaultTreeOptions } from "./consts"
 import type { TreeNode, TreeNodeBase } from "./types"
-import { isPlainObject } from '../typecheck/isPlainObject';
 import { assignObject } from "../object/assignObject";
 import type { ForEachTreeOptions, IForEachTreeCallback } from "./forEachTree";
  
@@ -13,15 +12,16 @@ import type { ForEachTreeOptions, IForEachTreeCallback } from "./forEachTree";
  * @param options 
  * @returns 
  */
- export function forEachTreeByDfs<Node extends TreeNodeBase = TreeNode>(treeData: Node[] | Node, callback: IForEachTreeCallback<Node>, options?: ForEachTreeOptions) {
-    let { startId, childrenKey, idKey, pathKey, pathDelimiter } = assignObject({
+ export function forEachTreeByDfs<Node extends TreeNodeBase = TreeNode,Path=string>(treeData: Node[] | Node, callback: IForEachTreeCallback<Node,Path>, options?: ForEachTreeOptions) {
+    let { startId, childrenKey, idKey,path:generatePath} = assignObject({
         startId: null,
     }, DefaultTreeOptions, options) as Required<ForEachTreeOptions>
+    if(!generatePath) generatePath=(node:Node)=>node[idKey]
 
     // 当指定startId时用来标识是否开始调用callback
     let isStart = startId == null ? true : (typeof (treeData) == 'object' ? String((treeData as Node)[idKey]) === String(startId) : false)
 
-    const stack = (Array.isArray(treeData) ? [...treeData] : [treeData] ) as Node[]
+    const stack = (Array.isArray(treeData) ? [...treeData.reverse()] : [treeData] ) as Node[]
     const levels: number[] = [];
     const paths:any[] = []
     const parents:Node[] = []
@@ -30,7 +30,7 @@ import type { ForEachTreeOptions, IForEachTreeCallback } from "./forEachTree";
     while (stack.length > 0) {
         const node = stack.pop() as Node;
         const level = levels.pop() || 1; 
-        let path = paths.pop() || node[pathKey]       
+        let path = paths.pop() || [generatePath(node)]      
         let parent = parents.pop()  
         let index = indexs.pop() || 0
         if (node[childrenKey]) {
@@ -38,7 +38,8 @@ import type { ForEachTreeOptions, IForEachTreeCallback } from "./forEachTree";
                 const child = node[childrenKey][i]
                 stack.push(child);
                 levels.push(level + 1);
-                paths.push(`${path}${pathDelimiter}${child[pathKey]}`)
+                // paths.push(`${path}${pathDelimiter}${child[pathKey]}`)
+                paths.push([...path,generatePath(child)])
                 parents.push(node)
                 indexs.push(i)
             }

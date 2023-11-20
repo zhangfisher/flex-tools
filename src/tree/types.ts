@@ -27,11 +27,11 @@ export type Tree<
 > = EmptyTree | TreeNode<Node,IdKey,ChildrenKey> | TreeNode<Node,IdKey,ChildrenKey>[]
 
 
-export interface TreeNodeOptions{
+export interface TreeNodeOptions<Node=any,Path=any>{
     childrenKey?:string                             // 子节点集的键名
     idKey?:string                                   // 节点id字段名称
-    pathKey?:string                                 // 当生成路径时使用的节点键名
-    pathDelimiter?:string                           // 路径分割符
+    // 用来生成节点路径信息
+    path?:(node:Node)=>Path                        
 }
   
   

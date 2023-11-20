@@ -1,7 +1,6 @@
 import { ABORT } from "../object/forEachObject"
 import { DefaultTreeOptions } from "./consts"
 import type { TreeNode, TreeNodeBase } from "./types"
-import { isPlainObject } from '../typecheck/isPlainObject';
 import { assignObject } from "../object/assignObject";
 import type { ForEachTreeOptions, IForEachTreeCallback } from "./forEachTree";
  
@@ -14,14 +13,15 @@ import type { ForEachTreeOptions, IForEachTreeCallback } from "./forEachTree";
  * @returns 
  */
 export function forEachTreeByBfs<Node extends TreeNodeBase = TreeNode>(treeData: Node[] | Node, callback: IForEachTreeCallback<Node>, options?: ForEachTreeOptions) {
-    let { startId, childrenKey, idKey, pathKey, pathDelimiter } = assignObject({
+    let { startId, childrenKey, idKey, path:generatePath } = assignObject({
         startId: null,
     }, DefaultTreeOptions, options) as Required<ForEachTreeOptions>
+    if(!generatePath) generatePath=(node:Node)=>node[idKey]
 
     // 当指定startId时用来标识是否开始调用callback
     let isStart = startId == null ? true : (typeof (treeData) == 'object' ? String((treeData as Node)[idKey]) === String(startId) : false)
 
-    const queue = (Array.isArray(treeData) ?  [...treeData]  : [treeData]) as Node[]
+    const queue = (Array.isArray(treeData) ?  [...treeData.reverse()]  : [treeData]) as Node[]
     const levels: number[] = [];
     const paths:any[] = []
     const parents:Node[] = []
@@ -30,7 +30,7 @@ export function forEachTreeByBfs<Node extends TreeNodeBase = TreeNode>(treeData:
     while (queue.length > 0) {
         const node = queue.shift() as Node;
         let level = levels.shift() || 1     
-        let path = paths.shift() || node[pathKey]       
+        let path = paths.shift() || [generatePath(node)]         
         let parent = parents.shift()  
         let index = indexs.shift() || 0
         if (node[childrenKey]) {
@@ -38,7 +38,7 @@ export function forEachTreeByBfs<Node extends TreeNodeBase = TreeNode>(treeData:
                 const child = node[childrenKey][i]
                 queue.push(child);
                 levels.push(level + 1)
-                paths.push(`${path}${pathDelimiter}${child[pathKey]}`)
+                paths.push([...path,generatePath(child)])
                 parents.push(node)
                 indexs.push(i)
             }

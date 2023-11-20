@@ -29,17 +29,18 @@ export function getTreeNodeRelation<Node extends TreeNodeBase = TreeNode,IdKey e
 
     const opts= Object.assign({}, DefaultTreeOptions ,options || {}) as Required<GetTreeNodeRelationOptions>     
     const { idKey } = opts
-    if(nodeId == refNodeId) return TreeNodeRelation.Same
+    if(nodeId == refNodeId) return TreeNodeRelation.Same     
 
     let nodes: string | any[]=[] 
     
     forEachTreeByDfs<Node>(treeObj,({node:curNode,level,parent,path})=>{
+        const fullpath = path.map(p=>typeof(p)=='string' ? p : p[idKey]).join('/')
         if(nodes.length==0){
             if(curNode[idKey]==nodeId) {
-                nodes = [[nodeId,level,parent && parent[idKey],path],refNodeId]
+                nodes = [[nodeId,level,parent && parent[idKey],fullpath],refNodeId]
                 return
             }else if(curNode[idKey]==refNodeId){
-                nodes = [[refNodeId,level,parent && parent[idKey],path],nodeId]
+                nodes = [[refNodeId,level,parent && parent[idKey],fullpath],nodeId]
                 return
             } 
         }
@@ -50,7 +51,7 @@ export function getTreeNodeRelation<Node extends TreeNodeBase = TreeNode,IdKey e
                 relation = TreeNodeRelation.Sibling
             }else if(parent?.id == id ){
                 relation = TreeNodeRelation.Child
-            }else if(path.startsWith(basePath)){
+            }else if(fullpath.startsWith(basePath)){
                 relation = TreeNodeRelation.Descendants
             }
             return ABORT 
