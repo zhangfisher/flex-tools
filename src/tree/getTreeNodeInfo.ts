@@ -13,7 +13,7 @@ import { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types";
       
  }  
  
-export interface TreeNodeInfo<Node,Path>{
+export interface TreeNodeInfo<Node,Path=string>{
     node:Node
     parent:Node | undefined | null
     path:Path[]
