@@ -324,4 +324,57 @@ describe("树操作",()=>{
 
 
     })
+    
+    test("遍历节点时的路径生成",()=>{        
+        forEachTree<Book>(books,({node,path,level})=>{            
+            expect(path.length).toBe(level)
+            expect(path[path.length-1]).toBe(node.id)
+            for(let item of path){
+                expect(typeof(item)).toBe('number')    
+            }
+        })
+        forEachTree<Book>(books,({node,path,level})=>{            
+            expect(path.length).toBe(level)
+            expect(path[path.length-1]).toBe(node)
+            for(let item of path){
+                expect(typeof(item)).toBe('object')    
+            }
+        },{
+            path:(book)=>book
+        })
+
+        forEachTree<Book>(books.children!,({node,path,level})=>{            
+            expect(path.length).toBe(level)
+            expect(path[path.length-1]).toBe(node)
+            for(let item of path){
+                expect(typeof(item)).toBe('object')    
+            }
+        },{
+            path:(book)=>book
+        })
+
+        forEachTree<Book>(books.children!,({node,path,level})=>{            
+            expect(path.length).toBe(level)
+            expect(path[path.length-1]).toBe(node.title)
+            for(let item of path){
+                expect(typeof(item)).toBe("string")    
+            }
+        },{         
+            idKey:"title"
+        })
+
+        forEachTree<Book>(books.children!,({node,path,level})=>{            
+            expect(path.length).toBe(level)
+            expect(path[path.length-1]).toBe(node)
+            for(let item of path){
+                expect(typeof(item)).toBe('object')    
+            }
+        },{
+            path:(book)=>book,
+            idKey:"title"
+        })
+
+
+
+    })
 })
