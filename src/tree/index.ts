@@ -15,3 +15,4 @@ export * from './forEachTree'
 export * from "./forEachTreeByDfs"
 export * from "./forEachTreeByBfs"
 export * from "./forEachTreeByDfsRecursion"
+export * from "./getAncestors"
