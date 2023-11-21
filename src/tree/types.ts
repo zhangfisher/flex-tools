@@ -29,9 +29,8 @@ export type Tree<
 
 export interface TreeNodeOptions<Node=any,Path=any>{
     childrenKey?:string                             // 子节点集的键名
-    idKey?:string                                   // 节点id字段名称
-    // 用来生成节点路径信息
-    path?:(node:Node)=>Path                        
+    idKey?:string                                   // 节点id字段名称    
+    path?:string | ((node:Node)=>Path)              // 用来生成节点路径信息
 }
   
   

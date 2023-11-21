@@ -8,6 +8,7 @@ import { TreeNode } from "../src/tree/types"
 
 import { forEachTreeByBfs, forEachTreeByDfs } from "../src/tree"
 import { deepClone } from '../src/object/deepClone';
+import { getAncestors } from '../src/tree/getAncestors';
 
 // 共30个节点的数据，不要变更，后续用户例依赖此数据
 type Book = {id:number, title:string} 
@@ -293,4 +294,34 @@ describe("树操作",()=>{
         expect(tree.nodes.length).toBe(0)
     })
 
+    test("获取指定节点的所有祖先节点",()=>{
+        let nodes = getAncestors<Book>(books,1563)
+        expect(nodes.length).toBe(3)
+        expect(nodes[0].id).toBe(1)
+        expect(nodes[1].id).toBe(15)
+        expect(nodes[2].id).toBe(156)
+
+        nodes = getAncestors<Book>(books,1563,{includeSelf:true})
+        expect(nodes.length).toBe(4)
+        expect(nodes[0].id).toBe(1)
+        expect(nodes[1].id).toBe(15)
+        expect(nodes[2].id).toBe(156)
+        expect(nodes[3].id).toBe(1563)
+
+        nodes = getAncestors<Book>(books,1241)
+        expect(nodes.length).toBe(3)
+        expect(nodes[0].id).toBe(1)
+        expect(nodes[1].id).toBe(12)
+        expect(nodes[2].id).toBe(124)
+
+        nodes = getAncestors<Book>(books,1241,{includeSelf:true})
+        expect(nodes.length).toBe(4)
+        expect(nodes[0].id).toBe(1)
+        expect(nodes[1].id).toBe(12)
+        expect(nodes[2].id).toBe(124)
+        expect(nodes[3].id).toBe(1241)
+        
+
+
+    })
 })

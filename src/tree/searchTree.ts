@@ -24,11 +24,11 @@ export interface SerachTreeOptions extends TreeNodeOptions,ForEachTreeOptions {
   * @param matchOne 只匹配一个就退出,匹配所有,默认只匹配一个
   * 
   */
-export function searchTree<Node extends TreeNodeBase=TreeNode,Returns=Node[]>(treeData:Node[] | Node,matcher:IForEachTreeCallback<Node>,picker?:IForEachTreeCallback<Node>,options?:SerachTreeOptions):Returns[]{
+export function searchTree<Node extends TreeNodeBase=TreeNode,Returns=Node[],Path=string>(treeData:Node[] | Node,matcher:IForEachTreeCallback<Node,Path>,picker?:IForEachTreeCallback<Node,Path>,options?:SerachTreeOptions):Returns[]{
     let result:Returns[] = []
-    const pickerFunc = picker || (({node})=>node) as IForEachTreeCallback<Node>
+    const pickerFunc = picker || (({node})=>node) as IForEachTreeCallback<Node,Path>
     const opts = Object.assign({matchOne:true},options || {})   
-    forEachTreeByDfs<Node>(treeData,({node,level,parent,path,index})=>{
+    forEachTreeByDfs<Node,Path>(treeData,({node,level,parent,path,index})=>{
        if(matcher({node,level,parent,path,index})){
            result.push(pickerFunc({node,level,parent,path,index}))
            return opts.matchOne==false ? undefined : ABORT  

@@ -3,6 +3,7 @@ import { DefaultTreeOptions } from "./consts"
 import type { TreeNode, TreeNodeBase } from "./types"
 import { assignObject } from "../object/assignObject";
 import type { ForEachTreeOptions, IForEachTreeCallback } from "./forEachTree";
+import { buildPathGenerator } from "./utils";
  
 
 /**
@@ -13,10 +14,10 @@ import type { ForEachTreeOptions, IForEachTreeCallback } from "./forEachTree";
  * @returns 
  */
 export function forEachTreeByBfs<Node extends TreeNodeBase = TreeNode>(treeData: Node[] | Node, callback: IForEachTreeCallback<Node>, options?: ForEachTreeOptions) {
-    let { startId, childrenKey, idKey, path:generatePath } = assignObject({
+    let { startId, childrenKey, idKey, path } = assignObject({
         startId: null,
     }, DefaultTreeOptions, options) as Required<ForEachTreeOptions>
-    if(!generatePath) generatePath=(node:Node)=>node[idKey]
+    const generatePath = buildPathGenerator(path,idKey)
 
     // 当指定startId时用来标识是否开始调用callback
     let isStart = startId == null ? true : (typeof (treeData) == 'object' ? String((treeData as Node)[idKey]) === String(startId) : false)

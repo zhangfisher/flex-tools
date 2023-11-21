@@ -70,9 +70,10 @@ const tree = {
         {id:3,name:"c"}
     ]
 } 
-getByPath(treeData,"a/b")           // == {id:2,name:"b"
+// 指定路由采用name值进行组合
+getByPath(treeData,"a/b",,{path:"name"})       
 // 指定路径采用id值进行组合
-getByPath(treeData,"1/2",{pathKey:"id"})           // == {id:2,name:"b"
+getByPath(treeData,"1/2",{path:"id"})           
 ```
 
 ## forEachTree
@@ -80,11 +81,11 @@ getByPath(treeData,"1/2",{pathKey:"id"})           // == {id:2,name:"b"
 采用深度优先(循环算法而非递归)的方法遍历树节点。
 
 ```typescript
-function forEachTree<Node extends TreeNodeBase = TreeNode>(treeData:Node[] | Node,callback:IForEachTreeCallback<Node>,options?:ForEachTreeOptions)
-interface ForEachTreeOptions extends TreeNodeOptions{
-    startId?:string | number | null                 // 从哪一个节点id开始进行遍历
- }
-type IForEachTreeCallback<Node> = ({node,level,parent,path,index}:{node:Node,level:number,parent:Node | null,path:(string),index:number})=> any
+forEachTreeByDfs<Node extends TreeNodeBase = TreeNode,Path=string>(
+        treeData: Node[] | Node, 
+        callback: IForEachTreeCallback<Node,Path>, 
+        options?: ForEachTreeOptions) 
+type IForEachTreeCallback<Node,Path=string> = ({ node, level, parent, path, index }: { node: Node, level: number, parent?: Node | null, path: Path[], index: number }) => any
 
 ```
 
@@ -93,7 +94,7 @@ type IForEachTreeCallback<Node> = ({node,level,parent,path,index}:{node:Node,lev
 - 遍历过程中可以在`callback`中返回`ABORT`来中止遍历。
 - `callback`提供四个参数，分别是`node=<当前节点>`,`level=<节点层级>`,`parent=<父节点>`,`path=<当前节点的路径>`,`index=<子节点序号>`}。
 -  `startId`参数可以用来指定遍历起点。
-
+- `IForEachTreeCallback`函数返回值可以用来指定遍历的路径，` { node: Node, level: number, parent?: Node | null, path: Path[], index: number }`如果返回`ABORT`则中止遍历。
 
 ## forEachTreeBfs
 
@@ -114,6 +115,7 @@ function mapTree<FromNode extends TreeNodeBase = TreeNode,ToNode extends TreeNod
 type ITreeNodeMapper<FromNode,ToNode> = ({node,parent,level,path,index}:{node:FromNode,parent:FromNode | null,level:number,path:any[],index:number})=>ToNode
 
 interface MapTreeOptions extends TreeNodeOptions{
+    path?:(node:Node)=>any
     from?:{
         idKey?:string,childrenKey?:string
     }
@@ -137,7 +139,7 @@ interface MapTreeOptions extends TreeNodeOptions{
                 path: path.join("/")
             }
         }, { 
-            pathKey: "title",
+            path: "title",
             to:{
                 idKey:'key',childrenKey:"books"
             } 
@@ -307,6 +309,19 @@ enum RelatedTreeNode{
 }
 function getRelatedTreeNode<Node extends TreeNode = TreeNode,IdKey extends string = 'id' 
 >(treeObj: Node | Node[],nodeId:Node[IdKey],pos:RelatedTreeNode , options?:GetRelatedTreeNodeOptions):Node | null   
+```
+## getAncestors
+
+获取节点的所有祖节点.
+
+```typescript    
+export interface GetAncestorsOptions extends TreeNodeOptions{
+        includeSelf?:boolean            //  返回结果是否包含自身节点
+    }
+export function getAncestors<Node extends TreeNodeBase = TreeNode,IdKey extends string = 'id'>(treeObj:Node | Node[],nodeId: Node[IdKey],options?:GetAncestorsOptions):Node[] 
+
+    let nodes = getAncestors<Book>(books,1563) 
+    let nodes = getAncestors<Book>(books,1563,{includeSelf:true}) 
 ```
 
 ## FlexTree

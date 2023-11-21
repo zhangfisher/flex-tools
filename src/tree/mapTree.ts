@@ -1,11 +1,12 @@
 import { DefaultTreeOptions } from "./consts"
 import type { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types"
+import { buildPathGenerator } from "./utils";
 
 export type ITreeNodeMapper<FromNode,ToNode> = ({node,parent,level,path,index}:{node:FromNode,parent:FromNode | null,level:number,path:any[],index:number})=>ToNode
 
 
 export interface MapTreeOptions<Node>{    
-    path?:(node:Node)=>any
+    path?:string | ((node:Node)=>any)
     from?:{
         idKey?:string
         childrenKey?:string
@@ -14,6 +15,9 @@ export interface MapTreeOptions<Node>{
         idKey?:string,childrenKey?:string
     }
 } 
+
+
+
 /**
  * 映射生成新的树
  * 每一个节点生成新的节点
@@ -27,7 +31,7 @@ export function mapTree<FromNode extends TreeNodeBase = TreeNode,ToNode extends 
     
     const from = Object.assign({idKey:'id',childrenKey:"children"}, options?.from || {})
     const to = Object.assign({idKey:'id',childrenKey:"children"}, options?.to || {})
-    let generatePath =options?.path ||  ((node)=>node[from.idKey]) 
+    const generatePath = buildPathGenerator(options?.path,from.idKey)
 
     function mapTreeNode(node:FromNode,parent:FromNode | null,level:number,parentPath:any[],index:number):ToNode{
         let curPath = [...parentPath, generatePath(node)] 

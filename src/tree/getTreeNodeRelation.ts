@@ -8,6 +8,7 @@ import { DefaultTreeOptions } from "./consts";
 import { TreeNode, TreeNodeBase, TreeNodeOptions } from "./types";
 import { ABORT } from '../object/forEachObject';
 import { forEachTreeByDfs } from "./forEachTreeByDfs";
+import { getFullPath } from "./utils";
 
  
 export interface GetTreeNodeRelationOptions extends TreeNodeOptions{
@@ -34,7 +35,7 @@ export function getTreeNodeRelation<Node extends TreeNodeBase = TreeNode,IdKey e
     let nodes: string | any[]=[] 
     
     forEachTreeByDfs<Node>(treeObj,({node:curNode,level,parent,path})=>{
-        const fullpath = path.map(p=>typeof(p)=='string' ? p : p[idKey]).join('/')
+        const fullpath = getFullPath(path,idKey)
         if(nodes.length==0){
             if(curNode[idKey]==nodeId) {
                 nodes = [[nodeId,level,parent && parent[idKey],fullpath],refNodeId]
