@@ -22,7 +22,8 @@ export function forEachTreeByBfs<Node extends TreeNodeBase = TreeNode>(treeData:
     // 当指定startId时用来标识是否开始调用callback
     let isStart = startId == null ? true : (typeof (treeData) == 'object' ? String((treeData as Node)[idKey]) === String(startId) : false)
 
-    const queue = (Array.isArray(treeData) ?  [...treeData.reverse()]  : [treeData]) as Node[]
+    const queue = (Array.isArray(treeData) ? [{id:"__ROOT__",children:treeData}] : [treeData] ) as Node[]
+
     const levels: number[] = [];
     const paths:any[] = []
     const parents:Node[] = []
@@ -30,10 +31,16 @@ export function forEachTreeByBfs<Node extends TreeNodeBase = TreeNode>(treeData:
 
     while (queue.length > 0) {
         const node = queue.shift() as Node;
-        let level = levels.shift() || 1     
-        let path = paths.shift() || [generatePath(node)]         
-        let parent = parents.shift()  
-        let index = indexs.shift() || 0
+        
+        let level = 0, path =[], parent, index = 0
+        
+        if(node.id !== "__ROOT__"){
+            level = levels.shift() || 1     
+            path = paths.shift() || [generatePath(node)]         
+            parent = parents.shift()  
+            index = indexs.shift() || 0
+        }
+
         if (node[childrenKey]) {
             for (let i=0;i<node[childrenKey].length;i++) {
                 const child = node[childrenKey][i]
@@ -48,7 +55,7 @@ export function forEachTreeByBfs<Node extends TreeNodeBase = TreeNode>(treeData:
             isStart = String(node[idKey]) === String(startId)
         }
         // skip参数决定是否执行跳过节点而不执行callback
-        if (isStart) {
+        if (isStart && node.id !== "__ROOT__") {
             //如果在Callback中返回false则
             if (callback({ 
                 node, 

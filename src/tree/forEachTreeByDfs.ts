@@ -23,8 +23,7 @@ import { buildPathGenerator } from "./utils";
 
     // 当指定startId时用来标识是否开始调用callback
     let isStart = startId == null ? true : (typeof (treeData) == 'object' ? String((treeData as Node)[idKey]) === String(startId) : false)
-
-    const stack = (Array.isArray(treeData) ? [...treeData.reverse()] : [treeData] ) as Node[]
+    const stack = (Array.isArray(treeData) ? [{id:"__ROOT__",children:treeData}] : [treeData] ) as Node[]
     const levels: number[] = [];
     const paths:any[] = []
     const parents:Node[] = []
@@ -32,10 +31,14 @@ import { buildPathGenerator } from "./utils";
 
     while (stack.length > 0) {
         const node = stack.pop() as Node;
-        const level = levels.pop() || 1; 
-        let path = paths.pop() || [generatePath(node)]      
-        let parent = parents.pop()  
-        let index = indexs.pop() || 0
+        let level = 0, path =[], parent, index = 0
+
+        if(node.id !== "__ROOT__"){
+            level = levels.pop() || 1; 
+            path = paths.pop() || [generatePath(node)]      
+            parent = parents.pop()  
+            index = indexs.pop() || 0
+        }
         if (node[childrenKey]) {
             for (let i = node[childrenKey].length - 1; i >= 0; i--) {
                 const child = node[childrenKey][i]
@@ -50,7 +53,7 @@ import { buildPathGenerator } from "./utils";
             isStart = String(node[idKey]) === String(startId)
         }
         // skip参数决定是否执行跳过节点而不执行callback
-        if (isStart) {
+        if (isStart && node.id !== "__ROOT__") {
             //如果在Callback中返回false则
             if (callback({ 
                 node, 
