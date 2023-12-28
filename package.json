@@ -9,8 +9,8 @@
   "repository": "https://github.com/zhangfisher/flex-tools",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "modern build && cd dist && npm pkg set main=index.js && npm pkg set module=index.mjs && npm pkg set types=index.d.ts",
-    "build:tsup": "tsup  && cd dist && npm pkg set main=index.js && npm pkg set module=index.mjs && npm pkg set types=index.d.ts && git init",
+    "build:modern": "modern build && cd dist && npm pkg set main=index.js && npm pkg set module=index.mjs && npm pkg set types=index.d.ts",
+    "build": "tsup  && cd dist && npm pkg set main=index.js && npm pkg set module=index.mjs && npm pkg set types=index.d.ts && git init",
     "release": "npm version patch --commit-hooks=false && npm run build:tsup && cd dist  && git init && npm publish && pnpm sync",
     "doc": "docsify serve docs",
     "prepare": "husky install",
