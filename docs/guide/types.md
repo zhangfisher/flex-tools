@@ -67,12 +67,22 @@ export type ArrayMember<T> = T extends (infer T)[] ? T : never
 export type AsyncFunction = (...args: any[]) => Awaited<Promise<any>>;
 ```
 
-## FirstArgument
+## Argument
 
-获取函数的第一个参数类型
+获取函数的第`n`个参数类型
 
 ```typescript
-export type FirstArgument<T extends (...args:any[])=>any> = Parameters<T>[0]
+
+function fn(a:number,b:boolean,c:string,d:any[]){
+}
+
+
+type arg1 = Argument<typeof fn,0>  // == number
+type arg2 = Argument<typeof fn,1>   // == boolean
+type arg3 = Argument<typeof fn,2>   // string
+// -1代表最后一个参数，不支持-2,-3等
+type arg4 = Argument<typeof fn,-1>  // any[]
+
 ```
 
 ## LastArgument
