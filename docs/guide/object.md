@@ -605,4 +605,28 @@ const obj = {
 defaultObject(obj, {a: 2, b: 3, c: 4}) // {a: 1, b: 3, c: 4}
 
 ```
+`defaultObject`使在在以下场景：
 
+```
+interface Options{
+    a?:number
+    b?:boolean
+    c?:string
+}
+
+
+function fn(options:Options){
+    // 第1处理方式，
+    const opts = Object.assing({a:1,b:true,c:""},options)
+    // 此处理方式的缺点是，当传入{a:undefined}时，a默认值也会变成undefined
+    // 因此就有了第2种处理方式
+    
+    // 第2处理方式:  当传入{a:undefined}时，a默认值保持不变
+    const opts = assignObject({a:1,b:true,c:""},options)
+
+    // 第3处理方式: 如果希望直接修改传入的options对象，而不是生成新的对象，则上述两种均不合适
+    defaultObject(options,{a:1,b:true,c:""})
+    此方式仅当options中不存在键或值为undefined时才会更新到options    
+}
+
+```

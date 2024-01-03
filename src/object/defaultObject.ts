@@ -16,14 +16,12 @@
 
 export function defaultObject<T extends Record<any,any> = Record<any,any>>(target:T , ...sources: any[]): T{   
     if(sources.length === 0) return target as any;
-    sources.forEach((source) =>{
-        const sourceEntries = Object.entries(source || {})
-        sourceEntries.forEach(([key,value])=>{
-            if(!(key in target) || (target[key]== undefined)){
-                (target as any)[key] =  value
-            }
-        })        
-    })
+    const src:T = Object.assign({},...sources)    
+    Object.entries(src).forEach(([key,value]: [string, any])=>{
+        if(!(key in target) || (target[key]== undefined)){
+            (target as any)[key] =  value
+        }               
+    })        
     return  target as T
 }
 
