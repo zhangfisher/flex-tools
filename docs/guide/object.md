@@ -589,3 +589,20 @@ console.log(hasKey(obj, "a")); // true
 console.log(hasKey(obj, "b")); // false
 ```
 
+
+
+## defaultObject
+
+用来为对象提供默认值。执行此函数时，仅当对象中的键不存在或值为`undefined`时才会使用默认值进行替换。
+当我们需要为对象提供默认值时，可以使用此函数。
+
+```typescript
+const obj = {
+  a: 1
+  b: undefined
+}
+
+defaultObject(obj, {a: 2, b: 3, c: 4}) // {a: 1, b: 3, c: 4}
+
+```
+
