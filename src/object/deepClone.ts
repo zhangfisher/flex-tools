@@ -13,10 +13,11 @@ import type { Collection } from "../types";
 
 export function deepClone<T=Collection>(obj:T):T{
     if(obj==undefined) return obj    
-    //
-    if(globalThis.structuredClone){
-        return globalThis.structuredClone(obj)
-    }
+    
+    // structuredClone虽然高效但不支持成员中包含函数
+    // if(globalThis.structuredClone){
+    //     return globalThis.structuredClone(obj)
+    // }
 
     if (isPrimitive(obj) || isFunction(obj)){
         return obj
