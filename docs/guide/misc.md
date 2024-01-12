@@ -197,4 +197,57 @@ const output = await execScript("npm info",{silent:true})          // 控制台�
 ```
 
 
+## switchValue
+
+对输入的值进行匹配，如果匹配相同则返回对应的值
+
+```typescript
+
+class User{
+    name="a"
+}
+
+const switcher = {
+    1:"I am 1",
+    current:"current",
+    parent:"parent",
+    String:"I am string",
+    Number:()=>"I am number",   // 如果是函数则会执行函数取返回值
+    Function:()=>{ return "I am function" },
+    Object:"I am object",
+    Array:"I am array",
+    Boolean:"I am boolean",
+    StringArray:"I am string array",
+    NumberArray:"I am number array",
+    BooleanArray:"I am boolean array"     
+}
+    
+    switchValue(1,switcher))                // == "I am 1"
+    switchValue("current",switcher))        // == "current"
+    switchValue("parent",switcher))         // == "parent"
+    switchValue("xxxxx",switcher))          // ==  I am string
+    switchValue(100,switcher))              // ==  I am number
+    switchValue(true,switcher))             // ==  I am boolean
+    switchValue({},switcher))               // ==  I am object
+    switchValue([],switcher))               // ==  I am array
+    switchValue(["String"],switcher))       // ==  I am string array
+    switchValue([100],switcher))            // ==  I am number array
+    switchValue([true],switcher))           // ==  I am boolean array
+    switchValue(()=>{},switcher))           // ==  I am function
+    switchValue(Symbol(),switcher,{defaultValue:1}))  // == 1
+    switchValue(new User(),{
+            User: "I am user"
+        },{
+            typeMatchers:{
+                User: (value:any)=> value instanceof User 
+            }
+        }
+    ))  // == "I am user"
+```
+
+
+- 支持两个参数,`defaultValue`用于指定默认值，如果没有指定则返回`undefined`。`typeMatchers`用于自定义类型匹配器，如果没有指定则使用默认的类型匹配器。
+- 内置`Function`、`Object`、`Array`、`Boolean`、`String`、`Number`、`StringArray`、`NumberArray`、`BooleanArray`类型匹配器,如果只是简单的类型判断，可以直接使用内置的类型匹配器。
+- 也可以自定义类型匹配器，比如`User`类型，可以自定义类型匹配器`User: (value:any)=> value instanceof User`，这样就可以匹配`User`类型了。
+
 
