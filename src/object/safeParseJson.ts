@@ -46,6 +46,6 @@ export function safeParseJson(str:string, callback?: (key: string, value: any) =
 		if (typeof value == "string") value = decodeURI(value);
 		if (callback) {
 			return callback(key, value);
-		}
-		return value;
-});
+		}		return value;
+    })
+}
