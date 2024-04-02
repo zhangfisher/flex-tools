@@ -67,7 +67,7 @@ export interface FlexEventBusMessageMeta{
 
 export interface FlexEventBusNodeOptions{
     id?:string                                  // 为节点取一个标识，比如模块名称之类
-    receiveBoradcast?:boolean                   // 是否接收广播消息
+    receiveBroadcast?:boolean                   // 是否接收广播消息
     onMessage?:FlexEventListener<FlexEventBusMessage>
 }
 
@@ -81,7 +81,7 @@ export class FlexEventBusNode{
     constructor(options?:FlexEventBusNodeOptions){
         this.#options = assignObject({
             id:`${Date.now()}${Math.random()*1000}`,
-            receiveBoradcast:true
+            receiveBroadcast:true
         },options) 
     }
     get id(){return this.#options.id}
@@ -111,7 +111,7 @@ export class FlexEventBusNode{
         // 订阅发送给本节点的消息
         this.#subscribers?.push(eventbus.on(THIS_NODE_EVENT.params(this.id),onMessage ,{objectify:true}) as FlexEventSubscriber)
         // 订阅广播消息
-        if(this.#options.receiveBoradcast){
+        if(this.#options.receiveBroadcast){
             this.#subscribers?.push(eventbus.on(ALL_NODE_EVENT,onMessage,{objectify:true}) as FlexEventSubscriber)
         }
         // 触发节点加入事件,  $node/join   
