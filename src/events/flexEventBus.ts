@@ -74,141 +74,162 @@ export interface FlexEventBusNodeOptions{
 const THIS_NODE_EVENT =  "{}/$data"          // 用来接收本节点消息的事件名称
 const ALL_NODE_EVENT =  "$ALL"           // 用来发送给所有节点广播消息的事件名称
 
-export class FlexEventBusNode{
-    #options:Required<FlexEventBusNodeOptions>
-    #eventbus?:FlexEventBus
-    #subscribers?:FlexEventSubscriber[] = []
-    constructor(options?:FlexEventBusNodeOptions){
-        this.#options = assignObject({
-            id:`${Date.now()}${Math.random()*1000}`,
-            receiveBroadcast:true
-        },options) 
-    }
-    get id(){return this.#options.id}
+export class FlexEventBusNode {
+  #options: Required<FlexEventBusNodeOptions>;
+  #eventbus?: FlexEventBus;
+  #subscribers?: FlexEventSubscriber[] = [];
+  constructor(options?: FlexEventBusNodeOptions) {
+    this.#options = assignObject(
+      {
+        id: `${Date.now()}${Math.random() * 1000}`,
+        receiveBroadcast: true,
+      },
+      options
+    );
+  }
+  get id() {
+    return this.#options.id;
+  }
 
-    private _onMessage(message:FlexEventBusMessage){
-        if(typeof this.#options.onMessage=="function"){
-            this.#options.onMessage.call(this,message)
-        }else if('onMessage' in this){
-            this.onMessage.call(this,message)
-        }
+  private _onMessage(message: FlexEventBusMessage) {
+    if (typeof this.#options.onMessage == "function") {
+      this.#options.onMessage.call(this, message);
+    } else if ("onMessage" in this) {
+      this.onMessage.call(this, message);
     }
-    /**
-     * 接收到发送给该节点的消息时触发
-     * 供子类继承
-     * @param message 
-     */
-    onMessage(message:FlexEventBusMessage){
-        
-    } 
-    /**
-     * 连接到总线
-     * @param eventbus 
-     */
-    join(eventbus:FlexEventBus){
-        this.#eventbus = eventbus
-        const onMessage = this._onMessage.bind(this) as FlexEventListener
-        // 订阅发送给本节点的消息
-        this.#subscribers?.push(eventbus.on(THIS_NODE_EVENT.params(this.id),onMessage ,{objectify:true}) as FlexEventSubscriber)
-        // 订阅广播消息
-        if(this.#options.receiveBroadcast){
-            this.#subscribers?.push(eventbus.on(ALL_NODE_EVENT,onMessage,{objectify:true}) as FlexEventSubscriber)
-        }
-        // 触发节点加入事件,  $node/join   
-        this.#eventbus?.emit(FlexEventBusNodeEvents.Join,{payload:this.id} as FlexEventBusMessage)
+  }
+  /**
+   * 接收到发送给该节点的消息时触发
+   * 供子类继承
+   * @param message
+   */
+  onMessage(message: FlexEventBusMessage) {}
+  /**
+   * 连接到总线
+   * @param eventbus
+   */
+  join(eventbus: FlexEventBus) {
+    this.#eventbus = eventbus;
+    const onMessage = this._onMessage.bind(this) as FlexEventListener;
+    // 订阅发送给本节点的消息
+    this.#subscribers?.push(
+      eventbus.on(THIS_NODE_EVENT.params(this.id), onMessage, {
+        objectify: true,
+      }) as FlexEventSubscriber
+    );
+    // 订阅广播消息
+    if (this.#options.receiveBroadcast) {
+      this.#subscribers?.push(
+        eventbus.on(ALL_NODE_EVENT, onMessage, {
+          objectify: true,
+        }) as FlexEventSubscriber
+      );
     }
-    /**
-     * 从总线中断开
-     */
-    disjoin(){
-        // 取消订阅事件
-        this.#subscribers?.forEach(subscriber=>subscriber.off())
-        // 触发节点离开事件,  $node/disjoin
-        this.#eventbus?.emit(FlexEventBusNodeEvents.Disjoin,{payload:this.id} as FlexEventBusMessage)
-        this.#eventbus=undefined
-    }     
-    /**
-     * 以当前节点身份向总线触发事件
-     * 
-     * 如node(name='device')
-     * 
-     * let node = new FlexEventbusNode({id:"device"})
-     * node.emit("a")           // == FlexEventbus.emit("device/a")
-     * @param message 
-     */
-    emit(event:string,payload:any,meta?:FlexEventBusMessageMeta){
-        let message = buildFlexEventBusMessage(payload,meta)        
-        message.from = `${this.id}${this.#eventbus?.delimiter}${event}`
-        this.#eventbus?.emit(message.from,message)
-    }      
-    async emitAsync(event:string,payload:any,meta?:FlexEventBusMessageMeta){
-        let message = buildFlexEventBusMessage(payload,meta)        
-        message.meta!.from = this.id
-        message.from = `${this.id}${this.#eventbus?.delimiter}${event}`     
-        return this.#eventbus?.emitAsync(message.from,message)
-    }
+    // 触发节点加入事件,  $node/join
+    this.#eventbus?.emit(FlexEventBusNodeEvents.Join, {
+      payload: this.id,
+    } as FlexEventBusMessage);
+  }
+  /**
+   * 从总线中断开
+   */
+  disjoin() {
+    // 取消订阅事件
+    this.#subscribers?.forEach((subscriber) => subscriber.off());
+    // 触发节点离开事件,  $node/disjoin
+    this.#eventbus?.emit(FlexEventBusNodeEvents.Disjoin, {
+      payload: this.id,
+    } as FlexEventBusMessage);
+    this.#eventbus = undefined;
+  }
+  /**
+   * 以当前节点身份向总线触发事件
+   *
+   * 如node(name='device')
+   *
+   * let node = new FlexEventbusNode({id:"device"})
+   * node.emit("a")           // == FlexEventbus.emit("device/a")
+   * @param message
+   */
+  emit(event: string, payload: any, meta?: FlexEventBusMessageMeta) {
+    let message = buildFlexEventBusMessage(payload, meta);
+    message.from = `${this.id}${this.#eventbus?.delimiter}${event}`;
+    this.#eventbus?.emit(message.from, message);
+  }
+  async emitAsync(event: string, payload: any, meta?: FlexEventBusMessageMeta) {
+    let message = buildFlexEventBusMessage(payload, meta);
+    message.meta!.from = this.id;
+    message.from = `${this.id}${this.#eventbus?.delimiter}${event}`;
+    return this.#eventbus?.emitAsync(message.from, message);
+  }
 
-    /**
-     * 向指定节点发送消息
-     * @param nodeId   目标节点id
-     * @param message 
-     */
-    send(nodeId:string,payload:any,meta?:FlexEventBusMessageMeta){
-        let message = buildFlexEventBusMessage(payload,meta)        
-        message.from = this.id
-        return this.#eventbus?.emit(THIS_NODE_EVENT.params(nodeId),message)
+  /**
+   * 向指定节点发送消息
+   * @param nodeId   目标节点id
+   * @param message
+   */
+  send(nodeId: string, payload: any, meta?: FlexEventBusMessageMeta) {
+    let message = buildFlexEventBusMessage(payload, meta);
+    message.from = this.id;
+    return this.#eventbus?.emit(THIS_NODE_EVENT.params(nodeId), message);
+  }
+  sendAsync(nodeId: string, payload: any, meta?: FlexEventBusMessageMeta) {
+    let message = buildFlexEventBusMessage(payload, meta);
+    message.from = this.id;
+    return this.#eventbus?.emitAsync(THIS_NODE_EVENT.params(nodeId), message);
+  }
+  /**
+   * 只订阅一次事件
+   * @param event
+   * @param listener
+   * @returns
+   */
+  once(event: string, listener?: FlexEventListener<FlexEventBusMessage>) {
+    const delimiter = this.#eventbus?.delimiter!;
+    if (!event.includes(delimiter)) event = `${this.id}${delimiter}${event}`;
+    return this.#eventbus?.once(
+      event,
+      (listener ? listener : this._onMessage.bind(this)) as FlexEventListener
+    );
+  }
+  /**
+   * 订阅事件
+   * @param event  事件名称，如果不包含分隔符，会自动加上当前节点id作为前缀
+   * @param listener
+   * @returns
+   */
+  on(event: string, listener?: FlexEventListener<FlexEventBusMessage>) {
+    const delimiter = this.#eventbus?.delimiter!;
+    if (!event.includes(delimiter)) event = `${this.id}${delimiter}${event}`;
+    return this.#eventbus?.on(
+      event,
+      (listener ? listener : this._onMessage.bind(this)) as FlexEventListener
+    );
+  }
+  /**
+   * 等待某个事件发生
+   * @param event
+   * @param timeout
+   * @returns
+   */
+  async waitFor(event: string, timeout?: number) {
+    const delimiter = this.#eventbus?.delimiter!;
+    if (!event.includes(delimiter)) event = `${this.id}${delimiter}${event}`;
+    return this.#eventbus?.waitFor(event, timeout);
+  }
+  /**
+   * 广播消息，所有节点都会收到该消息
+   * @param message
+   * @param useAsync
+   */
+  broadcast(message: FlexEventBusMessage, useAsync: boolean = false) {
+    message.from = this.id;
+    if (useAsync) {
+      return this.#eventbus?.emitAsync(ALL_NODE_EVENT, message);
+    } else {
+      return this.#eventbus?.emit(ALL_NODE_EVENT, message);
     }
-    sendAsync(nodeId:string,payload:any,meta?:FlexEventBusMessageMeta){
-        let message = buildFlexEventBusMessage(payload,meta)        
-        message.from = this.id
-        return this.#eventbus?.emitAsync(THIS_NODE_EVENT.params(nodeId),message)
-    }  
-    /**
-     * 只订阅一次事件
-     * @param event 
-     * @param listener 
-     * @returns 
-     */
-    once(event:string,listener?:FlexEventListener<FlexEventBusMessage>){
-        const delimiter = this.#eventbus?.delimiter!
-        if(!event.includes(delimiter)) event = `${this.id}${delimiter}${event}`
-        return this.#eventbus?.once(event,(listener ? listener : this._onMessage.bind(this)) as FlexEventListener )
-    }
-    /**
-     * 订阅事件
-     * @param event  事件名称，如果不包含分隔符，会自动加上当前节点id作为前缀
-     * @param listener 
-     * @returns 
-     */
-    on(event:string,listener?:FlexEventListener<FlexEventBusMessage>){
-        const delimiter = this.#eventbus?.delimiter!
-        if(!event.includes(delimiter)) event = `${this.id}${delimiter}${event}`
-        return this.#eventbus?.on(event,(listener ? listener : this._onMessage.bind(this)) as FlexEventListener )
-    }
-    /**
-     * 等待某个事件发生
-     * @param event 
-     * @param timeout 
-     * @returns 
-     */
-    async waitFor(event:string,timeout?:number){
-        const delimiter = this.#eventbus?.delimiter!
-        if(!event.includes(delimiter)) event = `${this.id}${delimiter}${event}`
-        return  this.#eventbus?.waitFor(event,timeout)
-    }
-    /**
-     * 广播消息，所有节点都会收到该消息
-     * @param message 
-     * @param useAsync
-     */
-    boradcast(message:FlexEventBusMessage,useAsync:boolean=false){
-        message.from = this.id
-        if(useAsync){
-            return this.#eventbus?.emitAsync(ALL_NODE_EVENT,message)
-        }else{
-            return this.#eventbus?.emit(ALL_NODE_EVENT,message)
-        }        
-    }
+  }
 }
 export type FlexEventBusOptions = FlexEventOptions 
 /**
