@@ -1,78 +1,86 @@
 /**
  *  基于FlexEvent的事件总线
- * 
- *  let bus = new FlexEventBus() 
- * 
- *  class MyModule extends FlexEventBusNode{ 
+ *
+ *  let bus = new FlexEventBus()
+ *
+ *  class MyModule extends FlexEventBusNode{
  *    constructor(){
  *      this.join(bus)
- *    }  
+ *    }
  *    onMessage(message:FlexEventBusMessage){
- *       // 接收消息 
+ *       // 接收消息
  *    }
  *  }
- * 
+ *
  *  let node = new FlexEventBusNode({id:"node1"})
  *  node.join(bus)
- * 
+ *
  *  node.onMessage((message)=>{....})
- * 
- *  
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
  */
-import { assignObject } from "../object/assignObject"
-import { FlexEvent } from "./flexEvent"
-import type { FlexEventListener,FlexEventOptions,FlexEventSubscriber } from "./flexEvent"
+import { assignObject } from "../object/assignObject";
+import { FlexEvent } from "./flexEvent";
+import type {
+  FlexEventListener,
+  FlexEventOptions,
+  FlexEventSubscriber,
+} from "./flexEvent";
 
-
-export interface FlexEventLikeError{
-    code?:number
-    message?:string
-}
- 
-export enum FlexEventBusNodeEvents{
-    Join    = "$node/join",                          // 节点加入到总线时
-    Disjoin = "$node/disjoin"                       // 节点从总线中断开时
+export interface FlexEventLikeError {
+  code?: number;
+  message?: string;
 }
 
-let seq = 0
-export function buildFlexEventBusMessage(payload:any,meta?:FlexEventBusMessageMeta):FlexEventBusMessage{
-    return {
-        id: ++seq,
-        meta:assignObject({
-            timestamp:Date.now()
-        },meta),
-        payload,
-    }
+export enum FlexEventBusNodeEvents {
+  Join = "$node/join", // 节点加入到总线时
+  Disjoin = "$node/disjoin", // 节点从总线中断开时
 }
 
-export interface FlexEventBusMessageMeta{
-    timestamp?:number                    // 消息产生的时间戳
-    [key:string]:any                     // 额外的元数据
+let seq = 0;
+export function buildFlexEventBusMessage(
+  payload: any,
+  meta?: FlexEventBusMessageMeta
+): FlexEventBusMessage {
+  return {
+    id: ++seq,
+    meta: assignObject(
+      {
+        timestamp: Date.now(),
+      },
+      meta
+    ),
+    payload,
+  };
+}
+
+export interface FlexEventBusMessageMeta {
+  timestamp?: number; // 消息产生的时间戳
+  [key: string]: any; // 额外的元数据
 }
 
 /**
  * 为总线中的消息指定类型
  */
- export interface FlexEventBusMessage{
-    from?:string                                // 消息来源=<节点的id>/<事件名称>
-    id?:number                                  // 消息唯一标识用来跟踪消息时有用
-    meta?:FlexEventBusMessageMeta
-    error?:FlexEventLikeError | Error           // 错误信息
-    payload?:any
+export interface FlexEventBusMessage {
+  from?: string; // 消息来源=<节点的id>/<事件名称>
+  id?: number; // 消息唯一标识用来跟踪消息时有用
+  meta?: FlexEventBusMessageMeta;
+  error?: FlexEventLikeError | Error; // 错误信息
+  payload?: any;
 }
 
-
-export interface FlexEventBusNodeOptions{
-    id?:string                                  // 为节点取一个标识，比如模块名称之类
-    receiveBroadcast?:boolean                   // 是否接收广播消息
-    onMessage?:FlexEventListener<FlexEventBusMessage>
+export interface FlexEventBusNodeOptions {
+  id?: string; // 为节点取一个标识，比如模块名称之类
+  receiveBroadcast?: boolean; // 是否接收广播消息
+  onMessage?: FlexEventListener<FlexEventBusMessage>;
 }
 
-const THIS_NODE_EVENT =  "{}/$data"          // 用来接收本节点消息的事件名称
-const ALL_NODE_EVENT =  "$ALL"           // 用来发送给所有节点广播消息的事件名称
+const THIS_NODE_EVENT = "{}/$data"; // 用来接收本节点消息的事件名称
+const ALL_NODE_EVENT = "$ALL"; // 用来发送给所有节点广播消息的事件名称
 
 export class FlexEventBusNode {
   #options: Required<FlexEventBusNodeOptions>;
@@ -231,45 +239,49 @@ export class FlexEventBusNode {
     }
   }
 }
-export type FlexEventBusOptions = FlexEventOptions 
+export type FlexEventBusOptions = FlexEventOptions;
 /**
- * 
+ *
  * 一个简单的事件总线，每一个节点均具有唯一的ID
- * 
+ *
  */
-export class FlexEventBus extends FlexEvent<FlexEventBusMessage>{
-    #nodes:string[] = []
-    constructor(options?:FlexEventBusOptions){
-        super(options)
-        this.on(FlexEventBusNodeEvents.Join,this.onNodeJoin.bind(this) as FlexEventListener)
-        this.on(FlexEventBusNodeEvents.Disjoin,this.onNodeDisjoin.bind(this) as FlexEventListener)
-    }
-    private onNodeJoin(message:FlexEventBusMessage){
-        this.#nodes.push(message.payload)
-    }
-    private onNodeDisjoin(message:FlexEventBusMessage){
-        this.#nodes = this.#nodes.filter(node=>node!=message.payload)
-    } 
-    /**
-     * 广播消息，所有节点都会收到该消息
-     *  
-     * @param message 
-     * @param useAsync 
-     * @returns 
-     */
-    broadcast(payload:any,meta?:FlexEventBusMessageMeta){        
-        let message = buildFlexEventBusMessage(payload,meta)
-        return this.emit(ALL_NODE_EVENT,message as FlexEventBusMessage)        
-    }
-    /**
-     * 向指定的节点发送消息
-     * @param nodeId 
-     * @param message 
-     */
-    send(nodeId:string,payload:any,meta?:FlexEventBusMessageMeta){
-        let message = buildFlexEventBusMessage(payload,meta)
-        this.emit(THIS_NODE_EVENT.params(nodeId),message)
-    } 
+export class FlexEventBus extends FlexEvent<FlexEventBusMessage> {
+  #nodes: string[] = [];
+  constructor(options?: FlexEventBusOptions) {
+    super(options);
+    this.on(
+      FlexEventBusNodeEvents.Join,
+      this.onNodeJoin.bind(this) as FlexEventListener
+    );
+    this.on(
+      FlexEventBusNodeEvents.Disjoin,
+      this.onNodeDisjoin.bind(this) as FlexEventListener
+    );
+  }
+  private onNodeJoin(message: FlexEventBusMessage) {
+    this.#nodes.push(message.payload);
+  }
+  private onNodeDisjoin(message: FlexEventBusMessage) {
+    this.#nodes = this.#nodes.filter((node) => node != message.payload);
+  }
+  /**
+   * 广播消息，所有节点都会收到该消息
+   *
+   * @param message
+   * @param useAsync
+   * @returns
+   */
+  broadcast(payload: any, meta?: FlexEventBusMessageMeta) {
+    let message = buildFlexEventBusMessage(payload, meta);
+    return this.emit(ALL_NODE_EVENT, message as FlexEventBusMessage);
+  }
+  /**
+   * 向指定的节点发送消息
+   * @param nodeId
+   * @param message
+   */
+  send(nodeId: string, payload: any, meta?: FlexEventBusMessageMeta) {
+    let message = buildFlexEventBusMessage(payload, meta);
+    this.emit(THIS_NODE_EVENT.params(nodeId), message);
+  }
 }
-
- 
