@@ -391,6 +391,6 @@ A.emit(event:string,payload:any,meta?:FlexEventBusMessageMeta)
 // emit的异步版本，采用Promise.allSettled并返回结果
 await A.emitAsync(event:string,payload:any,meta?:FlexEventBusMessageMeta)
 // 广播消息
-A.boradcast(message:FlexEventBusMessage,useAsync:boolean=false)
+A.broadcast(message:FlexEventBusMessage,useAsync:boolean=false)
 
 ```
