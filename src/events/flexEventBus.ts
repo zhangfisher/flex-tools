@@ -201,7 +201,7 @@ export class FlexEventBusNode{
      * @param message 
      * @param useAsync
      */
-    boradcast(message:FlexEventBusMessage,useAsync:boolean=false){
+    broadcast(message:FlexEventBusMessage,useAsync:boolean=false){
         message.from = this.id
         if(useAsync){
             return this.#eventbus?.emitAsync(ALL_NODE_EVENT,message)
