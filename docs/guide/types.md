@@ -399,3 +399,23 @@ type mysite = Optional<SiteOptions,'id' | 'path'>
 
 ```
  
+
+ 
+## ObjectKeyOf
+
+获取对象的键名类型
+
+```typescript 
+  
+interface Animal {
+    [key: string]: string;
+}
+
+type name = keyof Animal
+
+// 此时name的类型是string | number,而不是预想的string
+
+type KeyType = ObjectKeyOf<Animal>
+
+
+```
