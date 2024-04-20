@@ -126,6 +126,13 @@ export class FlexEvent<Message=any,Events extends string = string,Options extend
         }
     } 
     /**
+     * 全部信息都监听 一般用于测试
+     * @param callback
+    */
+    onAny(callback: FlexEventListener<any>) {
+      this.on("*" as Events, callback);
+    }
+    /**
      * 如果事件已经有最近触发时保留的数据，则立即触发事件将最近的数据传递给侦听器
      * @param event 
      */
