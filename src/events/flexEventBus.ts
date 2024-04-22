@@ -136,16 +136,16 @@ export class FlexEventBusNode{
      * node.emit("a")           // == FlexEventbus.emit("device/a")
      * @param message 
      */
-    emit(event:string,payload:any,meta?:FlexEventBusMessageMeta){
+    emit(event:string,payload:any,meta?:FlexEventBusMessageMeta,retain?: boolean){
         let message = buildFlexEventBusMessage(payload,meta)        
         message.from = `${this.id}${this.#eventbus?.delimiter}${event}`
-        this.#eventbus?.emit(message.from,message)
+        this.#eventbus?.emit(message.from,message,retain)
     }      
-    async emitAsync(event:string,payload:any,meta?:FlexEventBusMessageMeta){
+    async emitAsync(event:string,payload:any,meta?:FlexEventBusMessageMeta,retain?: boolean){
         let message = buildFlexEventBusMessage(payload,meta)        
         message.meta!.from = this.id
         message.from = `${this.id}${this.#eventbus?.delimiter}${event}`     
-        return this.#eventbus?.emitAsync(message.from,message)
+        return this.#eventbus?.emitAsync(message.from,message,retain)
     }
 
     /**
