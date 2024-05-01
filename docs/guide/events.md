@@ -240,7 +240,7 @@ const eventbus = new FlexEventBus({
 // 直接实例化
 let node = new FlexEventBusNode({
     id:"<节点的唯一标识>",
-    receiveBoradcast:true       // 是否接收广播消息
+    receiveBroadcast:true       // 是否接收广播消息
     onMessage:<Function>        // 提供一个接收消息的函数
 })
 
@@ -337,7 +337,7 @@ A.join(eventbus)
 A.broadcast("内容")       // 广播到所有节点
 eventbus.broadcast("内容")
 ```
-- 节点可以通过设置`receiveBoradcast=false`来禁用接收广播消息。
+- 节点可以通过设置`receiveBroadcast=false`来禁用接收广播消息。
 
 #### API
 
@@ -391,6 +391,6 @@ A.emit(event:string,payload:any,meta?:FlexEventBusMessageMeta)
 // emit的异步版本，采用Promise.allSettled并返回结果
 await A.emitAsync(event:string,payload:any,meta?:FlexEventBusMessageMeta)
 // 广播消息
-A.boradcast(message:FlexEventBusMessage,useAsync:boolean=false)
+A.broadcast(message:FlexEventBusMessage,useAsync:boolean=false)
 
 ```
