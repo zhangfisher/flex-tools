@@ -1,5 +1,7 @@
 import { isPlainObject } from "../typecheck"
 import { canIterator } from "./canIterator"
+import { SKIP } from "../consts"
+
 export type FlexIteratorOptions<Value=any,Result=Value,Parent=any> = {
     pick?:(item:Value | Parent)=>Value | Iterable<any>
     transform:(value:Value,parent?:Parent)=>Result
@@ -66,11 +68,19 @@ export class FlexIterator<Value=any,Result=Value,Parent=any> {
                         return {done: true, value: undefined} 
                     }                    
                 }else{
-                    const itemValue = pickItemValue(value.value)                     
+                    let itemValue  = pickItemValue(value.value)                                            
+                    while(itemValue === SKIP){
+                        itemValue = curSource.next()
+                        if(itemValue.done){
+                            return {done: true, value: undefined} 
+                        }else{
+                            itemValue  = pickItemValue(itemValue.value)   
+                        }                        
+                    } 
                     if(recursion && canIterator(itemValue)){
-                            sources.push(itemValue[Symbol.iterator]())
-                            curSource = sources[sources.length-1]    
-                            parentValue = value.value
+                        sources.push(itemValue[Symbol.iterator]())
+                        curSource = sources[sources.length-1]    
+                        parentValue = value.value
                         return this.next() 
                     }else if(isPlainObject(itemValue) && 'value' in itemValue && 'parent' in itemValue){  
                         sources.push(itemValue.value[Symbol.iterator]())
@@ -87,15 +97,22 @@ export class FlexIterator<Value=any,Result=Value,Parent=any> {
             }
         
         }
-    }
-    
+    }   
 }
 
+export { SKIP } from "../consts"
 
+// const i1 = new FlexIterator([1,2,3,4,5,6,7],{
+//     pick:(value)=>value % 2 ==0 ? SKIP : value,
+//     transform:(value)=>`S-${value}`
+// })
+// for(let value of i1){
+//     console.log(value)
+// }
 
 // const i1 = new FlexIterator([1,2,3,4,5],{transform:(value)=>`S-${value}`})
 // for(let value of i1){
-//     console.log(value,",")
+//     console.log(value)
 // }
 // // Output: S-1,S-2,S-3,S-4,S-5
 // console.log("---")

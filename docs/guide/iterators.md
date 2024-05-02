@@ -134,3 +134,23 @@ for(let value of i6){
 ```
 
 
+- **跳过迭代**
+
+可以在`pick`中返回`SKIP`来跳过指定的迭代项。
+
+```ts
+import { FlexIterator,SKIP } from 'flex-tools/iterators/flexIterator';
+
+const i1 = new FlexIterator([1,2,3,4,5,6,7],{
+    pick:(value)=>value % 2 ==0 ? SKIP : value,
+    transform:(value)=>`S-${value}`
+})
+for(let value of i1){
+    console.log(value)
+}
+// Output:
+// S-1
+// S-3
+// S-5
+// S-7
+```
