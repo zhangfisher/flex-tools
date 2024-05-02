@@ -93,75 +93,75 @@ export class FlexIterator<Value=any,Result=Value,Parent=any> {
 
 
 
-const i1 = new FlexIterator([1,2,3,4,5],{transform:(value)=>`S-${value}`})
-for(let value of i1){
-    console.log(value,",")
-}
-// Output: S-1,S-2,S-3,S-4,S-5
-console.log("---")
+// const i1 = new FlexIterator([1,2,3,4,5],{transform:(value)=>`S-${value}`})
+// for(let value of i1){
+//     console.log(value,",")
+// }
+// // Output: S-1,S-2,S-3,S-4,S-5
+// console.log("---")
 
-const i2 = new FlexIterator([1,[2,3],[4,5]],{transform:(value)=>`S-${value}`})
-for(let value of i2){
-    console.log(value)
-}
+// const i2 = new FlexIterator([1,[2,3],[4,5]],{transform:(value)=>`S-${value}`})
+// for(let value of i2){
+//     console.log(value)
+// }
 
-// Output: S-1,S-2,3,S-4,5
-console.log("---")
-const i3 = new FlexIterator([1,[2,3],[4,5]],{transform:(value)=>`S-${value}`,recursion:true})
-for(let value of i3){
-    console.log(value)
-}
-// Output: S-1,S-2,S-3,S-4,S-5
-console.log("---")
-const i4 = new FlexIterator(["A","AA","AAA","AAAA","AAAAA"],{
-    pick:(value)=>String(value.length),
-    transform:(value)=>`S-${value}`
-})
-for(let value of i4){
-    console.log(value)
-}
-// Output: S-1,S-2,S-3,S-4,S-5
-console.log("---")
-const i5 = new FlexIterator([1,[2,3],[4,5]],{
-    pick:(value)=>value,
-    transform:(value,parent)=>`S-${value} (parent=${parent})`,
-    recursion:true
-})
-for(let value of i5){
-    console.log(value)
-}
-// Output: 
-// S-1 (parent=undefined)
-// S-2 (parent=2,3)
-// S-3 (parent=2,3)
-// S-4 (parent=4,5)
-// S-5 (parent=4,5)
-console.log("---")
+// // Output: S-1,S-2,3,S-4,5
+// console.log("---")
+// const i3 = new FlexIterator([1,[2,3],[4,5]],{transform:(value)=>`S-${value}`,recursion:true})
+// for(let value of i3){
+//     console.log(value)
+// }
+// // Output: S-1,S-2,S-3,S-4,S-5
+// console.log("---")
+// const i4 = new FlexIterator(["A","AA","AAA","AAAA","AAAAA"],{
+//     pick:(value)=>String(value.length),
+//     transform:(value)=>`S-${value}`
+// })
+// for(let value of i4){
+//     console.log(value)
+// }
+// // Output: S-1,S-2,S-3,S-4,S-5
+// console.log("---")
+// const i5 = new FlexIterator([1,[2,3],[4,5]],{
+//     pick:(value)=>value,
+//     transform:(value,parent)=>`S-${value} (parent=${parent})`,
+//     recursion:true
+// })
+// for(let value of i5){
+//     console.log(value)
+// }
+// // Output: 
+// // S-1 (parent=undefined)
+// // S-2 (parent=2,3)
+// // S-3 (parent=2,3)
+// // S-4 (parent=4,5)
+// // S-5 (parent=4,5)
+// console.log("---")
 
-// Output: S-1,S-2,S-3,S-4,S-5
-console.log("---")
-const i6 = new FlexIterator([1,[2,3],[4,5]],{
-    pick:(value)=>{
-        if(Array.isArray(value)){
-            return {
-                value,
-                parent:`P_${value.join("_")}`
-            }
-        }else{  
-            return value    
-        }
+// // Output: S-1,S-2,S-3,S-4,S-5
+// console.log("---")
+// const i6 = new FlexIterator([1,[2,3],[4,5]],{
+//     pick:(value)=>{
+//         if(Array.isArray(value)){
+//             return {
+//                 value,
+//                 parent:`P_${value.join("_")}`
+//             }
+//         }else{  
+//             return value    
+//         }
         
-    },
-    transform:(value,parent)=>`S-${value} (parent=${parent})`,
-    recursion:true
-})
-for(let value of i6){
-    console.log(value)
-}
-// Output: 
-// S-1 (parent=undefined)
-// S-2 (parent=2,3)
-// S-3 (parent=2,3)
-// S-4 (parent=4,5)
-// S-5 (parent=4,5)
-console.log("---")
+//     },
+//     transform:(value,parent)=>`S-${value} (parent=${parent})`,
+//     recursion:true
+// })
+// for(let value of i6){
+//     console.log(value)
+// }
+// // Output: 
+// // S-1 (parent=undefined)
+// // S-2 (parent=2,3)
+// // S-3 (parent=2,3)
+// // S-4 (parent=4,5)
+// // S-5 (parent=4,5)
+// console.log("---")
