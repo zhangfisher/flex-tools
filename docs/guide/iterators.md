@@ -104,7 +104,7 @@ for(let value of i5){
 
 ```
 
-- **当进行递归遍历时，在`pick`中可以对当前迭代项的父级迭代项`parent`包装**
+- **当进行递归遍历时，在`transform`的`parent`参数用获取当前迭代项的父级迭代项**
 
 ```ts
 const i6 = new FlexIterator([1,[2,3],[4,5]],{
@@ -132,6 +132,8 @@ for(let value of i6){
 // S-4 (parent=P_4_5)
 // S-5 (parent=P_4_5)
 ```
+
+- 如果`recursion`为`false`，则`parent`等于输入的迭代对象。如上例中,`parent`等于`[1,[2,3],[4,5]]`。 
 
 
 - **跳过迭代**
