@@ -8,6 +8,10 @@ export type FlexIteratorOptions<Value=any,Result=Value,Parent=any> = {
     // 当true时如果transform也返回一个迭代对象时，递归遍历所有可迭代对象
     recursion?:boolean
 }
+
+function hasParentItem(obj:object){
+    return isPlainObject(obj) && ('value' in obj) && ('parent' in obj)
+}
 /**
  * 可以迭代的对象
  * 
@@ -56,11 +60,14 @@ export class FlexIterator<Value=any,Result=Value,Parent=any> {
         let sources:Iterator<any>[] = [this.nodes[Symbol.iterator]()]  
         let curSource = sources[sources.length-1] as Iterator<Result, any, undefined> 
         let parentValue:Value | Iterable<any> | undefined  = this.nodes
+        const parents:any[]=[this.nodes]
+        const self = this
         return {
             next() {                
                 value =  curSource.next()
                 if(value.done){
                     sources.pop()
+                    parentValue = parents.pop()
                     if(sources.length>0){
                         curSource = sources[sources.length-1]    
                         return this.next()          
@@ -69,6 +76,7 @@ export class FlexIterator<Value=any,Result=Value,Parent=any> {
                     }                    
                 }else{
                     let itemValue  = pickItemValue(value.value)                                            
+                    // 处理SKIP跳过迭代项
                     while(itemValue === SKIP){
                         itemValue = curSource.next()
                         if(itemValue.done){
@@ -77,18 +85,17 @@ export class FlexIterator<Value=any,Result=Value,Parent=any> {
                             itemValue  = pickItemValue(itemValue.value)   
                         }                        
                     } 
-                    if(recursion && canIterator(itemValue)){
-                        sources.push(itemValue[Symbol.iterator]())
+
+                    // 返回值指定了parent
+                    const hasParent = hasParentItem(itemValue)
+                    const v = hasParent ? itemValue.value : itemValue
+                    if(recursion && canIterator(v)){                        
+                        sources.push(v[Symbol.iterator]())
                         curSource = sources[sources.length-1]    
-                        parentValue = value.value
+                        parents.push(hasParent ? itemValue.parent : self.nodes)
                         return this.next() 
-                    }else if(isPlainObject(itemValue) && 'value' in itemValue && 'parent' in itemValue){  
-                        sources.push(itemValue.value[Symbol.iterator]())
-                        curSource = sources[sources.length-1]    
-                        parentValue = itemValue.parent
-                        return this.next()
-                    }else{                                           
-                        return {done:false,value:transformValue(itemValue,parentValue as any)}
+                    }else{     
+                        return {done:false,value:transformValue(itemValue,parents[parents.length-1] as any)}
                     }
                }
             },
@@ -172,24 +179,24 @@ export { SKIP } from "../consts"
 
 // // Output: S-1,S-2,S-3,S-4,S-5
 // console.log("---")
-// const i6 = new FlexIterator([1,[2,3],[4,5]],{
-//     pick:(value)=>{
-//         if(Array.isArray(value)){
-//             return {
-//                 value,
-//                 parent:`P_${value.join("_")}`
-//             }
-//         }else{  
-//             return value    
-//         }
+const i6 = new FlexIterator([1,[2,3],[4,5],6,7,[8,9]],{
+    pick:(value)=>{
+        if(Array.isArray(value)){            
+            return {
+                value:['a','b'],
+                parent:`P_${value.join("_")}`
+            }
+        }else{  
+            return value    
+        }
         
-//     },
-//     transform:(value,parent)=>`S-${value} (parent=${parent})`,
-//     recursion:true
-// })
-// for(let value of i6){
-//     console.log(value)
-// }
+    },
+    transform:(value,parent)=>`S-${value} (parent=${parent})`,
+    recursion:true
+})
+for(let value of i6){
+    console.log(value)
+}
 // // Output: 
 // // S-1 (parent=undefined)
 // // S-2 (parent=2,3)
