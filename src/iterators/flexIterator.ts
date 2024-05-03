@@ -102,17 +102,17 @@ export class FlexIterator<Value=any,Result=Value,Parent=any> {
 
 export { SKIP } from "../consts"
 
-const i1 = new FlexIterator([[1,2],[3,4],[5,6]],{
-    pick:(value)=>value,
-    transform:(value,parent)=>{
-        console.log("parent=",parent.join(","))
-        return `S-${value}`
-    },
-    recursion:false
-})
-for(let value of i1){
-    console.log(value)
-}
+// const i1 = new FlexIterator([[1,2],[3,4],[5,6]],{
+//     pick:(value)=>value,
+//     transform:(value,parent)=>{
+//         console.log("parent=",parent.join(","))
+//         return `S-${value}`
+//     },
+//     recursion:false
+// })
+// for(let value of i1){
+//     console.log(value)
+// }
 
 // const i1 = new FlexIterator([1,2,3,4,5,6,7],{
 //     pick:(value)=>value % 2 ==0 ? SKIP : value,
