@@ -3,7 +3,7 @@ import { canIterator } from "./canIterator"
 import { SKIP } from "../consts"
 
 export type FlexIteratorOptions<Value=any,Result=Value,Parent=any> = {
-    pick?:(item:Value | Parent)=>Value | Iterable<any>
+    pick?:(item:Value | Parent)=>Value | Iterable<any> | {value:Value,parent:Parent}
     transform:(value:Value,parent?:Parent)=>Result
     // 当true时如果transform也返回一个迭代对象时，递归遍历所有可迭代对象
     recursion?:boolean
@@ -95,7 +95,7 @@ export class FlexIterator<Value=any,Result=Value,Parent=any> {
                         parents.push(hasParent ? itemValue.parent : self.nodes)
                         return this.next() 
                     }else{     
-                        return {done:false,value:transformValue(itemValue,parents[parents.length-1] as any)}
+                        return {done:false,value:transformValue(v,parents[parents.length-1] as any)}
                     }
                }
             },
@@ -179,24 +179,22 @@ export { SKIP } from "../consts"
 
 // // Output: S-1,S-2,S-3,S-4,S-5
 // console.log("---")
-const i6 = new FlexIterator([1,[2,3],[4,5],6,7,[8,9]],{
-    pick:(value)=>{
-        if(Array.isArray(value)){            
-            return {
-                value:['a','b'],
-                parent:`P_${value.join("_")}`
-            }
-        }else{  
-            return value    
-        }
-        
-    },
-    transform:(value,parent)=>`S-${value} (parent=${parent})`,
-    recursion:true
-})
-for(let value of i6){
-    console.log(value)
-}
+// class A{
+//     constructor(public id:any){}
+// }
+// const i6 = new FlexIterator([1,[2,3]],{
+//     pick:(value)=>{
+//         return {
+//             value:value,
+//             parent: new A(value)
+//         }        
+//     },
+//     transform:(value,parent)=>`S-${value} (parent=${parent.id})`,
+//     recursion:true
+// })
+// for(let value of i6){
+//     console.log(value)
+// }
 // // Output: 
 // // S-1 (parent=undefined)
 // // S-2 (parent=2,3)
