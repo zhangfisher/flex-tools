@@ -98,7 +98,7 @@ export class FlexIterator<Value=any,Result=Value,Parent=any> {
                         if(fValue===SKIP){
                             return this.next()
                         }else{
-                            return {done:false,value:transformValue(v,hasParent ? itemValue.parent : parents[parents.length-1] as any)}
+                            return {done:false,value:fValue}
                         }
                         
                     }
