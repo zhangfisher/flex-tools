@@ -96,7 +96,7 @@ for(let value of i5){
     console.log(value)
 }
 // Output: 
-// S-1 (parent=undefined)
+// S-1 (parent=1,2,3,4,5)
 // S-2 (parent=2,3)
 // S-3 (parent=2,3)
 // S-4 (parent=4,5)
@@ -134,6 +134,7 @@ for(let value of i6){
 ```
 
 - 如果`recursion`为`false`，则`parent`等于输入的迭代对象。如上例中,`parent`等于`[1,[2,3],[4,5]]`。 
+- **注意：**当启用递归迭代时，当`pick`返回的是一个可迭代对象时，也会对该对象进行递归迭代。此时要指定终止条件，否则可能会导致无限递归。
 
 
 - **跳过迭代**
