@@ -139,7 +139,7 @@ for(let value of i6){
 
 - **跳过迭代**
 
-可以在`pick`中返回`SKIP`来跳过指定的迭代项。
+可以在`pick`或`transform`中返回`SKIP`来跳过指定的迭代项。
 
 ```ts
 import { FlexIterator,SKIP } from 'flex-tools/iterators/flexIterator';

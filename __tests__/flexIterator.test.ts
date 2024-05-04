@@ -1,5 +1,5 @@
 import { test,expect, describe} from "vitest"
-import { FlexIterator } from "../src/iterators/flexIterator"
+import { FlexIterator, SKIP } from "../src/iterators/flexIterator"
 
 
 class A{
@@ -98,5 +98,22 @@ describe("FlexIterator",()=>{
             "S-6 (parent=6)"
         ])
     })
-
+    test("在transform中返回SKIP来跳过迭代", () => {
+        const iterator = new FlexIterator([1,2,3,4,5,6,7,8],{
+            transform:(value,parent)=>{
+                if(value % 2 ==0){
+                    return SKIP
+                }
+                return `S-${value}`
+            },
+            recursion:true
+        })
+        const results = [...iterator] 
+        expect(results).toEqual([
+            "S-1",
+            "S-3",
+            "S-5",
+            "S-7"
+        ])
+    })
 })
