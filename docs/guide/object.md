@@ -630,3 +630,35 @@ function fn(options:Options){
 }
 
 ```
+## observable
+
+创建一个可观察的对象，当对象的值发生变化时，会触发回调函数。
+
+```typescript
+export type ObservableOptions= {
+    onRead?:(key:string[],value:any)=>any
+    onWrite?:(key:string[],newValue:any)=>any
+    onDelete?:(key:string[])=>any
+    // 触发方式
+    // default: 只有读取值是非对象时才会触发
+    // full: 读取任何值都会触发,这可能会导致性能问题,慎用
+    trigger?: 'default' | 'full'
+}
+function observable<T extends object=object>(target: T, options?:ObservableOptions):T 
+
+
+const obj = observable({a:1,b:2},{
+    onRead:(key,value)=>{
+        console.log("read",key,value)
+    },
+    onWrite:(key,newValue)=>{
+        console.log("write",key,value)
+    },
+    onDelete:(key)=>{
+        console.log("delete",key)
+    }
+})
+
+```
+
+
