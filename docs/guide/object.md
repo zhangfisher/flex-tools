@@ -661,4 +661,19 @@ const obj = observable({a:1,b:2},{
 
 ```
 
+## lazyObject
+
+创建一个懒加载对象，只有在访问对象的属性时才会加载对象。
+
+```typescript
+
+const obj = lazyObject(()=>{
+    a:1,
+    b:2
+})
+
+obj.a       // 首先访问时执行懒加载函数的返回值
+
+
+```
 
