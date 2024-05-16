@@ -13,7 +13,7 @@
  * 
  */
 
-const path = require("node:path")
+import path from "path"
 
 
 export function inPath(src: string, basePath: string): boolean {  
