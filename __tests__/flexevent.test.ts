@@ -14,7 +14,7 @@ describe("事件触发器", () => {
         expect(listeners[0]).toBe(fn)
         events.emit("click")
         expect(fn).toBeCalledTimes(1)
-        events.off(eid as number)
+        events.off(eid as string)
         events.emit("click")
         expect(fn).toBeCalledTimes(1)
     })
@@ -50,7 +50,7 @@ describe("事件触发器", () => {
         // 通过id退订
         let eid = events.on("click", fn)
         expect(events.getListeners("click").length).toBe(1)
-        events.off(eid as number)
+        events.off(eid as string)
         expect(events.getListeners("click").length).toBe(0)
 
         // 指定事件和订阅者
@@ -429,6 +429,34 @@ describe("测试事件总线", async () => {
             })
         
         })
+    })
+
+    test("flexEventNode通配符事件订阅",()=>{
+    
+        const eventbus = new FlexEventBus({ wildcard: true });
+        const emitter = new FlexEventBusNode();
+        emitter.join(eventbus);
+        eventbus.on('**', (a) => {
+          console.log(`eventbus.on('**'`, a); // 这里也接收不到
+        },{id:"100"});
+        eventbus.onAny((a) => {
+          console.log(`eventbus`, a);
+        });        
+        
+        emitter.on('*', (a) => {
+          console.log(`emitter.on('*'`, a);
+        });        
+        emitter.on('**', (a) => {
+          console.log(`emitter.on('**'`, a);
+        });
+        emitter.on('update/**', (a) => {
+          console.log(`emitter.on('update/**'`, a); // ! 这里接收不到
+        });       
+        
+        emitter.emit('update/a', { a: 1 });
+        emitter.emit('update/a/b', { a: 1 });
+
+        
     })
 
 })

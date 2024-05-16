@@ -80,7 +80,7 @@ export class FlexEventBusNode{
     #subscribers?:FlexEventSubscriber[] = []
     constructor(options?:FlexEventBusNodeOptions){
         this.#options = assignObject({
-            id:`${Date.now()}${Math.random()*1000}`,
+            id: `node${++seq}`,
             receiveBroadcast:true
         },options) 
     }
@@ -141,6 +141,7 @@ export class FlexEventBusNode{
         message.from = `${this.id}${this.#eventbus?.delimiter}${event}`
         this.#eventbus?.emit(message.from,message,retain)
     }      
+    
     async emitAsync(event:string,payload:any,meta?:FlexEventBusMessageMeta,retain?: boolean){
         let message = buildFlexEventBusMessage(payload,meta)        
         message.meta!.from = this.id
@@ -164,25 +165,43 @@ export class FlexEventBusNode{
         return this.#eventbus?.emitAsync(THIS_NODE_EVENT.params(nodeId),message)
     }  
     /**
+     * 处理要订阅的事件名称
+     * 如果有以分隔符开头，代表要订阅全局事件，其他情况下会自动加上当前节点id作为前缀
+     * 代表只订阅本节点的事件
+     * @param event 
+     * @param listener 
+     * @returns 
+     */
+    private handleOnEvent(event:string){
+        const delimiter = this.#eventbus?.delimiter!
+        if(event.startsWith(delimiter)){
+            event = event.substring(delimiter.length)
+        }else{
+            event = `${this.id}${delimiter}${event}`
+        }       
+        return event
+    }
+    /**
      * 只订阅一次事件
      * @param event 
      * @param listener 
      * @returns 
      */
     once(event:string,listener?:FlexEventListener<FlexEventBusMessage>){
-        const delimiter = this.#eventbus?.delimiter!
-        if(!event.includes(delimiter)) event = `${this.id}${delimiter}${event}`
+        event =  this.handleOnEvent(event)
         return this.#eventbus?.once(event,(listener ? listener : this._onMessage.bind(this)) as FlexEventListener )
     }
     /**
      * 订阅事件
+     * 
+     * 如果有以分隔符开头，代表要订阅全局事件
+     * 
      * @param event  事件名称，如果不包含分隔符，会自动加上当前节点id作为前缀
      * @param listener 
      * @returns 
      */
     on(event:string,listener?:FlexEventListener<FlexEventBusMessage>){
-        const delimiter = this.#eventbus?.delimiter!
-        if(!event.includes(delimiter)) event = `${this.id}${delimiter}${event}`
+        event =  this.handleOnEvent(event)
         return this.#eventbus?.on(event,(listener ? listener : this._onMessage.bind(this)) as FlexEventListener )
     }
     /**
@@ -192,8 +211,7 @@ export class FlexEventBusNode{
      * @returns 
      */
     async waitFor(event:string,timeout?:number){
-        const delimiter = this.#eventbus?.delimiter!
-        if(!event.includes(delimiter)) event = `${this.id}${delimiter}${event}`
+        event =  this.handleOnEvent(event)
         return  this.#eventbus?.waitFor(event,timeout)
     }
     /**
