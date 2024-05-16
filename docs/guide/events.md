@@ -21,6 +21,7 @@ let events = new FlexEvent({
     wildcard?: boolean          // 是否启用通配符订阅  
     delimiter?:string           // 当启用通配符时的事件分割符
     retain?:boolean             // 是否保留事件最后一次触发的消息
+    onWatch?:(params:FlexEventWatchParams<Message>)=>void            // 用来监视事件订阅/触发/接收等行为，供调试使用
 })
 ```
 
@@ -128,7 +129,7 @@ events.once("a",(data)=>{
 - 当启用`retain=true`时,所有触发发的事件消息均会被保留最后一条,并在新的订阅时立即发送给订阅者
 - 也可以在`emit`时单独指定`emit(event,message,true)`来保留某个事件的最后一条消息.由于`emit`的第三个参数是`retain`参数,所以当`retain=true`时,可以使用`emit(event,message,false)`来禁用某个事件的粘性消息.也可以在`retain=false`时使用`emit(event,message,true)`来单独启用某个事件的粘性消息.
 
-## 泛型
+### 泛型
 
 `FlexEvent`支持两个泛型参数：
 
@@ -142,6 +143,45 @@ const events =  new FlexEvent<Message,'a' | 'b' | 'c'>()
 events.on("aaa") // ERROR
 events.on("a")  // OK
 ```
+
+**注意**: 
+
+当指定`Events`泛型参数时，虽然约束了事件名称，但是由于`FlexEvent`支持通配符，所以在使用通配符时可能会出现类型不匹配的情况。
+
+
+### 监视事件
+
+`FlexEvent`提供了一个`onWatch`方法用来监视事件的订阅/触发/接收等行为，供调试使用。
+
+
+```ts
+export type FlexEventWatchType = "on" | "once" | "off" | "offAll"                                 
+                                | 'emit' | 'execute' 
+                                | 'wait-begin' | 'wait-end'  | 'wait-timeout' 
+
+export type FlexEventWatchParams<Message=any> = {
+    type       : FlexEventWatchType
+    event      : string
+    listener?  : {id:string,fn?:string | Function,count?:number}
+    message?   : Message
+    retain?    : boolean
+    async?     : boolean
+}
+
+
+let events = new FlexEvent({onWatch:(params:FlexEventWatchParams<Message>)=>{
+    console.log(params)
+})
+
+events.on("a",()=>{}) // {type:"on",event:"a",listener:{id:"xxxx",fn:"xxxx"},message:undefined}
+
+```
+
+**注意**：
+
+`onWatch`回调一般用于调试，不要在生产环境中使用。
+
+
 ## LiteEvent
 
 `LiteEvent`是`FlexEvent`的简化版本，代码量减少约一半，当需要一个简单的事件触发器时可以使用。
