@@ -215,6 +215,18 @@ export class FlexEventBusNode{
         return  this.#eventbus?.waitFor(event,timeout)
     }
     /**
+     * 取消订阅某个事件
+     * @param event  事件名称，如果不包含分隔符，会自动加上当前节点id作为前缀
+     * @param listener
+     * @returns
+     */
+    // off(listener: FlexEventListener<FlexEventBusMessage>): void;
+    // off(listenerId: string): void;
+    off(event: string, listener: FlexEventListener<FlexEventBusMessage>): void {
+      event = this.handleOnEvent(event);
+      return this.#eventbus?.off(event, listener);
+    }
+    /**
      * 广播消息，所有节点都会收到该消息
      * @param message 
      * @param useAsync
