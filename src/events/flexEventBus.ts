@@ -106,6 +106,9 @@ export class FlexEventBusNode{
      * @param eventbus 
      */
     join(eventbus:FlexEventBus){
+        if(!eventbus){
+          throw new Error('eventbus is not defined')
+        }
         this.#eventbus = eventbus
         const onMessage = this._onMessage.bind(this) as FlexEventListener
         // 订阅发送给本节点的消息
