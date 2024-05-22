@@ -223,11 +223,15 @@ export class FlexEventBusNode{
      * @param listener
      * @returns
      */
-    // off(listener: FlexEventListener<FlexEventBusMessage>): void;
-    // off(listenerId: string): void;
-    off(event: string, listener: FlexEventListener<FlexEventBusMessage>): void {
-      event = this.handleOnEvent(event);
-      return this.#eventbus?.off(event, listener);
+    off(listener: FlexEventListener<FlexEventBusMessage>): void;
+    off(listenerId: string): void;
+    off(event: string, listener: FlexEventListener<FlexEventBusMessage>): void;
+    off(...args: any[]) {
+      if (args.length === 2) {
+        const event = this.handleOnEvent(args[0]);
+        return this.#eventbus?.off(event, args[1]);
+      }
+      return this.#eventbus?.off(args[0]);
     }
     /**
      * 广播消息，所有节点都会收到该消息
