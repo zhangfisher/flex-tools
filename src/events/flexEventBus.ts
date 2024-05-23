@@ -267,6 +267,14 @@ export class FlexEventBus extends FlexEvent<FlexEventBusMessage>{
         this.#nodes = this.#nodes.filter(node=>node!=message.payload)
     } 
     /**
+     * 创建这个eventbus上的节点(直接join)
+     */
+    createNode(options?: FlexEventBusNodeOptions){
+      const node = new FlexEventBusNode(options);
+      node.join(this)
+      return node;
+    }
+    /**
      * 广播消息，所有节点都会收到该消息
      *  
      * @param message 
