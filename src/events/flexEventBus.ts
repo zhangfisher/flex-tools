@@ -106,6 +106,9 @@ export class FlexEventBusNode{
      * @param eventbus 
      */
     join(eventbus:FlexEventBus){
+        if(!eventbus){
+          throw new Error('eventbus is not defined')
+        }
         this.#eventbus = eventbus
         const onMessage = this._onMessage.bind(this) as FlexEventListener
         // 订阅发送给本节点的消息
@@ -215,6 +218,22 @@ export class FlexEventBusNode{
         return  this.#eventbus?.waitFor(event,timeout)
     }
     /**
+     * 取消订阅某个事件
+     * @param event  事件名称，如果不包含分隔符，会自动加上当前节点id作为前缀
+     * @param listener
+     * @returns
+     */
+    off(listener: FlexEventListener<FlexEventBusMessage>): void;
+    off(listenerId: string): void;
+    off(event: string, listener: FlexEventListener<FlexEventBusMessage>): void;
+    off(...args: any[]) {
+      if (args.length === 2) {
+        const event = this.handleOnEvent(args[0]);
+        return this.#eventbus?.off(event, args[1]);
+      }
+      return this.#eventbus?.off(args[0]);
+    }
+    /**
      * 广播消息，所有节点都会收到该消息
      * @param message 
      * @param useAsync
@@ -247,6 +266,14 @@ export class FlexEventBus extends FlexEvent<FlexEventBusMessage>{
     private onNodeDisjoin(message:FlexEventBusMessage){
         this.#nodes = this.#nodes.filter(node=>node!=message.payload)
     } 
+    /**
+     * 创建这个eventbus上的节点(直接join)
+     */
+    createNode(options?: FlexEventBusNodeOptions){
+      const node = new FlexEventBusNode(options);
+      node.join(this)
+      return node;
+    }
     /**
      * 广播消息，所有节点都会收到该消息
      *  
