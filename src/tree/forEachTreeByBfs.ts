@@ -14,8 +14,9 @@ import { buildPathGenerator } from "./utils";
  * @returns 
  */
 export function forEachTreeByBfs<Node extends TreeNodeBase = TreeNode>(treeData: Node[] | Node, callback: IForEachTreeCallback<Node>, options?: ForEachTreeOptions) {
-    let { startId, childrenKey, idKey, path } = assignObject({
+    let { startId, childrenKey, idKey, path,level:maxLevel } = assignObject({
         startId: null,
+        level:0
     }, DefaultTreeOptions, options) as Required<ForEachTreeOptions>
     const generatePath = buildPathGenerator(path,idKey)
 
@@ -41,7 +42,7 @@ export function forEachTreeByBfs<Node extends TreeNodeBase = TreeNode>(treeData:
             index = indexs.shift() || 0
         }
 
-        if (node[childrenKey]) {
+        if (node[childrenKey]  && (maxLevel==0 || maxLevel >0 && level<maxLevel)) {
             for (let i=0;i<node[childrenKey].length;i++) {
                 const child = node[childrenKey][i]
                 queue.push(child);

@@ -14,8 +14,9 @@ import { buildPathGenerator } from "./utils";
  * @returns 
  */
  export function forEachTreeByDfs<Node extends TreeNodeBase = TreeNode,Path=string>(treeData: Node[] | Node, callback: IForEachTreeCallback<Node,Path>, options?: ForEachTreeOptions) {
-    let { startId, childrenKey, idKey,path} = assignObject({
+    let { startId, childrenKey, idKey,path,level:maxLevel } = assignObject({
         startId: null,
+        level : 0
     }, DefaultTreeOptions, options) as Required<ForEachTreeOptions>
     
     const generatePath = buildPathGenerator(path,idKey)
@@ -39,7 +40,7 @@ import { buildPathGenerator } from "./utils";
             parent = parents.pop()  
             index = indexs.pop() || 0
         }
-        if (node[childrenKey]) {
+        if (node[childrenKey] && (maxLevel==0 || maxLevel >0 && level<maxLevel)) {  // 处理子节点
             for (let i = node[childrenKey].length - 1; i >= 0; i--) {
                 const child = node[childrenKey][i]
                 stack.push(child);

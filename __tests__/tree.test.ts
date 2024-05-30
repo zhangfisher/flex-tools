@@ -285,7 +285,6 @@ describe("树操作",()=>{
         expect(nodes.length).toBe(30)
     })
 
-
     test("遍历删除所有节点",()=>{ 
         let tree = new FlexTree<Book>(Object.assign({},books))
         for(let { node } of tree){
@@ -377,4 +376,25 @@ describe("树操作",()=>{
 
 
     })
+    
+    test("遍历树节点时限制遍历的层级",()=>{ 
+        const nodes:any[] = []
+        forEachTree<Book>(books!,({node,path,level})=>{            
+            nodes.push(node.id)
+            expect(level).toBeLessThanOrEqual(1)
+        },{
+            level:1
+        })
+        expect(nodes.length).toBe(1)
+        nodes.splice(0,nodes.length)
+        forEachTree<Book>(books!,({node,path,level})=>{            
+            nodes.push(node.id)
+            expect(level).toBeLessThanOrEqual(2)
+        },{
+            level:2
+        })
+        expect(nodes.length).toBe(1+books.children?.length!)
+        nodes.splice(0,nodes.length)
+    })
+
 })
