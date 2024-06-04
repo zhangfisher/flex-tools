@@ -97,7 +97,7 @@ export class FlexEvent<Message=any,Events extends string = string,Options extend
         if(pattern == event) return true
         if(this._options.wildcard && pattern.includes("*")){
             // 由于通配符**与*冲突，所以先将**替换成一个特殊的字符
-            const regex =new RegExp("^"+pattern.replaceAll("**",`__###__`).replaceAll("*","[\\w\\*]*").replaceAll("__###__",`[\\w\\\\*${this.delimiter}]*`)+"$")
+            const regex =new RegExp("^"+pattern.replaceAll("**",`__###__`).replaceAll("*","[\\^\\~\\!\\&\\@\\$\\%\\w\\*]*").replaceAll("__###__",`[\\^\\~\\!\\&\\@\\$\\%\\w\\\\*${this.delimiter}]*`)+"$")
             return regex.test(event)
         }else{
             return pattern == event

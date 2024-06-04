@@ -331,6 +331,19 @@ describe("事件触发器", () => {
             expect(e).toBeInstanceOf(TimeoutError)
         } 
     })
+    
+    test("事件名称包含特列字符",()=>{
+        const events = new FlexEvent() 
+        return new Promise<void>((resolve)=>{
+            events.onAny((event)=>{
+                expect(event).toBe(1)
+                resolve()
+            })
+            events.emit("$main/click",1)
+        })
+        
+
+    })
 })
 
 
@@ -458,5 +471,6 @@ describe("测试事件总线", async () => {
 
         
     })
+
 
 })
