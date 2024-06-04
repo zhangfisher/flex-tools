@@ -341,12 +341,55 @@ describe("事件触发器", () => {
             })
             events.emit("$main/click",1)
         })
-        
-
-    })
+    }) 
 })
 
 
+describe('事件匹配测试', () => {
+    const wildcard="*",delimiter="/"
+    function isEventMatched(pattern:string,event:string):boolean{
+        if(pattern == event) return true
+        if(wildcard && pattern.includes("*")){
+            // 由于通配符**与*冲突，所以先将**替换成一个特殊的字符
+            const regex =new RegExp("^"+pattern.replaceAll("**",`__#####__`)
+                .replaceAll("*",`[^\\s\\*${delimiter}]*`)
+                .replaceAll("__#####__",`[^\\s\\*]*`)+"$")
+            return regex.test(event)
+        }else{
+            return pattern == event
+        }
+    }
+    test('直接字符串匹配', () => {
+        expect(isEventMatched('event1', 'event1')).toBe(true);
+        expect(isEventMatched('event1', 'event2')).toBe(false);
+    });
+
+    test('单星通配符匹配', () => {
+        expect(isEventMatched('event*', 'event1')).toBe(true);
+        expect(isEventMatched('a/*/c', 'a/b/c')).toBe(true);
+        expect(isEventMatched('a/*/c', 'a/b1/c')).toBe(true);
+        expect(isEventMatched('a/*/c', 'a/!@#$~%&^%/c')).toBe(true);
+        expect(isEventMatched('a/*/*', 'a/b/c')).toBe(true);
+        expect(isEventMatched('a/*/*', 'a/b/c1')).toBe(true);
+        expect(isEventMatched('a/*/*', 'a/!@#$~%&^%/!@#$~%&^%')).toBe(true);
+    });
+
+    test('双星通配符匹配', () => {
+        expect(isEventMatched('a/**', 'a/b')).toBe(true);
+        expect(isEventMatched('a/**', 'a/b/c')).toBe(true);
+        expect(isEventMatched('a/**', 'a/b/c/d')).toBe(true);
+        expect(isEventMatched('a/**', 'a/b/c/d/e')).toBe(true);
+        expect(isEventMatched('a/**', 'a/b/c/d/e/f')).toBe(true);
+
+        expect(isEventMatched('$-a/**', '$-a/b')).toBe(true);
+        expect(isEventMatched('$-a/**', '$-a/b/c')).toBe(true);
+        expect(isEventMatched('$-a/**', '$-a/b/c/d')).toBe(true);
+        expect(isEventMatched('$-a/**', '$-a/b/c/d/e')).toBe(true);
+        expect(isEventMatched('$-a/**', '$-a/b/c/d/e/f')).toBe(true);
+
+    });
+
+});
 
 describe("测试事件总线", async () => {
     const eventbus = new FlexEventBus()
