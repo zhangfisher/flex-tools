@@ -332,14 +332,18 @@ describe("事件触发器", () => {
         } 
     })
     
-    test("事件名称包含特列字符",()=>{
+    test("事件名称包含特殊字符",()=>{
         const events = new FlexEvent() 
         return new Promise<void>((resolve)=>{
             events.onAny((event)=>{
+                expect(event).toBe(1) 
+            })
+            events.on("$renderer/voerkaapp/*",(event)=>{
                 expect(event).toBe(1)
                 resolve()
             })
-            events.emit("$main/click",1)
+            events.emit("$renderer/voerkaapp/max",1)
+            
         })
     }) 
 })
@@ -352,6 +356,9 @@ describe('事件匹配测试', () => {
         if(wildcard && pattern.includes("*")){
             // 由于通配符**与*冲突，所以先将**替换成一个特殊的字符
             const regex =new RegExp("^"+pattern.replaceAll("**",`__#####__`)
+                .replaceAll("$","\\$")
+                .replaceAll("^","\\^")
+                .replaceAll(".","\\.")
                 .replaceAll("*",`[^\\s\\*${delimiter}]*`)
                 .replaceAll("__#####__",`[^\\s\\*]*`)+"$")
             return regex.test(event)
@@ -362,6 +369,13 @@ describe('事件匹配测试', () => {
     test('直接字符串匹配', () => {
         expect(isEventMatched('event1', 'event1')).toBe(true);
         expect(isEventMatched('event1', 'event2')).toBe(false);
+    });
+
+    test('特殊字符匹配', () => {
+        expect(isEventMatched('$renderer/voerka/*', '$renderer/voerka/max')).toBe(true);
+        expect(isEventMatched('.renderer/voerka/*', '.renderer/voerka/max')).toBe(true);
+        expect(isEventMatched('^renderer/voerka/*', '^renderer/voerka/max')).toBe(true);
+
     });
 
     test('单星通配符匹配', () => {
@@ -387,8 +401,7 @@ describe('事件匹配测试', () => {
         expect(isEventMatched('$-a/**', '$-a/b/c/d/e')).toBe(true);
         expect(isEventMatched('$-a/**', '$-a/b/c/d/e/f')).toBe(true);
 
-    });
-
+    }); 
 });
 
 describe("测试事件总线", async () => {
