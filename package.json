@@ -54,6 +54,12 @@
       "default": "./dist/async/index.js",
       "types": "./dist/async/index.d.ts"
     },
+    "./async/*": {
+      "import": "./dist/async/*.mjs",
+      "require": "./dist/async/*.js",
+      "default": "./dist/async/*.js",
+      "types": "./dist/async/*.d.ts"
+    },
     "./chinese": {
       "import": "./dist/chinese/index.mjs",
       "require": "./dist/chinese/index.js",
