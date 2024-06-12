@@ -10,7 +10,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsup",
-    "release": "npm version patch --commit-hooks=false && pnpm run build &&&& pnpm publish",
+    "release": "npm version patch --commit-hooks=false && pnpm build && pnpm publish",
+    "release:beta": "npm version patch --commit-hooks=false && pnpm build && pnpm publish --tag beta",
     "docs:dev": "docsify serve docs",
     "prepare": "husky install",
     "commit": "git add . && git cz",
@@ -21,6 +22,11 @@
     "README.md",
     "LICENSE"
   ],
+  "typesVersions": {
+    "*": {
+      "*": ["./dist/index.d.ts"]
+    }
+  },
   "exports":{
     ".":{
       "import": "./dist/index.mjs",
