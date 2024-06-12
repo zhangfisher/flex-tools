@@ -47,25 +47,25 @@ import type { JsonObject } from "./JsonObject"
 //     ) ]: string
 //   }
 // )
-type CutPrefix<P  extends string,K extends string> = P extends '' ? `${K}` : `${P}.${K}`
-type Key<P extends string,K> = K extends string ? CutPrefix<P,K> : never
+// type CutPrefix<P  extends string,K extends string> = P extends '' ? `${K}` : `${P}.${K}`
+// type Key<P extends string,K> = K extends string ? CutPrefix<P,K> : never
 
-type KeyPath<T extends Record<string, any>, P extends string = ''> =(
-  {
-    [K in keyof T as (
-      (T[K] extends JsonObject 
-        ? (keyof KeyPath<T[K],K extends string ? CutPrefix<P,K> : (K extends string ? `${P}.${K}` : never)>) | Key<P,K>
-        : (
-            T[K] extends any[] ? (K extends string ? 
-                `${CutPrefix<P,K>}[${number}]`: never
-            ) | Key<P,K> 
-            : Key<P,K> 
-        )
-      ) 
-    ) ]: never
-  }
-)
-export type ObjectPath<T extends Record<string, any>> = keyof KeyPath<T>
+// type KeyPath<T extends Record<string, any>, P extends string = ''> =(
+//   {
+//     [K in keyof T as (
+//       (T[K] extends JsonObject 
+//         ? (keyof KeyPath<T[K],K extends string ? CutPrefix<P,K> : (K extends string ? `${P}.${K}` : never)>) | Key<P,K>
+//         : (
+//             T[K] extends any[] ? (K extends string ? 
+//                 `${CutPrefix<P,K>}[${number}]`: never
+//             ) | Key<P,K> 
+//             : Key<P,K> 
+//         )
+//       ) 
+//     ) ]: never
+//   }
+// )
+// export type ObjectPath<T extends Record<string, any>> = keyof KeyPath<T>
 
 // const obj = {
 //     a: {

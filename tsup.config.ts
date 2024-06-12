@@ -1,5 +1,5 @@
 import { defineConfig } from 'tsup'
-import copy from "esbuild-copy-files-plugin";
+// import copy from "esbuild-copy-files-plugin";
 
 
 export default defineConfig({
@@ -12,21 +12,10 @@ export default defineConfig({
     sourcemap: false,
     clean: true,
     treeshake:true,  
-    minify: true,
-    esbuildPlugins:[
-        // @ts-ignore
-        copy({
-            source:['package.json','README.md','LICENSE'],
-            target:"dist/"
-        })
-    ], 
+    minify: true, 
     banner: {
         js: `/**
-*        
 *   ---=== FlexTools ===---
-*   https://zhangfisher.github.com/flex-tools
-* 
-*   一些实用工具函数
-*
+*   https://zhangfisher.github.com/flex-tools 
 */`}
 }) 

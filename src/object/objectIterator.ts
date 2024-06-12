@@ -25,13 +25,14 @@ export interface ObjectIteratorValue {
     value?:any
     parent?:Collection| null,
     keyOrIndex?:string | symbol | number | null
+    path: string[]
 }
 
 export function objectIterator(obj:Collection,options?:ObjectIteratorOptions):Iterable<ObjectIteratorValue>{
         let { keys,onlyPrimitive,circularRef } = assignObject({
             keys:[], 
             onlyPrimitive:true,   
-            circularRef:'skip'
+            circularRef:'error'
         },options) as Required<ObjectIteratorOptions>
     
         const stack:any[] = [obj]
@@ -65,7 +66,7 @@ export function objectIterator(obj:Collection,options?:ObjectIteratorOptions):It
                         const [k,v] = items[i]
                         stack.push(v); 
                         parents.push(curItem) 
-                        keyOrIndexs.push(k) 
+                        keyOrIndexs.push(k)  
                     } 
                 }            
             }  

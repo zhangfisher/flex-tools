@@ -7,9 +7,7 @@ import { set } from "../src/object/set"
 import { ABORT, forEachObject  } from "../src/object/forEachObject"
 import { forEachUpdateObject } from "../src/object/forEachUpdateObject"
 import {CircularRefError} from "../src/errors"
-import { objectIterator } from "../src/object/objectIterator"
-import { e } from "vitest/dist/index-40ebba2b"
-
+import { objectIterator } from "../src/object/objectIterator" 
 describe("forEachObject",()=>{
 
     test("遍历对象",() => {
@@ -37,7 +35,7 @@ describe("forEachObject",()=>{
     
         // 只遍历对象中的原始类型
         let result2:any[]=[]
-        forEachObject(obj,({value,parent,keyOrIndex}) => {
+        forEachObject(obj,({value,keyOrIndex}) => {
             result2.push(`${String(keyOrIndex)}=${JSON.stringify(value)}`)
         },{onlyPrimitive:false})
     
