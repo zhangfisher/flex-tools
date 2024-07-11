@@ -19,9 +19,7 @@ export * from "./arrayMember"
 export * from "./overloads"
 export * from "./optional"
 export * from "./valueOf"
-export * from "./changeReturns"
-export * from "./deepRequired"
-export * from "./deepPartial"
+export * from "./changeReturns" 
 export * from "./dict"
 
 
