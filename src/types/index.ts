@@ -22,7 +22,7 @@ export * from "./valueOf"
 export * from "./changeReturns"
 export * from "./deepRequired"
 export * from "./deepPartial"
-export * from "./Dict"
+export * from "./dict"
 
 
 // export * from "./typedClassDecorator"
