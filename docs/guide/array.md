@@ -33,3 +33,15 @@ let arr = [1,2,3,4,5,6,7,8,9,10]
 arr.remove(1,2,3)  // 移除值为1,2,3的元素
 
 ```
+
+## get
+获取数组中的元素，支持负数索引。
+
+```typescript
+import "flex-tools/array"
+let arr = [1,2,3,4,5,6,7,8,9,10]
+arr.get(1)  // 2
+arr.get(-1) // 10
+```
+
+
