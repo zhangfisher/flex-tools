@@ -21,7 +21,7 @@ export * from "./optional"
 export * from "./valueOf"
 export * from "./changeReturns" 
 export * from "./dict"
-
+export * from "./requiredKeys"
 
 // export * from "./typedClassDecorator"
 // export * from "./objectPath"

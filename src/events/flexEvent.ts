@@ -56,13 +56,13 @@ export type FlexListenerRegistry<M,E> = Map<E,FlexEventListenerRegistry<M>>
 
 /**
  * Event: 指定一个通用事件类型
+ * 
+ * 
  */
-export class FlexEvent<Message=any,Events extends string = string,Options extends Record<string,any>= Record<string,any>>{
-    // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
-    private _listeners:FlexListenerRegistry<Message,Events>= new Map()
-    private _options:Required<FlexEventOptions & Options> 
-    // 保留最后一次触发的消息,key=事件名称,value=消息
-    private _lastMessage:Record<string,any> = {}        
+export class FlexEvent<Message=any,Events extends string = string,Options extends Record<string,any>= Record<string,any>>{  
+    private _listeners:FlexListenerRegistry<Message,Events>= new Map() // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
+    private _options:Required<FlexEventOptions & Options>    
+    private _lastMessage:Record<string,any> = {}     // 保留最后一次触发的消息,key=事件名称,value=消息    
     static listenerSeqId:number = 0
     constructor(options:FlexEventOptions<Message> = {ignoreError:true,context:null}){
         this._options = assignObject({
