@@ -1,17 +1,22 @@
-import { test, expect, vi, describe, afterEach, beforeEach } from "vitest"
+import { test, expect, describe, afterEach, beforeEach,vi } from "vitest"
 import { FlexEvent, FlexEventBus, FlexEventBusMessage, FlexEventBusNode, FlexEventListener, TimeoutError } from "../src"
 import { delay } from "../src/async"
 import { LiteEvent } from '../src/events/liteEvent';
 
-describe("事件触发器", () => {
-
+describe("FlexEvent事件触发器", () => {
+    beforeEach(() => {
+        vi.useFakeTimers()
+      })
+      afterEach(() => {
+        vi.restoreAllMocks()
+      })
     test("事件订阅与退订", () => {
         let events = new FlexEvent()
         let fn = vi.fn()
         let eid = events.on("click", fn)
         let listeners = events.getListeners("click")
         expect(listeners.length).toBe(1)
-        expect(listeners[0]).toBe(fn)
+        expect(listeners[0][0]).toBe(fn)
         events.emit("click")
         expect(fn).toBeCalledTimes(1)
         events.off(eid as string)
@@ -22,7 +27,7 @@ describe("事件触发器", () => {
     test("只订阅一次", () => {
         let events = new FlexEvent()
         let fn = vi.fn()
-        let eid = events.once("click", fn)
+        events.once("click", fn)
         let listeners = events.getListeners("click")
         expect(listeners.length).toBe(1)
         events.emit("click")
@@ -35,7 +40,6 @@ describe("事件触发器", () => {
 
     test("等待某个事件的触发", async () => {
         let events = new FlexEvent()
-        let fn = vi.fn()
         setTimeout(() => {
             events.emit("click", 1)
         }, 10)
@@ -75,9 +79,9 @@ describe("事件触发器", () => {
         let count = 10
         let fn = vi.fn()
         // 通过id退订
-        let eid = events.on("click", fn, { count })
+        events.on("click", fn, { count })
 
-        new Array(count).fill(0).forEach(() => {
+        Array.from({length:count}).fill(0).forEach(() => {
             events.emit("click")
         })
         expect(fn).toBeCalledTimes(10)
@@ -94,7 +98,7 @@ describe("事件触发器", () => {
         let listeners2 = events.getListeners("a/2/c")
         expect(listeners1.length).toBe(1)
         expect(listeners2.length).toBe(1)
-        expect(listeners1[0]).toBe(listeners2[0])
+        expect(listeners1[0][0]).toBe(listeners2[0][0])
         events.emit("a/1/c")
         events.emit("a/2/c")
         expect(fn).toBeCalledTimes(2)
@@ -137,9 +141,9 @@ describe("事件触发器", () => {
 
     test("异步事件订阅", async () => {
         let events = new FlexEvent()
-        let list = new Array(10).fill(0).map((value, index) => index + 1)
+        let list = Array.from({length:10}).fill(0).map((value, index) => index + 1)
         list.forEach((value, index) => {
-            events.on("click", async (args) => {
+            events.on("click", async () => {
                 if (index % 2 == 0) {
                     return value
                 } else {
@@ -179,7 +183,8 @@ describe("事件触发器", () => {
                 expect(data).toBe(2)
             })
             events.once("a/y/c", (data) => {
-                expect(data).toBe(2)                
+                expect(data).toBe(2)     
+                resolve()           
             })
             events.once("*/*/c", (data) => {
                 expect(data).toBe(2)
@@ -191,7 +196,7 @@ describe("事件触发器", () => {
         const events = new FlexEvent()
         let results:any[]=[]
         events.emit("app/started",1,true)
-        events.once("app/started",(msg:any)=>{
+        events.once("app/started",()=>{
             events.emit("modules/auth/started",2,true) 
         })
         events.on("modules/*/started",(msg:any)=>{
@@ -201,6 +206,7 @@ describe("事件触发器", () => {
         expect(results.length).toBe(1)
     })
     test("retain=false时单独为事件指定保留消息", () => {
+
         return new Promise<void>(resolve => {
             let events = new FlexEvent()
             events.emit(`workspace/test/counter/ready`,events,true)
@@ -221,6 +227,8 @@ describe("事件触发器", () => {
                     resolve()
                 })
             },500)            
+            vi.runAllTimers()
+
         })
     })
 
@@ -346,6 +354,45 @@ describe("事件触发器", () => {
             
         })
     }) 
+
+    test("订阅全局事件",()=>{
+        const results:any[]=[]
+        const events = new FlexEvent() 
+        return new Promise<void>((resolve)=>{
+            events.on("**",(event)=>{                
+                results.push(event)
+            })
+            events.on("**",(event)=>{
+                results.push(event) 
+            })
+            events.on("**",(event)=>{
+                results.push(event) 
+            })
+            events.on("a",(event)=>{
+                results.push(event) 
+            })
+            events.on("a/b",(event)=>{
+                results.push(event) 
+            })
+            events.on("a/b/c",(event)=>{
+                results.push(event) 
+            })
+            events.on("a/b/c/d",(event)=>{
+                results.push(event) 
+            })
+            events.emit("a",1)
+            events.emit("a/b",2)
+            events.emit("a/b/c",3)
+            events.emit("a/b/c/d",4)
+
+            expect(results).toStrictEqual([1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4])
+            resolve()
+        })
+
+    })
+
+
+
 })
 
 
@@ -359,7 +406,7 @@ describe('事件匹配测试', () => {
                 .replaceAll("$","\\$")
                 .replaceAll("^","\\^")
                 .replaceAll(".","\\.")
-                .replaceAll("*",`[^\\s\\*${delimiter}]*`)
+                .replaceAll("*",`[^\\s${delimiter}]*`)
                 .replaceAll("__#####__",`[^\\s\\*]*`)+"$")
             return regex.test(event)
         }else{
@@ -474,10 +521,10 @@ describe("测试事件总线", async () => {
             const B = new FlexEventBusNode({ id: "B" })
             B.join(eventbus)
             let results: any[] = []
-            B.on("A/x", (message?: FlexEventBusMessage) => {
+            B.on("/A/x", (message?: FlexEventBusMessage) => {
                 results.push(message?.payload)
             })
-            B.on("A/y")     // 无回调函数时由下面接收
+            B.on("/A/y")     // 无回调函数时由下面接收
             B.onMessage = vi.fn((message: FlexEventBusMessage) => {
                 expect(message.payload).toBe(200)
                 expect(message.from).toBe("A/y")
@@ -489,16 +536,7 @@ describe("测试事件总线", async () => {
             resolve()
         })
     })
-
-    test("liteEvent",()=>{
-        return new Promise<void>((resolve) => {
-            let events = new LiteEvent()
-            events.once("loaded",()=>{
-                console.log("loaded")
-            })
-        
-        })
-    })
+ 
 
     test("flexEventNode通配符事件订阅",()=>{
     

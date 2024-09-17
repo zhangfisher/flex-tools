@@ -101,7 +101,7 @@ export class FlexEvent<Message=any,Events extends string = string,Options extend
                 .replaceAll("$","\\$")
                 .replaceAll("^","\\^")
                 .replaceAll(".","\\.")
-                .replaceAll("*",`[^\\s\\*${this.delimiter}]*`)
+                .replaceAll("*",`[^\\s${this.delimiter}]*`)  //`[^\\s\\*${this.delimiter}]*`
                 .replaceAll("__#####__",`[^\\s\\*]*`)+"$")
             return regex.test(event)
         }else{
