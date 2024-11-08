@@ -20,14 +20,15 @@ export interface getByPathOptions{
     matched?: getByPathMatchCallback        // 当匹配到路径时的回调
 }
 
-const arrayRegex = /(?<name>\w*)\[\s*(?<index>\d)\s*\]/
+const arrayRegex = /(\w*)\[\s*(\d)\s*\]/
 export class InvalidPathError extends Error {}
 
 function parseArrayPath(pathItem:string):[string,number] | undefined{
     let result = pathItem.match(arrayRegex)
     if(result){
-        let {name,index} = result.groups as {name:string,index:string}
-        return [name,parseInt(index)]
+        let name = result[1];
+        let index = parseInt(result[2]);
+        return [name, index];
     }
     return undefined
 }
