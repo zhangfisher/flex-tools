@@ -55,6 +55,11 @@ type ArrayItemKeys<Item, P extends string = ''> = Item extends Record<string, an
   )]: never
 } : never
 
+ 
+type Depth = [never, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+type MaxDepth = 20;
+type NextDepth<D extends Depth[number]> = Depth extends [infer _, ...infer Rest] ? Rest[D] : never;
+ 
 
 type KeyPath<T extends Record<string, any>, P extends string = ''> =(
   {
