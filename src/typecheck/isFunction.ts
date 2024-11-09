@@ -1,3 +1,3 @@
-export function isFunction(fn:any){
+export function isFunction(fn:any):fn is Function{
     return fn && typeof(fn)=="function"
 }

@@ -3,7 +3,7 @@
  * @param fn 
  * @returns 
  */
-export function isGeneratorFunction(fn:any):boolean{
+export function isGeneratorFunction(fn:any):fn is GeneratorFunction{
     if (typeof fn !== 'function') {
 		return false;
 	}

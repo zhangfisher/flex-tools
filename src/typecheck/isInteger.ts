@@ -1,5 +1,5 @@
 
-export function isInteger(value:any):boolean {
+export function isInteger(value:any):value is number{
     if(!value) return false
     if(typeof(value)=='number') return true
     if(typeof(value)!='string') return false        
