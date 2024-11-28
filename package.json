@@ -8,13 +8,14 @@
   "homepage": "https://github.com/zhangfisher/flex-tools",
   "repository": "https://github.com/zhangfisher/flex-tools",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsup",
+    "publish:all": "pnpm build && changeset version && changeset publish",
     "release": "npm version patch --commit-hooks=false && pnpm build && pnpm publish",
     "release:beta": "npm version patch --commit-hooks=false && pnpm build && pnpm publish --tag beta",
     "docs:dev": "vitepress dev new-docs",
     "prepare": "husky install",
     "commit": "git add . && git cz",
+    "changeset":"changeset",
     "sync": "cnpm sync flex-tools",
     "docs:build": "vitepress build new-docs",
     "docs:preview": "vitepress preview new-docs"
@@ -228,8 +229,10 @@
   "author": "wxzhang",
   "license": "ISC",
   "devDependencies": {
+    "@changesets/cli": "^2.27.10",
     "@commitlint/config-conventional": "^17.4.4",
     "@commitlint/cz-commitlint": "^17.4.4",
+    "@lite-tree/vue": "^1.1.4",
     "@modern-js/module-tools": "^2.40.0",
     "@swc/core": "^1.3.24",
     "@types/fs-extra": "^11.0.1",
