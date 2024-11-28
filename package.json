@@ -17,8 +17,8 @@
     "commit": "git add . && git cz",
     "changeset":"changeset",
     "sync": "cnpm sync flex-tools",
-    "docs:build": "vitepress build new-docs",
-    "docs:preview": "vitepress preview new-docs"
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "files": [
     "dist",
