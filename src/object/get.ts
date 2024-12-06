@@ -35,10 +35,14 @@ function parseArrayPath(pathItem:string):[string,number] | undefined{
 
 
 export function get<R=any,P extends string=string>(obj:Record<string,any>,path:P,options?:getByPathOptions):R{
+
+    if(!path) return obj as R
+
     const { defaultValue,matched,ignoreInvalidPath} = assignObject({
         ignoreInvalidPath:true,
         defaultValue:undefined
     },options)
+
     while(path.includes("][")){
         path = path.replace("][","].[") as P
     }
