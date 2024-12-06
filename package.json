@@ -1,6 +1,6 @@
 {
   "name": "flex-tools",
-  "version": "1.4.11",
+  "version": "1.4.12",
   "description": "typescript modular utilities.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -15,7 +15,7 @@
     "docs:dev": "vitepress dev new-docs",
     "prepare": "husky install",
     "commit": "git add . && git cz",
-    "changeset":"changeset",
+    "changeset": "changeset",
     "sync": "cnpm sync flex-tools",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
