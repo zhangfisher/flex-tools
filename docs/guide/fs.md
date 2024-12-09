@@ -188,6 +188,31 @@ export async function copyDirs(
 -  `before`回调会在复制文件前调用，可以在这里修改`vars`参数，或者返回`ABORT`来阻止复制。
  
 
+## copyFiles
+
+复制文件符合通配符的文件到指定的目标文件夹。
+
+```ts
+export interface CopyFilesOptions {
+	vars?: Record<string, any>;         // 传递给模板的变量 
+	ignore?: string[];                  // 忽略的文件或文件夹，支持通配符
+    clean?:boolean                      // 是否清空目标文件夹
+    cwd?:string;                        // pattern的cwd
+	before?: (info:CopyFileInfo) => void | typeof ABORT; // 复制前的回调
+	after?: (info:CopyFileInfo) => void | typeof ABORT; // 复制后的回调
+    error?:(error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
+}
+export async function copyFiles(
+	pattern: string,
+	targetDir: string,
+	options?: CopyFilesOptions
+)
+```
+
+- 支持与`copyDirs`相同的功能参数。
+- `pattern`参数支持通配符，内部使用`glob`。
+- `targetDir`必须是一个文件夹,如果不存在则会自动创建。
+- 复制时会保持源文件夹的结构不变。
 
 ## fs
 
