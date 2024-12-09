@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.13
+
+### Patch Changes
+
+- 8abddea: feat: add fs/copyFiles
+
 ## 1.4.12
 
 ### Patch Changes
