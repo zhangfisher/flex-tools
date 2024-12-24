@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.14
+
+### Patch Changes
+
+- 716baaa: fix string exports error
+
 ## 1.4.13
 
 ### Patch Changes
