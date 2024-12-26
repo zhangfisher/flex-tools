@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.16
+
+### Patch Changes
+
+- d1a8e12: feat: add emitAsync on liteEvent
+
 ## 1.4.15
 
 ### Patch Changes
