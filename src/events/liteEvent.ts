@@ -34,20 +34,20 @@ export type LiteListenerRegistry<E,M> = Map<E,LiteEventListenerRegistry<M>>
 export class LiteEvent<
     Events extends FlexLiteEvents = FlexLiteEvents,
     EventNames extends keyof Events = keyof Events,
-    Message extends Events[EventNames] = Events[EventNames]
+    Message = any
 >{
-     // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
-     private _listeners:LiteListenerRegistry<EventNames,Message>= new Map()
-     // 保留最后一次触发的消息,key=事件名称,value=消息
-     private _lastMessage:Record<string,any> = {}        
-     static listenerSeqId:number = 0
-     options:Required<LiteEventOptions>
-     constructor(options?:LiteEventOptions){
+     
+    private _listeners:LiteListenerRegistry<EventNames,Message>= new Map()     // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
+     
+    private _lastMessage:Record<string,any> = {}                       // 保留最后一次触发的消息,key=事件名称,value=消息
+    static listenerSeqId:number = 0
+    options:Required<LiteEventOptions>
+    constructor(options?:LiteEventOptions){
         this.options = Object.assign({
             ignoreError:false
         },options) as Required<LiteEventOptions>
      }
-     get listeners(){return this._listeners}
+    get listeners(){return this._listeners}
      /**
       * 订阅事件并返回一个事件订阅ID
       * 
@@ -56,9 +56,9 @@ export class LiteEvent<
       * @param options 
       * @returns 
       */
-     on(event:EventNames,callback:LiteEventListener<Message>,options?:LiteEventSubscribeOptions):LiteEventSubscriber | number
-     on(event:'*',callback:LiteEventListener<Message>,options?:LiteEventSubscribeOptions):LiteEventSubscriber | number
-     on():LiteEventSubscriber | number{
+    on<T extends EventNames>(event:T,callback:LiteEventListener<Events[T]>,options?:LiteEventSubscribeOptions):LiteEventSubscriber | number
+    on(event:'*',callback:LiteEventListener<Message>,options?:LiteEventSubscribeOptions):LiteEventSubscriber | number
+    on():LiteEventSubscriber | number{
         const event = arguments[0] as EventNames
         const callback = arguments[1] as LiteEventListener<Message>
         const options = arguments[2] as LiteEventSubscribeOptions
@@ -69,7 +69,7 @@ export class LiteEvent<
         const listenerId =  ++LiteEvent.listenerSeqId            
         const eventListeners = this._listeners.get(event) as LiteEventListenerRegistry<Message>
         eventListeners?.set(listenerId,[callback,count])        
-        this.emitRetainEvent(event,listenerId,eventListeners)      
+        this._emitRetainEvent(event,listenerId,eventListeners)      
         if(objectify){
             return {
                 off:()=>{
@@ -83,18 +83,18 @@ export class LiteEvent<
             return listenerId
         }
      } 
-     onAny(callback:LiteEventListener<Message>,options?:LiteEventSubscribeOptions):LiteEventSubscriber | number{
+    onAny(callback:LiteEventListener<Message>,options?:LiteEventSubscribeOptions):LiteEventSubscriber | number{
         return this.on('*',callback,options)
-     }
+    }
      /**
       * 如果事件已经有最近触发时保留的数据，则立即触发事件将最近的数据传递给侦听器
       * @param event 
       */
-     private emitRetainEvent(event:EventNames,listenerId:number,eventListeners:LiteEventListenerRegistry<Message>){
+    private _emitRetainEvent(event:EventNames,listenerId:number,eventListeners:LiteEventListenerRegistry<Message>){
         if(event in this._lastMessage){
-            this.executeListener(listenerId,eventListeners,this._lastMessage[event as string])   
+            this._executeListener(listenerId,eventListeners,this._lastMessage[event as string])   
         }        
-     }
+    }
      /**
       * 只订阅一次事件
       * @param event 
@@ -102,16 +102,16 @@ export class LiteEvent<
       * @param options 
       * @returns 
       */
-     once(event:EventNames,callback:LiteEventListener<Message>,options?:LiteEventSubscribeOptions){
+    once<T extends EventNames>(event:T,callback:LiteEventListener<Events[T]>,options?:LiteEventSubscribeOptions){
          return this.on(event,callback,Object.assign({},options,{count:1}))        
-     }  
+    }  
  
-     /**
+    /**
       * 遍历所有侦听器
       *   {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
       * @param callback  ={}
       */
-     private forEachListeners(callback:({event,listenerId,listener,count,eventListeners}:{event:EventNames,listenerId:number,listener:LiteEventListener<Message>,count:number,eventListeners:LiteEventListenerRegistry<Message>})=>boolean | void){
+    private _forEachListeners(callback:({event,listenerId,listener,count,eventListeners}:{event:EventNames,listenerId:number,listener:LiteEventListener<Message>,count:number,eventListeners:LiteEventListenerRegistry<Message>})=>boolean | void){
          // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
          let isAbort = false
          for(let [event,eventListeners] of this._listeners.entries()){
@@ -132,7 +132,7 @@ export class LiteEvent<
       * @param callback 
       * @returns 
       */
-     private forEachEventListeners(event:EventNames,callback:ForEachLiteEventListenerCallback<EventNames,Message>){
+     private _forEachEventListeners(event:EventNames,callback:ForEachLiteEventListenerCallback<EventNames,Message>){
          // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}        
          let isAbort = false        
          let matchedListeners = [[event,this._listeners.get(event)]] as [EventNames,LiteEventListenerRegistry<Message> | undefined][]       
@@ -164,12 +164,12 @@ export class LiteEvent<
       */ 
       off(listener:LiteEventListener<Message>):void;
       off(listenerId:number):void;
-      off(event:EventNames,listener:LiteEventListener<Message>):void;
+      off(event:EventNames,listener:LiteEventListener<any>):void;
       off(){
          // {"<事件名称>":{<listenerId>:[Callback,<侦听次数>]}}
         if(arguments.length==1){
              if(typeof(arguments[0])=='number'){// off(listenerId) 根据订阅ID退订
-                 this.forEachListeners(({listenerId,eventListeners,event})=>{
+                 this._forEachListeners(({listenerId,eventListeners,event})=>{
                      if(listenerId == arguments[0]){
                          eventListeners.delete(listenerId)
                          if(this._listeners.get(event)?.size==0) this._listeners.delete(event)
@@ -178,7 +178,7 @@ export class LiteEvent<
                  })
              }else if(typeof(arguments[0])=='function'){  // off(callback) 
                  let callback = arguments[0]
-                 this.forEachListeners(({listenerId,listener,eventListeners,event})=>{
+                 this._forEachListeners(({listenerId,listener,eventListeners,event})=>{
                      if(listener == callback){
                          eventListeners.delete(listenerId) 
                          if(this._listeners.get(event)?.size==0) this._listeners.delete(event)
@@ -187,7 +187,7 @@ export class LiteEvent<
              }
         }else if(arguments.length==2){
              if(typeof(arguments[0])=='string' && typeof(arguments[1])=='function'){// off(event,callback)
-                 this.forEachEventListeners(arguments[0] as EventNames,({event,listenerId,listener,eventListeners})=>{
+                 this._forEachEventListeners(arguments[0] as EventNames,({event,listenerId,listener,eventListeners})=>{
                      if(event == arguments[0] && listener ==  arguments[1] ){
                          eventListeners.delete(listenerId) 
                          if(this._listeners.get(event)?.size==0) this._listeners.delete(event)
@@ -201,7 +201,7 @@ export class LiteEvent<
       * 等待某个事件触发后返回
       * @param event  事件名称
       */
-     waitFor(event:EventNames,timeout:number=0){        
+    waitFor(event:EventNames,timeout:number=0){        
          return new Promise<Message>((resolve,reject)=>{
              let tmId:any,isTimeout:boolean=false 
              let listenerId:number
@@ -212,14 +212,14 @@ export class LiteEvent<
                      reject(new Error("Timeout"))    
                  },timeout)
              }        
-            listenerId = this.once(event,(message:Message)=>{     
+            listenerId = this.once(event,(message:any)=>{     
                 if(isTimeout) return
                 clearTimeout(tmId) 
                 resolve(message)
             }) as number
         })
     }
-     offAll(event?:EventNames){
+    offAll(event?:EventNames){
          if(event){
              this._listeners.delete(event)
          }else{
@@ -234,7 +234,7 @@ export class LiteEvent<
       * @param message 
       * @returns 
       */
-     private executeListener(listenerId:number,listeners:LiteEventListenerRegistry<Message>,message?:Message){
+    private _executeListener(listenerId:number,listeners:LiteEventListenerRegistry<Message>,message?:Message){
          if(!listeners) return 
          const listener = listeners!.get(listenerId)
          if(!listener) return 
@@ -251,10 +251,10 @@ export class LiteEvent<
              }            
          }  
      }   
-     private executeListeners(event:EventNames,message?:Message,callback?:(listenerId?:number)=>void){
+     private _executeListeners(event:EventNames,message?:Message,callback?:(listenerId?:number)=>void){
          let results:any[] = []
-         this.forEachEventListeners(event,({event:eventName,listenerId,eventListeners})=>{
-             results.push(this.executeListener(listenerId,eventListeners,message))
+         this._forEachEventListeners(event,({event:eventName,listenerId,eventListeners})=>{
+             results.push(this._executeListener(listenerId,eventListeners,message))
              if(typeof(callback)=='function') callback(listenerId)
              if(eventListeners.size==0){
                  this._listeners.delete(eventName)
@@ -267,24 +267,33 @@ export class LiteEvent<
       * @param event 
       * @param message 
       */
-     emit(event:EventNames,message?:Message,retain?:boolean){
+    emit<T extends EventNames>(event:T,message?:Events[T],retain?:boolean){
          if(retain){
              this._lastMessage[event as any] = message
          }
-         return this.executeListeners(event,message)
+         return this._executeListeners(event,message as any)
      }
  } 
 
+ 
+  
+//  export type VoerkaI18nEvents = {
+//     log        : { level: string, message:string }       // 当有日志输出时，data={level
+//     ready      : { scope:string,language:string }                        // 当默认语言第一次加载完成后触发，data={language,scope}
+//     Change     : string                                                 // 当语言切换时    data=language
+//     Registered : string                                                 // 当Scope注册到成功后    
+//     Restore    : { scope:string,language:string }                        // 当Scope加载并从本地存储中读取语言包合并到语言包时 ，data={language,scope}
+//     Patched    : { scope:string,language:string }                        // 当Scope加载并从本地存储中读取语言包合并到语言包时 ，data={language,scope}               
+// }      
+    
 
-const ev = new LiteEvent<{
-    a:number,
-    b:boolean,
-    c:{count:number}
-}>()
 
+//  const ev = new LiteEvent<VoerkaI18nEvents>()
 
-ev.on("a",(message)=>{
-
-})
-
-
+//  ev.on("log",({level,message})=>{
+//     console.log(level,message)
+//  })
+//  ev.on("*",({level,message})=>{
+//     console.log(level,message)
+//  })
+//  ev.emit("log",{level:"",message:""})
