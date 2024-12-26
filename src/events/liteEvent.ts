@@ -32,7 +32,7 @@ export type LiteListenerRegistry<E,M> = Map<E,LiteEventListenerRegistry<M>>
 
 
 export class LiteEvent<
-    Events extends FlexLiteEvents = FlexLiteEvents,
+    Events extends FlexLiteEvents = Record<string,any>,
     EventNames extends keyof Events = keyof Events,
     Message = any
 >{
@@ -272,6 +272,9 @@ export class LiteEvent<
             this._lastMessage[event as any] = message
         }
         return this._executeListeners(event,message as any)
+    }
+    async emitAsync<T extends EventNames>(event:T,message?:Events[T],retain?:boolean){
+        return await Promise.allSettled(this.emit(event,message,retain))
      }
  } 
 

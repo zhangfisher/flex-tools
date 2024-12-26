@@ -568,3 +568,28 @@ describe("测试事件总线", async () => {
 
 
 })
+
+describe("LiteEvent事件触发器", () => {
+    test("emitAsync", ()=>{
+        return new Promise<void>((resolve)=>{
+            const event = new LiteEvent() 
+            const count = 10 
+            Array.from({length:count}).fill(0).forEach((_,index)=>{
+                event.on("x",async (value)=>{
+                    await delay(10+index*2)
+                    return value+index+1
+                })
+            })        
+            event.emitAsync("x",1).then((result)=>{
+                expect(result.length).toBe(count)
+                result.forEach((value,index)=>{
+                    expect(value.status).toBe("fulfilled")
+                    // @ts-ignore
+                    expect(value.value).toBe(1+index+1)
+                })
+                resolve()
+            })
+        })
+    })
+
+})
