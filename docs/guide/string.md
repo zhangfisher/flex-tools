@@ -200,67 +200,67 @@ $forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,s
 
 **利用`$forEach`的机制，可以实现一些比较好玩的特性，比如以下例子，**
     
-    - **可以为插值变量值添加终端着色，从而使得在终端输出时插值变量显示为不同的颜色。**
+- **可以为插值变量值添加终端着色，从而使得在终端输出时插值变量显示为不同的颜色。**
 
-    ```typescript
-        import logsets from "logsets"
-        const result = "{a}{b}{<#>c<#>}".params(
-           {a:1,b:2,c:3}, 
-           {
-                $forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,string ]=>{
-                    let colorizer = logsets.getColorizer("red")
-                    // 分别返回前缀，变量值，后缀
-                    return [prefix,colorizer(value),suffix]            
-                }
-           }
-        )  
-        console.log(result) // 可以将插值内容输出为红色
-    ```
-
-    - **遍历字符串中的所有插值变量**
-
-    ```typescript
-    "{a}{b}{c}{d}{}{}{}".params({
-        $forEach:(name,value,prefix,suffix)=>{
-            vars.push(name)
+```typescript
+    import logsets from "logsets"
+    const result = "{a}{b}{<#>c<#>}".params(
+        {a:1,b:2,c:3}, 
+        {
+            $forEach:(name:string,value:string,prefix:string,suffix:string):[string,string,string ]=>{
+                let colorizer = logsets.getColorizer("red")
+                // 分别返回前缀，变量值，后缀
+                return [prefix,colorizer(value),suffix]            
+            }
         }
-    })
-    expect(vars.length).toEqual(7)
-    expect(vars).toEqual(["a","b","c","d","","",""]) 
-    ```
+    )  
+    console.log(result) // 可以将插值内容输出为红色
+```
 
-    - **特殊的插值变量**
+- **遍历字符串中的所有插值变量**
+
+```typescript
+"{a}{b}{c}{d}{}{}{}".params({
+    $forEach:(name,value,prefix,suffix)=>{
+        vars.push(name)
+    }
+})
+expect(vars.length).toEqual(7)
+expect(vars).toEqual(["a","b","c","d","","",""]) 
+```
+
+- **特殊的插值变量**
 
     在进行日志输出时，我们需要根据插值变量`module`,`func`,`lineno`输出`Error while execute method(auth/login/13)`，并且当`module`,`func`,`lineno`三个变量均为空时，就输出`Error while execute method`，不显示未尾的`(...)`。
 
-    ```typescript
-    // 输出出错时的模块名称、函数名称、行号
-    const template = "Error while execute method({<(>module/func/lineno<)>})"
-    const errInfo = {module:"auth",func:"login",lineno:123}
-    const opts = {
-        $forEach:(name,value,prefix,suffix)=>{
-            if(name=='module/func/lineno'){
-                 if(name=='module/func/lineno'){
-                if(!(errInfo.module || errInfo.func || errInfo.lineno)){
-                    return ['','','']
-                }else{
-                    return `${errInfo.module}/${errInfo.func ? errInfo.func : 'unknow'}/${errInfo.lineno}`
-                }
+```typescript
+// 输出出错时的模块名称、函数名称、行号
+const template = "Error while execute method({<(>module/func/lineno<)>})"
+const errInfo = {module:"auth",func:"login",lineno:123}
+const opts = {
+    $forEach:(name,value,prefix,suffix)=>{
+        if(name=='module/func/lineno'){
+                if(name=='module/func/lineno'){
+            if(!(errInfo.module || errInfo.func || errInfo.lineno)){
+                return ['','','']
+            }else{
+                return `${errInfo.module}/${errInfo.func ? errInfo.func : 'unknow'}/${errInfo.lineno}`
             }
         }
     }
-    let text = template.params(opts)
-    expect(text).toEqual("Error while execute method(auth/login/123)")
+}
+let text = template.params(opts)
+expect(text).toEqual("Error while execute method(auth/login/123)")
 
-    text = template.params(opts)
-    errorInfo.func = undefined
-    expect(text).toEqual("Error while execute method(auth/unknow/123)")
-    //
-    errorInfo={}
-    text = template.params(opts)
-    expect(text).toEqual("Error while execute method")
+text = template.params(opts)
+errorInfo.func = undefined
+expect(text).toEqual("Error while execute method(auth/unknow/123)")
+//
+errorInfo={}
+text = template.params(opts)
+expect(text).toEqual("Error while execute method")
 
-    ```
+```
  
  
 ## replaceVars
