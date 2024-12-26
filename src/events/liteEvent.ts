@@ -268,10 +268,10 @@ export class LiteEvent<
       * @param message 
       */
     emit<T extends EventNames>(event:T,message?:Events[T],retain?:boolean){
-         if(retain){
-             this._lastMessage[event as any] = message
-         }
-         return this._executeListeners(event,message as any)
+        if(retain){
+            this._lastMessage[event as any] = message
+        }
+        return this._executeListeners(event,message as any)
      }
  } 
 
