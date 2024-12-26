@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.15
+
+### Patch Changes
+
+- 44c4f82: 修复 liteEvent 的类型错误
+
 ## 1.4.14
 
 ### Patch Changes
