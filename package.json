@@ -1,6 +1,6 @@
 {
   "name": "flex-tools",
-  "version": "1.4.16",
+  "version": "1.4.17",
   "description": "typescript modular utilities.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -9,7 +9,7 @@
   "repository": "https://github.com/zhangfisher/flex-tools",
   "scripts": {
     "build": "tsup",
-    "publish:all": "pnpm build && changeset version && changeset publish",  
+    "publish:all": "pnpm build && changeset version && changeset publish",
     "changeset": "changeset",
     "sync": "cnpm sync flex-tools",
     "docs:dev": "vitepress dev new-docs",
