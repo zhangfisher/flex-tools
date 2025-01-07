@@ -403,3 +403,34 @@ type KeyType = ObjectKeyOf<Animal>
  }
   
  ```
+
+
+ 
+# FixedRecord
+
+创建一个`Record`类型，其中指定的键名称的项是固定的。
+
+```ts
+type FixedRecord<DefaultType,FixedType extends Record<string,any>> 
+
+// 
+// type VoerkaI18nMessages = FixedRecord<string | string[], {    
+//     $config: Record<string,Record<string,any>>;
+//     $remote: boolean;
+// }>
+
+// const messages: VoerkaI18nMessages = {
+//     $config: {
+//         add: {
+//             a:""
+//         }
+//     },
+//     $remote: true, 
+//     b:  "1",
+//     a:  ['1', '2'],
+//     c:  1
+// }
+
+```
+
+ - `VoerkaI18nMessages`类型指定`$config`和`$remote`键的类型，其他键类型均为`string | string[]`类型。
