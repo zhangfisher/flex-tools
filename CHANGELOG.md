@@ -1,5 +1,13 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.17
+
+### Patch Changes
+
+- a782b59: add GetTypeByPath and ObjectKeyPaths
+- b4bb2e4: add isNumberLike and Primitive
+- e4ffa45: feat: add FixedRecord type
+
 ## 1.4.16
 
 ### Patch Changes
