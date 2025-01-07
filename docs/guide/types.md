@@ -434,3 +434,70 @@ type FixedRecord<DefaultType,FixedType extends Record<string,any>>
 ```
 
  - `VoerkaI18nMessages`类型指定`$config`和`$remote`键的类型，其他键类型均为`string | string[]`类型。
+
+
+# GetTypeByPath
+
+根据路径获取对象的类型
+
+```ts
+type A = {
+    a:{
+        b:{
+            c:number
+        }
+    }
+}
+
+type B = GetTypeByPath<A,'a.b.c'>  // number
+
+```
+
+# ObjectKeyPaths
+
+获取对象的所有键路径
+
+```ts
+type A = {
+    a:{
+        b:{
+            c:number
+        }
+    }
+}
+type B = ObjectKeyPaths<A>  // ['a','a.b','a.b.c']
+
+```
+
+# Primitive
+
+原始类型
+
+```ts
+type Primitive =
+	| null
+	| undefined
+	| string
+	| number
+	| boolean
+	| symbol
+	| bigint
+```
+
+# IsNumberLike
+
+判断是否是数字类型
+
+```ts
+type A = IsNumberLike<'1'>;
+//=> true
+
+type B = IsNumberLike<'-1.1'>;
+//=> true
+
+type C = IsNumberLike<1>;
+//=> true
+
+type D = IsNumberLike<'a'>;
+//=> false
+```

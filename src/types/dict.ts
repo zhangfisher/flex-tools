@@ -1,1 +1,1 @@
-export type Dict<Key extends keyof any = string | number | symbol ,Value = any>= Record<Key, Value>;
+export type Dict<T=any> = T extends (...args:any[])=>any ? never : Record<string,T>
