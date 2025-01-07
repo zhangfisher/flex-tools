@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.18
+
+### Patch Changes
+
+- b2187b2: fix
+
 ## 1.4.17
 
 ### Patch Changes
