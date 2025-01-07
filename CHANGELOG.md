@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.17
+
+### Patch Changes
+
+- e4ffa45: feat: add FixedRecord type
+
 ## 1.4.16
 
 ### Patch Changes
