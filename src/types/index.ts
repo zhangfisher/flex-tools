@@ -22,6 +22,7 @@ export * from "./valueOf"
 export * from "./changeReturns" 
 export * from "./dict"
 export * from "./requiredKeys"
+export * from "./fixedRecord"
 
 // export * from "./typedClassDecorator"
 // export * from "./objectPath"
