@@ -2,7 +2,7 @@
 
 本工具函数用于编写`nodejs`应用时使用，用来操作当前包工程。
 
-# getProjectRootPath
+## getProjectRootPath
 
 返回当前包工程所在的根路径。
 
@@ -13,7 +13,7 @@ function getProjectRootPath(entryPath:string="./",exclueCurrent:boolean=false):s
 - `getProjectRootPath`会从指定的extryPath开始向上查找`package.json`文件
 - `entryPath`默认以当前路径为起点。
 
-# getPackageJson
+## getPackageJson
 
 返回当前工程的`package.json`文件内容
 
@@ -21,7 +21,7 @@ function getProjectRootPath(entryPath:string="./",exclueCurrent:boolean=false):s
 function getPackageJson()
 ```
 
-# getPackageTool
+## getPackageTool
 
 返回当前项目所使用的包管理工具。
 
@@ -31,7 +31,7 @@ function getPackageTool():('pnpm' | 'npm' | 'yarn')[]
 
 - getPackageTool通过检查当前工程根目录下是否存在`pnpm-lock.yaml`和`yarn.lock`来判断当前工程所使用的包管理工具。
 
-# installPackage
+## installPackage
 
 安装指定的包。
 
@@ -53,7 +53,7 @@ async function installPackage(packageName:string,options?:installPackageOptions)
 - 如果安装成功则返回`true`,否则返回`false`
 - `use`默认使用`pnpm`
 
-# packageIsInstalled
+## packageIsInstalled
 
 查询某个包是否已经安装。
 
@@ -65,7 +65,7 @@ async function packageIsInstalled(packageName:string,checkGlobal:boolean=false):
 - `checkGlobal`参数用来指定是否在全局进行检查。
 
 
-# updatePackageJson
+## updatePackageJson
 
 更新当前工程的`package.json`
 
@@ -165,7 +165,7 @@ const args = process.argv.slice(2)
     })
 ```
 
-# getPackageEntry
+## getPackageEntry
 
  读取包的入口文件，即`main`字段值
 
