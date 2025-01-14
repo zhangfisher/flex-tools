@@ -16,7 +16,7 @@ export function getPackageRootPath(entryPath:string="./",exclueCurrent:boolean=f
         const parent = path.dirname(entryPath)
         if(parent===entryPath) return null
         return getPackageRootPath(parent,false)
-    }catch(e){
+    }catch(e:any){
         throw new InvalidProjectPathError()
     }
 }

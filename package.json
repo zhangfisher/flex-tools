@@ -213,7 +213,8 @@
     "./typecheck/*": {
       "import": "./dist/typecheck/*.mjs",
       "require": "./dist/typecheck/*.js",
-      "default": "./dist/typecheck/*.js"
+      "default": "./dist/typecheck/*.js",
+      "types": "./dist/typecheck/*.d.ts"
     },
     "./types": {
       "import": "./dist/types/index.mjs",
