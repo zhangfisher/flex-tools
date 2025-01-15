@@ -23,6 +23,6 @@ export async function packageIsInstalled(packageName:string,options?:PackageIsIn
     try{
         const pkgJsonFile = path.join(packageRoot,"node_modules",packageName,"package.json")        
         installed = fs.existsSync(pkgJsonFile)
-    }catch(e){}
+    }catch{}
     return installed
 }

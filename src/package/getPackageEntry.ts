@@ -7,18 +7,20 @@ import {getPackageJson} from "./getPackageJson"
 import path from "node:path"
 
 export interface GetPackageEntryOptions{
-    entry?:string
-    absolute?:boolean
+    entry?   : string
+    absolute?: boolean
 }
 
-export function getPackageEntry(options:GetPackageEntryOptions){
+export function getPackageEntry(options:GetPackageEntryOptions):string | undefined{
     const { entry=process.cwd(),absolute } = options || {}
     let entryFile
     const packageJson = getPackageJson(entry)
-    if(packageJson.main){
-        entryFile =  packageJson.main
-    }else{        
-        entryFile ="./src/index.ts"
-    }
-    return absolute ? path.join(entry || process.cwd(),entryFile) : entryFile
+    if(packageJson){
+        if(packageJson.main){
+            entryFile =  packageJson.main
+        }else{        
+            entryFile ="./src/index.ts"
+        }
+        return absolute ? path.join(entry || process.cwd(),entryFile) : entryFile
+    }    
 }

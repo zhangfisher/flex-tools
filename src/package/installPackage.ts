@@ -5,13 +5,13 @@ import { packageIsInstalled } from "./packageIsInstalled"
 
 
 export interface installPackageOptions{
-    location?:string                                // 安装位置
-    silent?: boolean                                // 执行安装时静默输出
-    type?:'prod' | 'dev' | 'peer' | 'optional' | 'bundle'    // 安装开发依赖 
-    global?: boolean                                // 安装为全局依赖
-    upgrade?: boolean                               // 当依赖已经安装时是否进行升级 
-    use?:"auto" | string                            // 使用哪一个包工具
-    ignoreError?:boolean                            // 忽略错误
+    location?   : string                                                // 安装位置
+    silent?     : boolean                                               // 执行安装时静默输出
+    type?       : 'prod' | 'dev' | 'peer' | 'optional' | 'bundle'       // 安装开发依赖 
+    global?     : boolean                                               // 安装为全局依赖
+    upgrade?    : boolean                                               // 当依赖已经安装时是否进行升级 
+    use?        : "auto" | string                                       // 使用哪一个包工具
+    ignoreError?: boolean                                               // 忽略错误
 }
 /**
  * 在当前项目下安装指定的包
