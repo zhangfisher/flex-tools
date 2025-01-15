@@ -177,3 +177,42 @@ const args = process.argv.slice(2)
  getPackageEntry({entry:"/usr/app"}) 
 
  ```
+
+
+## isTypeScriptPackage
+
+判断当前包是否是`typescript`包
+
+```typescript
+function isTypeScriptPackage(entry?:string):boolean
+```
+
+## getPackageModuleType
+
+获取当前包的类型
+
+```typescript
+function getPackageModuleType(entry?:string):'esm' | 'cjs' | undefined
+```
+
+
+## getPackageReleaseInfo
+
+获取当前包的发布信息
+
+```typescript
+type PackageReleaseInfo = {
+    name         : string
+    tags         : { [key:string]:string }
+    license      : string
+    author       : string
+    version      : string
+    latestVersion: string
+    firstCreated : string
+    lastPublish  : string
+    size         : number
+}
+
+function getPackageReleaseInfo(packageName:string):Promise<PackageReleaseInfo>
+
+```

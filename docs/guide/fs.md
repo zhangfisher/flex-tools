@@ -243,3 +243,13 @@ getExistedDir([
 
 
 ```
+
+
+## fileIsExist
+
+判断文件是否存在
+
+```typescript
+fileIsExist("./a/b/c")  // true
+fileIsExist("./a/b/c/d")  // false
+```
