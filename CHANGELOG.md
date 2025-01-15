@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.20
+
+### Patch Changes
+
+- 1853392: fix package error
+
 ## 1.4.19
 
 ### Patch Changes
