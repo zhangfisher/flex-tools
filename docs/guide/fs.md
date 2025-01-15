@@ -223,3 +223,23 @@ import {mkdir,writeFile,readFile} from 'flex-tools/fs/nodefs'
 await mkdir('d:/temp/a/b/c',{recursive:true})  // 创建文件夹
 
 ```
+
+
+## getExistedDir
+
+返回第一个存在的文件夹
+
+```typescript
+
+getExistedDir([
+    "./a",
+    "./b",
+    "./c",
+    "/var/www/static"
+],{
+    cwd:"code",        // 当前文件夹，如果没指定则为当前文件夹
+    absolute:true       // 返回绝对路径
+}) 
+
+
+```
