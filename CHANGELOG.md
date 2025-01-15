@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.21
+
+### Patch Changes
+
+- efef64b: add getExistedDir
+
 ## 1.4.20
 
 ### Patch Changes
