@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.19
+
+### Patch Changes
+
+- 358d878: 修复 typecheck 类型导出错误
+
 ## 1.4.18
 
 ### Patch Changes
