@@ -6,8 +6,8 @@
  * const p2 = "d:/temp/a/b/c"
  * const base = "c:/temp"
  * 
- * inPath(p1,base) // true
- * inPath(p2,base) // false
+ * includePath(p1,base) // true
+ * includePath(p2,base) // false
  *  
  * 
  * 
@@ -16,7 +16,7 @@
 import path from "path"
 
 
-export function inPath(src: string, basePath: string): boolean {  
+export function includePath(src: string, basePath: string): boolean {  
     // 将路径字符串转换为目录对象  
     let srcDir = path.normalize(src);  
     let baseDir = path.normalize(basePath);      
@@ -29,6 +29,6 @@ export function inPath(src: string, basePath: string): boolean {
 // const p2 = "d:/temp/c"
 // const p3 = "d:/temp/a/b/c.zip"
 // const base = "c:/temp"
-// console.log(inPath(p1,base)) // true
-// console.log(inPath(p2,base)) // false
-// console.log(inPath(p3,base)) // false
+// console.log(includePath(p1,base)) // true
+// console.log(includePath(p2,base)) // false
+// console.log(includePath(p3,base)) // false

@@ -6,9 +6,7 @@
 *  1. 支持深度复制文件夹，保持文件夹结构
 *  2. 支持模板文件，模板文件以 .art 结尾，复制后去掉 .art后缀，采用art-template渲染
    3. 支持忽略文件或文件夹
-   4. 支持文件或文件夹重命名
- 
-
+   4. 支持文件或文件夹重命名 
 * 
 */
 
@@ -20,12 +18,9 @@ import artTemplate from "art-template";
 import { ABORT } from "../consts";
 import path from "node:path"
 import { cleanDir } from "./cleanDir";
-export interface CopyFileInfo{
-    file?:string                                            // 相对于源文件夹的文件路径
-    source?:string                                          // 源文件路径
-    target?:string                                          // 目标文件路径
-    vars?:null | undefined | Record<string,any>             // 模板变量
-}
+import type {CopyFileInfo} from "./copyFiles"
+
+export type {CopyFileInfo} from "./copyFiles"
 
 export interface CopyDirsOptions {
 	vars?: Record<string, any>;         // 传递给模板的变量

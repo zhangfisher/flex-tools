@@ -64,21 +64,21 @@ findUp(['tsconfig.json','tsconfig.ts']) // = ["d:/code/myapp/tsconfig.json","d:/
 - 如果找到文件，则返回文件路径列表
  
 
-## inPath
+## includePath
 
 判断某个文件夹或文件是否在指定的文件夹下
 
 ```typescript
 
- function inPath(src: string, basePath: string): boolean
+ function includePath(src: string, basePath: string): boolean
 
 // const p1 = "c:/temp/a/b/c"
 // const p2 = "d:/temp/c"
 // const p3 = "d:/temp/a/b/c.zip"
 // const base = "c:/temp"
-// console.log(inPath(p1,base)) // true
-// console.log(inPath(p2,base)) // false
-// console.log(inPath(p3,base)) // false
+// console.log(includePath(p1,base)) // true
+// console.log(includePath(p2,base)) // false
+// console.log(includePath(p3,base)) // false
 
 ```
 
@@ -214,16 +214,6 @@ export async function copyFiles(
 - `targetDir`必须是一个文件夹,如果不存在则会自动创建。
 - 复制时会保持源文件夹的结构不变。
 
-## fs
-
-对`node:fs`的`promise`包装,对标准的使用`callback`的异步函数全部进行了`promise`包装。
-
-```typescript
-import {mkdir,writeFile,readFile} from 'flex-tools/fs/nodefs'
-await mkdir('d:/temp/a/b/c',{recursive:true})  // 创建文件夹
-
-```
-
 
 ## getExistedDir
 
@@ -239,11 +229,8 @@ getExistedDir([
 ],{
     cwd:"code",        // 当前文件夹，如果没指定则为当前文件夹
     absolute:true       // 返回绝对路径
-}) 
-
-
+})  
 ```
-
 
 ## fileIsExist
 
@@ -252,4 +239,14 @@ getExistedDir([
 ```typescript
 fileIsExist("./a/b/c")  // true
 fileIsExist("./a/b/c/d")  // false
+``` 
+
+## fs
+
+对`node:fs`的`promise`包装,对标准的使用`callback`的异步函数全部进行了`promise`包装。
+
+```typescript
+import {mkdir,writeFile,readFile} from 'flex-tools/fs/nodefs'
+await mkdir('d:/temp/a/b/c',{recursive:true})  // 创建文件夹
+
 ```

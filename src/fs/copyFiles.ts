@@ -23,20 +23,20 @@ import path from "node:path"
 import { cleanDir } from "./cleanDir";
 
 export interface CopyFileInfo{
-    file?:string                                            // 相对于源文件夹的文件路径
-    source?:string                                          // 源文件路径
-    target?:string                                          // 目标文件路径
-    vars?:null | undefined | Record<string,any>             // 模板变量
+    file?  : string                                             // 相对于源文件夹的文件路径
+    source?: string                                             // 源文件路径
+    target?: string                                             // 目标文件路径
+    vars?  : null | undefined | Record<string,any>             // 模板变量
 }
 
 export interface CopyFilesOptions {
-	vars?: Record<string, any>;         // 传递给模板的变量 
-	ignore?: string[];                  // 忽略的文件或文件夹，支持通配符
-    clean?:boolean                      // 是否清空目标文件夹
-    cwd?:string;                        // pattern的cwd
-	before?: (info:CopyFileInfo) => void | typeof ABORT; // 复制前的回调
-	after?: (info:CopyFileInfo) => void | typeof ABORT; // 复制后的回调
-    error?:(error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
+	vars?    : Record<string, any>;                             // 传递给模板的变量 
+	ignore?  : string[];                                        // 忽略的文件或文件夹，支持通配符
+    clean?   : boolean                                          // 是否清空目标文件夹
+    cwd?     : string;                                          // pattern的cwd
+	before?  : (info:CopyFileInfo) => void | typeof ABORT;      // 复制前的回调
+	after?   : (info:CopyFileInfo) => void | typeof ABORT;      // 复制后的回调
+    error?   : (error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
 }
 
 export async function copyFiles(
@@ -49,7 +49,7 @@ export async function copyFiles(
         clean : false 
     }, options);
 
-	const { ignore,vars={},cwd=process.cwd() } = opts;
+	const { ignore, vars={}, cwd=process.cwd() } = opts;
 
     const srcDir = path.isAbsolute(pattern) ? path.dirname(pattern) : cwd;    
  

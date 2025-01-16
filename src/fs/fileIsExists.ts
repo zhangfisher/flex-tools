@@ -7,7 +7,7 @@ export function fileIsExists(filename:string):boolean{
     try{
         fs.statSync(filename)
         return true
-    }catch(e){
+    }catch{
         return false
     }
 }
