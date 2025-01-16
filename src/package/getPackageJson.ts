@@ -1,4 +1,4 @@
-import { PackageJson } from "type-fest";
+import type { PackageJson } from "type-fest";
 import { getPackageRootPath } from "./getPackageRootPath";
 import path from "node:path"
 
@@ -11,5 +11,4 @@ export function getPackageJson(entry?:string):PackageJson | undefined{
         return undefined
     }
 }
-
-export { PackageJson } from "type-fest"
+ 
