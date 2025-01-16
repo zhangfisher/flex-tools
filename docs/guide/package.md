@@ -2,23 +2,24 @@
 
 本工具函数用于编写`nodejs`应用时使用，用来操作当前包工程。
 
-## getProjectRootPath
+## getPackageRootPath
 
 返回当前包工程所在的根路径。
 
 ```typescript
-function getProjectRootPath(entryPath:string="./",exclueCurrent:boolean=false):string | null
+function getPackageRootPath(entryPath:string="./",exclueCurrent:boolean=false):string | null
 ```
 
-- `getProjectRootPath`会从指定的extryPath开始向上查找`package.json`文件
-- `entryPath`默认以当前路径为起点。
+- `getPackageRootPath`会从指定的`extryPath`开始向上查找`package.json`文件，如果没有找到则继续向上查找，直到找到`package.json`文件或者到达根目录为止。如果找到则返回`package.json`文件所在的路径，否则返回`null`。
+- `entryPath`默认以当前路径为起点
+- `exclueCurrent`参数用来指定是否排除当前路径。默认为`false`，即包含当前路径。
 
 ## getPackageJson
 
 返回当前工程的`package.json`文件内容
 
 ```typescript
-function getPackageJson()
+function getPackageJson(entry?:string):PackageJson | undefined
 ```
 
 ## getPackageTool

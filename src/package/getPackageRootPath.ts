@@ -27,3 +27,4 @@ export function getPackageRootPath(entryPath: string = "./", excludeCurrent: boo
         throw new InvalidProjectPathError()
     }
 }
+

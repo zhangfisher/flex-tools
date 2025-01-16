@@ -11,3 +11,5 @@ export function getPackageJson(entry?:string):PackageJson | undefined{
         return undefined
     }
 }
+
+export { PackageJson } from "type-fest"
