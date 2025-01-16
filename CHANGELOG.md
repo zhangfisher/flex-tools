@@ -1,5 +1,12 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.22
+
+### Patch Changes
+
+- 4c0cd1b: add getPackageReleaseInfo/getPackageModuleType
+- 1ae35ed: fix type error
+
 ## 1.4.21
 
 ### Patch Changes
