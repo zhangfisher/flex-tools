@@ -32,8 +32,9 @@ export interface CopyFileInfo{
 export interface CopyFilesOptions {
 	vars?    : Record<string, any>;                             // 传递给模板的变量 
 	ignore?  : string[];                                        // 忽略的文件或文件夹，支持通配符
-    clean?   : boolean                                          // 是否清空目标文件夹
+    clean?   : boolean;                                         // 是否清空目标文件夹
     cwd?     : string;                                          // pattern的cwd
+    overwrite?: boolean;                                        // 是否覆盖已存在的文件
 	before?  : (info:CopyFileInfo) => void | typeof ABORT;      // 复制前的回调
 	after?   : (info:CopyFileInfo) => void | typeof ABORT;      // 复制后的回调
     error?   : (error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
@@ -91,10 +92,17 @@ export async function copyFiles(
 				}				
 				try {
                     if (file.endsWith(".art")) {// 模板文件
+                        const targetFile = fileInfo.target.replace(".art","");
+                        if (!opts.overwrite && existsSync(targetFile)) {
+                            continue;
+                        }
                         const template = artTemplate(fileInfo.source);   
-                        await writeFile(fileInfo.target.replace(".art",""),template(fileInfo.vars ? Object.assign({},vars,fileInfo.vars) : vars ),{encoding:"utf-8"}) 
+                        await writeFile(targetFile, template(fileInfo.vars ? Object.assign({},vars,fileInfo.vars) : vars ), {encoding:"utf-8"});
                     }else{// 模板文件
-                        await copyFile(fileInfo.source, fileInfo.target);                        
+                        if (!opts.overwrite && existsSync(fileInfo.target)) {
+                            continue;
+                        }
+                        await copyFile(fileInfo.source, fileInfo.target);
                     }
                     if (typeof options?.after == "function") {
                         if(options.after(fileInfo)===ABORT){
