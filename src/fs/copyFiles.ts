@@ -15,13 +15,13 @@
 
 import { glob} from "glob";
 import { assignObject } from "../object/assignObject";
-import {copyFile,mkdir,writeFile} from "./nodefs";
-import { existsSync } from "node:fs";
-import artTemplate from "art-template";
+import { mkdir } from "./nodefs";
+import { existsSync } from "node:fs"; 
 import { ABORT } from "../consts";
 import path from "node:path"
-import { cleanDir } from "./cleanDir";
-import { getDynamicValue } from "../misc/getDynamicValue";
+import { cleanDir } from "./cleanDir"; 
+import { copyFile } from "./copyFile";
+
 
 export interface CopyFileInfo{
     file?  : string                                             // 相对于源文件夹的文件路径
@@ -42,14 +42,12 @@ export interface CopyFilesOptions {
     templateOptions?: Record<string, any> | ((file: string) => Record<string, any> | Promise<Record<string, any>>); 
 }
 
-export async function copyFiles(
-	pattern: string,
-	targetDir: string,
-	options?: CopyFilesOptions
-) {
+export async function copyFiles( pattern: string, targetDir: string, options?: CopyFilesOptions) {
+
 	const opts = assignObject({  
-        ignore: [],
-        clean : false 
+        ignore   : [],
+        clean    : false,
+        overwrite: false
     }, options);
 
 	const { ignore, cwd=process.cwd() } = opts;
@@ -65,27 +63,26 @@ export async function copyFiles(
         try{await cleanDir(targetDir)}catch{}
     }
 
-
 	return new Promise<void>((resolve, reject) => {
 		glob(pattern, {
 			ignore,
 			cwd:srcDir,
 		}).then(async (files) => {
-
 			for (let file of files) {
                 const isAbsoluteFile = path.isAbsolute(file); 
-                const fromFile = isAbsoluteFile ? file: path.join(srcDir, file)
-                const fromDir = path.dirname(fromFile);
-                const toFile = path.join(targetDir, isAbsoluteFile ? path.relative(fromDir,file) : file)                
+                const fromFile       = isAbsoluteFile ? file: path.join(srcDir, file)
+                const fromDir        = path.dirname(fromFile);
+                const toFile         = path.join(targetDir, isAbsoluteFile ? path.relative(fromDir,file) : file)           
+
                 const fileInfo:Required<CopyFileInfo> = {
                     file,
                     source: fromFile,
                     target: toFile,
-                    vars:null
+                    vars:opts.vars
                 } 
 				let targetFileDir = path.dirname(fileInfo.target);
 				if (!existsSync(targetFileDir)) {
-					await mkdir(targetFileDir, { recursive: true }); // 创建目录
+					await mkdir(targetFileDir, { recursive: true });  
 				}
 				if (typeof options?.before == "function") {
 					if(options.before(fileInfo)===ABORT){
@@ -93,11 +90,7 @@ export async function copyFiles(
                     }
 				}				
 				try {
-                    if (file.endsWith(".art")) {
-                        await copyTemplateFile(fileInfo, opts);
-                    } else {
-                        await copyRegularFile(fileInfo, opts);
-                    }
+                    await copyFile(fromFile, toFile, opts); 
                     if (typeof options?.after == "function") {
                         if(options.after(fileInfo)===ABORT){
                             break
@@ -108,57 +101,10 @@ export async function copyFiles(
                         if(options.error(e,fileInfo)===ABORT){
                             break
                         }
-                    }                    
+                    }
                 }
 			}
 			resolve();
 		}).catch(reject);
 	});
 }
-
-async function copyTemplateFile( fileInfo: Required<CopyFileInfo>,opts: CopyFilesOptions) {
-    const targetFile = path.join(
-        path.dirname(fileInfo.target),
-        path.basename(fileInfo.target, ".art")
-    );
-    const shouldOverwrite = typeof opts.overwrite === 'function' 
-        ? await Promise.resolve(opts.overwrite(targetFile))
-        : opts.overwrite;
-    if (shouldOverwrite === false && existsSync(targetFile)) {
-        return;
-    }
-    const template = artTemplate(fileInfo.source);
-    template.defaults.imports.json=(v:any)=>{
-        try{
-            return JSON.stringify(v,null,4)
-        }catch{
-            return v
-        }
-    }
-    const templateVars = await getDynamicValue.call(opts,opts.vars,[fileInfo.file]); 
-    const templateOptions = await getDynamicValue.call(opts,opts.templateOptions,[fileInfo.file]);                                
-    await writeFile(targetFile, template(templateVars,templateOptions), { encoding:"utf-8" });
-}
-
-async function copyRegularFile( fileInfo: Required<CopyFileInfo>, opts: CopyFilesOptions) {
-    const shouldOverwrite = await getDynamicValue.call(opts,opts.overwrite,[fileInfo.file]) as boolean                         
-    if (shouldOverwrite === false && existsSync(fileInfo.target)) {
-        return;
-    }
-    await copyFile(fileInfo.source, fileInfo.target);
-}
-
-export { ABORT } from "../consts";
-
-
-// copyFiles("*.*", "c://temp//copyFiles", {
-//     vars:{
-//         count:"hello to flex-tools"
-//     },
-// 	after: ({source,target}) => {
-// 		console.log("copy: ", source);
-// 	},
-//     error:(error,{source,target})=>{
-//         console.error("copy error:",source,error.message)
-//     }
-// }).then(() => {});

@@ -195,14 +195,15 @@ export async function copyDirs(
 
 ```ts
 export interface CopyFilesOptions {
-	vars?: Record<string, any>;         // 传递给模板的变量 
-	ignore?: string[];                  // 忽略的文件或文件夹，支持通配符
-    clean?:boolean                      // 是否清空目标文件夹
-    cwd?:string;                        // pattern的cwd
-    overwrite?: boolean | ((filename: string) => boolean | Promise<boolean>); // 是否覆盖已存在的文件，可以是boolean或返回boolean的同步/异步函数
-	before?: (info:CopyFileInfo) => void | typeof ABORT; // 复制前的回调
-	after?: (info:CopyFileInfo) => void | typeof ABORT; // 复制后的回调
-    error?:(error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
+	vars?           : Record<string, any> | ((file: string) => Record<string, any> | Promise<Record<string, any>>); // 传递给模板的变量
+	ignore?         : string[];                                        // 忽略的文件或文件夹，支持通配符
+    clean?          : boolean;                                         // 是否清空目标文件夹
+    cwd?            : string;                                          // pattern的cwd
+    overwrite?      : boolean | ((filename: string) => boolean | Promise<boolean>); // 是否覆盖已存在的文件，可以是boolean或返回boolean的同步/异步函数
+	before?         : (info:CopyFileInfo) => void | typeof ABORT;      // 复制前的回调
+	after?          : (info:CopyFileInfo) => void | typeof ABORT;      // 复制后的回调
+    error?          : (error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
+    templateOptions?: Record<string, any> | ((file: string) => Record<string, any> | Promise<Record<string, any>>); 
 }
 export async function copyFiles(
 	pattern: string,
@@ -211,11 +212,62 @@ export async function copyFiles(
 )
 ```
 
-- 支持与`copyDirs`相同的功能参数。
 - `pattern`参数支持通配符，内部使用`glob`。
 - `targetDir`必须是一个文件夹,如果不存在则会自动创建。
 - 复制时会保持源文件夹的结构不变。
+- 如果源文件是模板文件``.art`，则会使用`art-template`进行渲染,并且会传递`vars`参数给模板引擎。
 
+
+- 使用`glob`来匹配文件，所以`pattern`和`ignore`支持通配符。
+- 复制文件时保持源文件夹的结构不变，所以`targetDir`必须是一个文件夹,如果不存在则会自动创建。
+- `vars`参数会传递给模板引擎，用于渲染模板文件,对所有`.art`模板文件生效。如果需要对某个文件传入单独的模板变量，可以在`before`回调中设置`vars`参数。
+    
+    ```typescript
+    copyDirs("c://temp//myapp","d://temp/app",{
+        vars:{                          // 这个变量会传递给所有的模板文件
+            name:"myapp",
+            version:"1.0.0"
+        },
+        before(info){
+            if(info.file === "package.json.art"){
+                // 这里的变量会与全局变量合并后果传递给package.json.art模板文件
+                info.vars = {   
+                    name:"myapp",
+                    version:"1.0.0"
+                }
+            }
+        }
+    })
+    ```
+-  `before`回调会在复制文件前调用，可以在这里修改`vars`参数，或者返回`ABORT`来阻止复制。
+ 
+
+
+
+```typescript
+copyFiles("c://temp//myapp/**/*","d://temp/app",{
+    vars:{                          // 这个变量会传递给所有的模板文件
+        name:"myapp",
+        version:"1.0.0"
+    } 
+})
+```
+
+## copyFile
+
+复制文件到指定的目标文件夹
+
+```typescript
+copyFile( source: string,target: string, options?:CopyTemplateFileOptions) 
+
+type CopyTemplateFileOptions = {
+	vars?  : Record<string, any> | ((file: string) => Record<string, any> | Promise<Record<string, any>>); 
+    overwrite? : boolean | ((filename: string) => boolean | Promise<boolean>); 
+    templateOptions? : Record<string, any> | ((file: string) => Record<string, any> | Promise<Record<string, any>>); 
+}
+```
+
+- `copyFile`支持模板文件，如果源文件是`.art`文件，则会使用`art-template`进行渲染。
 
 ## getExistedDir
 

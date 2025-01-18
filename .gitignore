@@ -2,3 +2,5 @@ node_modules
 .yalc 
 dist
 src/fs/tmp.art
+/examples/copyFiles/target
+/examples/copyFiles/targetDirs

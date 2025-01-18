@@ -1,0 +1,16 @@
+{
+  "name": "copy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "dev:files": "tsx copyFiles.ts",
+    "dev:dirs": "tsx copyDirs.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tsx": "^4.19.2"
+  }
+}
