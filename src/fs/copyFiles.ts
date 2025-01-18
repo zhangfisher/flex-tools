@@ -30,7 +30,7 @@ export interface CopyFileInfo{
 }
 
 export interface CopyFilesOptions {
-	vars?    : Record<string, any>;                             // 传递给模板的变量 
+	vars?    : Record<string, any> | ((file: string) => Record<string, any> | Promise<Record<string, any>>); // 传递给模板的变量
 	ignore?  : string[];                                        // 忽略的文件或文件夹，支持通配符
     clean?   : boolean;                                         // 是否清空目标文件夹
     cwd?     : string;                                          // pattern的cwd

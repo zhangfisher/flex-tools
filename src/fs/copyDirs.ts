@@ -23,7 +23,7 @@ import type {CopyFileInfo} from "./copyFiles"
 export type {CopyFileInfo} from "./copyFiles"
 
 export interface CopyDirsOptions {
-	vars?        : Record<string, any>;         // 传递给模板的变量
+	vars?        : Record<string, any> | ((file: string) => Record<string, any> | Promise<Record<string, any>>); // 传递给模板的变量
 	pattern?     : string;                   // 匹配的文件或文件夹，支持通配符
 	ignore?      : string[];                  // 忽略的文件或文件夹，支持通配符
     clean?       : boolean                      // 是否清空目标文件夹
