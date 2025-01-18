@@ -1,5 +1,12 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.24
+
+### Patch Changes
+
+- 27afd49: copyDirs 和 copyFiles 增加 overwrite 和 vars 参数
+- 97a6778: fix copyDirs/copyFiles vars types
+
 ## 1.4.23
 
 ### Patch Changes
