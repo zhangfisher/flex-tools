@@ -19,6 +19,7 @@ import { ABORT } from "../consts";
 import path from "node:path"
 import { cleanDir } from "./cleanDir";
 import type {CopyFileInfo} from "./copyFiles"
+import { getDynamicValue } from "../misc/getDynamicValue";
 
 export type {CopyFileInfo} from "./copyFiles"
 
@@ -91,14 +92,10 @@ export async function copyDirs(
                             continue;
                         }
                         const template = artTemplate(fileInfo.source);
-                        const templateVars = typeof vars === 'function' 
-                            ? await Promise.resolve(vars(file))
-                            : vars || {};
+                        const templateVars =await getDynamicValue.call(opts,opts.vars,[file]);           
                         await writeFile(targetFile, template(templateVars), {encoding:"utf-8"});
-                    }else{// 普通文件
-                        const shouldOverwrite = typeof opts.overwrite === 'function' 
-                            ? await Promise.resolve(opts.overwrite(fileInfo.target))
-                            : opts.overwrite;
+                    }else{// 普通文件 
+                        const shouldOverwrite = await getDynamicValue.call(opts,opts.overwrite,[file]) as boolean
                         if (shouldOverwrite === false && existsSync(fileInfo.target)) {
                             continue;
                         }

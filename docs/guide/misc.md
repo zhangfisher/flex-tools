@@ -251,3 +251,15 @@ const switcher = {
 - 也可以自定义类型匹配器，比如`User`类型，可以自定义类型匹配器`User: (value:any)=> value instanceof User`，这样就可以匹配`User`类型了。
 
 
+
+## getDynamicValue
+
+获取动态值。
+
+```typescript
+getDynamicValue(1)                          // 1
+getDynamicValue(()=>1)                      // 1
+getDynamicValue(async ()=>1)                // 1
+getDynamicValue(async (n)=>n+1,{args:[1]})  // 2
+```
+

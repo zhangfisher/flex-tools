@@ -21,6 +21,7 @@ import artTemplate from "art-template";
 import { ABORT } from "../consts";
 import path from "node:path"
 import { cleanDir } from "./cleanDir";
+import { getDynamicValue } from "../misc/getDynamicValue";
 
 export interface CopyFileInfo{
     file?  : string                                             // 相对于源文件夹的文件路径
@@ -28,7 +29,7 @@ export interface CopyFileInfo{
     target?: string                                             // 目标文件路径
     vars?  : null | undefined | Record<string,any>             // 模板变量
 }
-
+ 
 export interface CopyFilesOptions {
 	vars?    : Record<string, any> | ((file: string) => Record<string, any> | Promise<Record<string, any>>); // 传递给模板的变量
 	ignore?  : string[];                                        // 忽略的文件或文件夹，支持通配符
@@ -38,6 +39,7 @@ export interface CopyFilesOptions {
 	before?  : (info:CopyFileInfo) => void | typeof ABORT;      // 复制前的回调
 	after?   : (info:CopyFileInfo) => void | typeof ABORT;      // 复制后的回调
     error?   : (error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
+    template?: Record<string, any> | ((file: string) => Record<string, any> | Promise<Record<string, any>>); 
 }
 
 export async function copyFiles(
@@ -103,14 +105,10 @@ export async function copyFiles(
                             continue;
                         }
                         const template = artTemplate(fileInfo.source);
-                        const templateVars = typeof vars === 'function' 
-                            ? await Promise.resolve(vars(file))
-                            : vars;
+                        const templateVars = await getDynamicValue.call(opts,opts.vars,[file]);                        
                         await writeFile(targetFile, template(templateVars), {encoding:"utf-8"});
                     }else{// 模板文件
-                        const shouldOverwrite = typeof opts.overwrite === 'function' 
-                            ? await Promise.resolve(opts.overwrite(fileInfo.target))
-                            : opts.overwrite;
+                        const shouldOverwrite = await getDynamicValue.call(opts,opts.overwrite,[file]) as boolean                         
                         if (shouldOverwrite === false && existsSync(fileInfo.target)) {
                             continue;
                         }
