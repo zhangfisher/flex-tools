@@ -23,13 +23,14 @@ import type {CopyFileInfo} from "./copyFiles"
 export type {CopyFileInfo} from "./copyFiles"
 
 export interface CopyDirsOptions {
-	vars?: Record<string, any>;         // 传递给模板的变量
-	pattern?: string;                   // 匹配的文件或文件夹，支持通配符
-	ignore?: string[];                  // 忽略的文件或文件夹，支持通配符
-    clean?:boolean                      // 是否清空目标文件夹
-	before?: (info:CopyFileInfo) => void | typeof ABORT; // 复制前的回调
-	after?: (info:CopyFileInfo) => void | typeof ABORT; // 复制后的回调
-    error?:(error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
+	vars?        : Record<string, any>;         // 传递给模板的变量
+	pattern?     : string;                   // 匹配的文件或文件夹，支持通配符
+	ignore?      : string[];                  // 忽略的文件或文件夹，支持通配符
+    clean?       : boolean                      // 是否清空目标文件夹
+    overwrite?   : boolean | ((filename: string) => boolean | Promise<boolean>); // 是否覆盖已存在的文件，可以是boolean或返回boolean的同步/异步函数
+	before?      : (info:CopyFileInfo) => void | typeof ABORT; // 复制前的回调
+	after?       : (info:CopyFileInfo) => void | typeof ABORT; // 复制后的回调
+    error?       : (error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
 }
 
 export async function copyDirs(
@@ -79,9 +80,28 @@ export async function copyDirs(
 				}				
 				try {
                     if (file.endsWith(".art")) {// 模板文件
-                        const template = artTemplate(fileInfo.source);   
-                        await writeFile(fileInfo.target.replace(".art",""),template(fileInfo.vars ? Object.assign({},vars,fileInfo.vars) : vars ),{encoding:"utf-8"}) 
-                    }else{// 模板文件
+                        const targetFile = path.join(
+                            path.dirname(fileInfo.target),
+                            path.basename(fileInfo.target, ".art")
+                        );
+                        const shouldOverwrite = typeof opts.overwrite === 'function' 
+                            ? await Promise.resolve(opts.overwrite(targetFile))
+                            : opts.overwrite;
+                        if (shouldOverwrite === false && existsSync(targetFile)) {
+                            continue;
+                        }
+                        const template = artTemplate(fileInfo.source);
+                        const templateVars = typeof vars === 'function' 
+                            ? await Promise.resolve(vars(file))
+                            : vars || {};
+                        await writeFile(targetFile, template(templateVars), {encoding:"utf-8"});
+                    }else{// 普通文件
+                        const shouldOverwrite = typeof opts.overwrite === 'function' 
+                            ? await Promise.resolve(opts.overwrite(fileInfo.target))
+                            : opts.overwrite;
+                        if (shouldOverwrite === false && existsSync(fileInfo.target)) {
+                            continue;
+                        }
                         await copyFile(fileInfo.source, fileInfo.target);                        
                     }
                     if (typeof options?.after == "function") {

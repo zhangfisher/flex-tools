@@ -141,20 +141,21 @@ function cleanDir(dir:string,options?:CleanDirOptions)
 ```typescript
 
 export interface CopyFileInfo{
-    file?:string                                            // 相对于源文件夹的文件路径
-    source?:string                                          // 源文件路径
-    target?:string                                          // 目标文件路径
-    vars?:null | undefined | Record<string,any>             // 模板变量
+    file?  : string                                            // 相对于源文件夹的文件路径
+    source?: string                                          // 源文件路径
+    target?: string                                          // 目标文件路径
+    vars?  : null | undefined | Record<string,any>             // 模板变量
 }
 
 export interface CopyDirsOptions {
-	vars?: Record<string, any>;         // 传递给模板的变量
-	pattern?: string;                   // 匹配的文件或文件夹，支持通配符
-	ignore?: string[];                  // 忽略的文件或文件夹，支持通配符
-    clean?:boolean                      // 是否清空目标文件夹
-	before?: (info:CopyFileInfo) => void | typeof ABORT; // 复制前的回调
-	after?: (info:CopyFileInfo) => void | typeof ABORT; // 复制后的回调
-    error?:(error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
+	vars?      : Record<string, any>;         // 传递给模板的变量
+	pattern?   : string;                   // 匹配的文件或文件夹，支持通配符
+	ignore?    : string[];                  // 忽略的文件或文件夹，支持通配符
+    clean?     : boolean                      // 是否清空目标文件夹
+    overwrite? : boolean | ((filename: string) => boolean | Promise<boolean>); // 是否覆盖已存在的文件，可以是boolean或返回boolean的同步/异步函数
+	before?    : (info:CopyFileInfo) => void | typeof ABORT; // 复制前的回调
+	after?     : (info:CopyFileInfo) => void | typeof ABORT; // 复制后的回调
+    error?     :(error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
 }
 
 export async function copyDirs(
@@ -198,6 +199,7 @@ export interface CopyFilesOptions {
 	ignore?: string[];                  // 忽略的文件或文件夹，支持通配符
     clean?:boolean                      // 是否清空目标文件夹
     cwd?:string;                        // pattern的cwd
+    overwrite?: boolean | ((filename: string) => boolean | Promise<boolean>); // 是否覆盖已存在的文件，可以是boolean或返回boolean的同步/异步函数
 	before?: (info:CopyFileInfo) => void | typeof ABORT; // 复制前的回调
 	after?: (info:CopyFileInfo) => void | typeof ABORT; // 复制后的回调
     error?:(error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
