@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.27
+
+### Patch Changes
+
+- 6a64b4b: fix copyFiles
+
 ## 1.4.26
 
 ### Patch Changes
