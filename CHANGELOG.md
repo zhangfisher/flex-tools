@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.26
+
+### Patch Changes
+
+- df29143: add copyDirs/copyFiles option<templateOptions>
+
 ## 1.4.25
 
 ### Patch Changes
