@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.28
+
+### Patch Changes
+
+- 736dd3f: fix: copyFiles support dot file
+
 ## 1.4.27
 
 ### Patch Changes
