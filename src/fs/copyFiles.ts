@@ -67,6 +67,7 @@ export async function copyFiles( pattern: string, targetDir: string, options?: C
 		glob(pattern, {
 			ignore,
 			cwd:srcDir,
+            dot:true
 		}).then(async (files) => {
 			for (let file of files) {
                 const isAbsoluteFile = path.isAbsolute(file); 
