@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.29
+
+### Patch Changes
+
+- 2863e25: fix: liteEvent & flexEvent set option<objectify> default value to true
+
 ## 1.4.28
 
 ### Patch Changes
