@@ -144,7 +144,7 @@ export class FlexEvent<Message=any,Events extends string = string,Options extend
      * @returns 
      */
     on(event:Events,callback:FlexEventListener<Message>,options?:SubscribeOptions):FlexEventSubscriber | string{
-        const { objectify = false,count=-1 } =Object.assign({},options) as Required<SubscribeOptions>        
+        const { objectify = true,count=-1 } =Object.assign({},options) as Required<SubscribeOptions>        
         if(!this._listeners.has(event)){
             this._listeners.set(event,new Map())        
         }

@@ -59,14 +59,14 @@ export class LiteEvent<
     on<T extends EventNames>(event:T,callback:LiteEventListener<Events[T]>,options?:LiteEventSubscribeOptions):LiteEventSubscriber | number
     on(event:'*',callback:LiteEventListener<Message>,options?:LiteEventSubscribeOptions):LiteEventSubscriber | number
     on():LiteEventSubscriber | number{
-        const event = arguments[0] as EventNames
+        const event    = arguments[0] as EventNames
         const callback = arguments[1] as LiteEventListener<Message>
-        const options = arguments[2] as LiteEventSubscribeOptions
-        const { objectify=false,count=-1 } = Object.assign({},options) as Required<LiteEventSubscribeOptions>        
+        const options  = arguments[2] as LiteEventSubscribeOptions
+        const { objectify=true,count=-1 } = Object.assign({},options) as Required<LiteEventSubscribeOptions>        
         if(!this._listeners.has(event)){
              this._listeners.set(event,new Map())        
         }
-        const listenerId =  ++LiteEvent.listenerSeqId            
+        const listenerId     = ++LiteEvent.listenerSeqId            
         const eventListeners = this._listeners.get(event) as LiteEventListenerRegistry<Message>
         eventListeners?.set(listenerId,[callback,count])        
         this._emitRetainEvent(event,listenerId,eventListeners)      
