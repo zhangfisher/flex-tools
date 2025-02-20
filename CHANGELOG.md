@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.30
+
+### Patch Changes
+
+- 4bd6622: getPackageJson 增加了一个 findUp 参数用来确认是否从当前路径向上
+
 ## 1.4.29
 
 ### Patch Changes
