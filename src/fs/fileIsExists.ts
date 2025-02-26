@@ -11,3 +11,16 @@ export function fileIsExists(filename:string):boolean{
         return false
     }
 }
+
+/**
+ * 异步检查文件是否存在
+ * @param filename 
+ */
+export async function fileIsExistsAsync(filename: string): Promise<boolean> {
+    try {
+        await fs.promises.stat(filename);
+        return true;
+    } catch {
+        return false;
+    }
+}

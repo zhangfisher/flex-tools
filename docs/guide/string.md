@@ -500,3 +500,14 @@ test("Matcher",() => {
     expect(matcher.test("myapp/src/test/ss.js")).toBe(true)
 })
 ```
+
+
+## trimChars
+
+去掉字符串前后的指定字符
+
+```typescript
+"<[abc123xyz]>".trimChars("abc","<>[]") // == "123xyz"
+"'abc123xyz'".trimChars("xyz") // == "abc123"
+```
+

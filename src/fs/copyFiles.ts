@@ -41,8 +41,15 @@ export interface CopyFilesOptions {
     error?          : (error:Error,{source,target}:{source: string, target: string})=>void | typeof ABORT // 复制出错的回调
     templateOptions?: Record<string, any> | ((file: string) => Record<string, any> | Promise<Record<string, any>>); 
 }
-
-export async function copyFiles( pattern: string, targetDir: string, options?: CopyFilesOptions) {
+/**
+ * 拷贝满足条件的文件到目标文件夹
+ * 
+ * @param pattern 
+ * @param targetDir 
+ * @param options 
+ * @returns  返回实际拷贝的文件列表
+ */
+export async function copyFiles( pattern: string, targetDir: string, options?: CopyFilesOptions):Promise<string[]> {
 
 	const opts = assignObject({  
         ignore   : [],
@@ -62,8 +69,10 @@ export async function copyFiles( pattern: string, targetDir: string, options?: C
     if (opts.clean) {
         try{await cleanDir(targetDir)}catch{}
     }
+    
+    const copyedFiles:string[] = []
 
-	return new Promise<void>((resolve, reject) => {
+	return new Promise<string[]>((resolve, reject) => {
 		glob(pattern, {
 			ignore,
 			cwd:srcDir,
@@ -92,6 +101,7 @@ export async function copyFiles( pattern: string, targetDir: string, options?: C
 				}				
 				try {
                     await copyFile(fromFile, toFile, opts); 
+                    copyedFiles.push(toFile)
                     if (typeof options?.after == "function") {
                         if(options.after(fileInfo)===ABORT){
                             break
@@ -105,7 +115,7 @@ export async function copyFiles( pattern: string, targetDir: string, options?: C
                     }
                 }
 			}
-			resolve();
+			resolve(copyedFiles);
 		}).catch(reject);
 	});
 }

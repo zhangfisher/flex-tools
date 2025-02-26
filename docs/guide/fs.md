@@ -304,3 +304,36 @@ import {mkdir,writeFile,readFile} from 'flex-tools/fs/nodefs'
 await mkdir('d:/temp/a/b/c',{recursive:true})  // 创建文件夹
 
 ```
+
+## writeJsonFile
+
+更新json文件
+
+```typescript
+writeJsonFile("d:/temp/package.json",{
+    name:"myapp",
+    version:"1.0.0"
+})
+```
+
+- 如果文件不存在，则会创建文件。
+- 如果目标文件存在，则会深度合并对象。
+
+## writeJsonFileAsync
+
+writeJsonFile的异步版本
+
+
+## readJsonFile
+
+读取json文件
+ 
+```
+readJsonFile(jsonfile: string,defaultValue?:Record<string,any>)
+```
+- 如果文件不存在，则返回`defaultValue`参数。
+- 如果文件存在且提供`defaultValue`参数，则会深度合并对象。
+
+## readJsonFileAsync
+
+readJsonFile的异步版本
