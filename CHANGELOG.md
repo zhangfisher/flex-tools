@@ -1,5 +1,12 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.31
+
+### Patch Changes
+
+- 48751bf: feat: add readJsonFile/writeJsonFile/trimChars func
+- 5e5aba1: fix: readJsonFile/writeJsonFile types
+
 ## 1.4.30
 
 ### Patch Changes
