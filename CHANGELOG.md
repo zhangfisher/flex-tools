@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.33
+
+### Patch Changes
+
+- d7d096f: getPackageJson 的 findUp 默认设为 true
+
 ## 1.4.31
 
 ### Patch Changes
