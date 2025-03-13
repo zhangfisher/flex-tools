@@ -13,6 +13,9 @@ export default defineConfig({
     clean: true,
     treeshake:true,  
     minify: true, 
+    noExternal:[
+        'art-template',
+    ],
     banner: {
         js: `/**
 *   ---=== FlexTools ===---
