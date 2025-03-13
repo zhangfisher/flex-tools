@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.35
+
+### Patch Changes
+
+- 09b565d: lock art-template version to 4.13.2
+
 ## 1.4.34
 
 ### Patch Changes
