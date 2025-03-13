@@ -12,7 +12,7 @@
     "publish:all": "pnpm build && changeset version && changeset publish",
     "changeset": "changeset",
     "sync": "cnpm sync flex-tools",
-    "docs:dev": "vitepress dev new-docs",
+    "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
   },
