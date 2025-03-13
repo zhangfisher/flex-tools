@@ -244,7 +244,7 @@
     "vitest": "^0.26.3"
   },
   "dependencies": {
-    "art-template": "^4.13.2",
+    "art-template": "4.13.2",
     "glob": "^10.3.3",
     "semver": "^7.6.3"
   }
