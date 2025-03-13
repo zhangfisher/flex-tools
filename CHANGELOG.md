@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.34
+
+### Patch Changes
+
+- 102ebc1: 修复在某此环境 fs/copyFiles 出现 lib/index 导入错误的问题
+
 ## 1.4.33
 
 ### Patch Changes
