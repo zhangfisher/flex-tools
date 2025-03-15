@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "FlexTools",
-  description: "A VitePress Site",
+  description: "typescript modular utilities.",
   base: '/flex-tools/',
   themeConfig: {
     outline: {
