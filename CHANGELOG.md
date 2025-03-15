@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.36
+
+### Patch Changes
+
+- 478b9cc: 新增加 encodeRegExp 和 escapeRegex
+
 ## 1.4.35
 
 ### Patch Changes
