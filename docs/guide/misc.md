@@ -263,3 +263,35 @@ getDynamicValue(async ()=>1)                // 1
 getDynamicValue(async (n)=>n+1,{args:[1]})  // 2
 ```
 
+
+## escapeRegExp
+
+此函数接收一个字符串，并将其中所有正则表达式的特殊字符
+（如 `-`、`[`、`]`、`/`、`{`、`}`、`(`、`)`、`*`、`+`、`?`、`.`、`\`、`^`、`$`、`|` 等）
+转义为其字面量形式，以便该字符串可以安全地用作正则表达式模式的一部分。
+
+示例：
+
+```typescript
+escapeRegExp("hello.world")  // `hello\.world`
+escapeRegExp("[abc]+")  // `\[abc\]\+`
+escapeRegExp("$5.00")  // `\$5\.00`
+```
+
+## encodeRegExp
+
+将正则表达式转换为字符串，并可选地用提供的变量替换占位符。
+
+```ts
+const regexStr1 = encodeRegExp(/hello/);
+console.log(regexStr1); 
+// Output: "hello"
+
+const regexStr2 = encodeRegExp(/hello__NAME__/, { "__NAME__": "world" });
+console.log(regexStr2); 
+// Output: "helloworld"
+
+const regexStr3 = encodeRegExp(/foo\.__var1__\.__var2__/, { "__var1__": "bar", "__var2__": "baz" });
+console.log(regexStr3); 
+// Output: "foo\\.bar\\.baz"
+```
