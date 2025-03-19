@@ -1,6 +1,6 @@
 {
   "name": "flex-tools",
-  "version": "1.4.37",
+  "version": "1.4.38",
   "description": "typescript modular utilities.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
