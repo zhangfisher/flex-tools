@@ -32,6 +32,20 @@ calss A1 extends A{
 }
  
 getStaticFieldValue(new A1(),"settings") //==== {a:1,b:2} 
+
+class A{
+    static value:number | number[] = 1
+    get(){ return getClassStaticValue(this,"value",{default:[]}) }
+}        
+class AA extends A{
+    static value:number | number[] = 2
+}        
+class AAA extends AA{
+    static value = [3,4]
+}
+let a = new AAA()
+console.log(a.get()) //==== [1,2,3,4]
+
  ```
 
 ## isPropertyMethod
