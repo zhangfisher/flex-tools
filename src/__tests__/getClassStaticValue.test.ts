@@ -64,5 +64,23 @@ describe('getClassStaticValue', ()=>{
         expect(a.get()).toEqual({a:3,b:4,c:5})  
   
     })
+    test('should return the static object value with defaultValue',()=>{
+        
+        class A{
+            get(){ 
+                return getClassStaticValue(this,"value",{default:[] })
+            }
+        }        
+        class AA extends A{
+        
+        }        
+        class AAA extends AA{
+        
+        }  
+        const a = new AAA()
+
+        expect(a.get()).toEqual([])  
+  
+    })
 })
 

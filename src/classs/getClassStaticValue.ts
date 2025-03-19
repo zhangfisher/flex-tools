@@ -47,7 +47,7 @@ export function getClassStaticValue<T=any>(instanceOrClass:object,fieldName:stri
 
     const defaultValue = valueType===0 ? Object.assign({},opts.default || {}) : (opts.default || [])
 
-    let valueList = [ fieldValue ]
+    let valueList = fieldValue!==undefined ? [ fieldValue ] : []
 
     // 依次读取继承链上的所有同名的字段值
     while (proto){
@@ -92,6 +92,6 @@ export function getClassStaticValue<T=any>(instanceOrClass:object,fieldName:stri
             })
         }
     }
-    return mergedResults as T
+    return mergedResults || defaultValue as T
 }
  
