@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.37
+
+### Patch Changes
+
+- 1e4167e: upgrage getClassStaticValue
+
 ## 1.4.36
 
 ### Patch Changes
