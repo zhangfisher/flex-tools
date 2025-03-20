@@ -1,5 +1,12 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.39
+
+### Patch Changes
+
+- d16b138: add setByPath
+- eb8f6cc: fix setByPath
+
 ## 1.4.38
 
 ### Patch Changes
