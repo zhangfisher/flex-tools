@@ -1,5 +1,5 @@
 import {get as getByPath} from "./get" 
-import {set as setByPath} from "./set"
+import {setByPath} from "./setByPath"
 import { isNothing } from "../typecheck/isNothing"
 import { isPlainObject } from "../typecheck/isPlainObject"
 

@@ -1,9 +1,9 @@
-export interface GetByPathOptions {
+export interface GetBYPathOptions {
     default?: any; // 默认值
     delimiter?: string; // 路径分隔符，默认为 '.'
 }
 
-export function getByPath<V = any, T = object>(obj: T, path: string, options?: GetByPathOptions): V {
+export function getByPath<V = any, T = object>(obj: T, path: string, options?: GetBYPathOptions): V {
     const { default: defaultValue, delimiter = '.' } = options || {};
 
     if (!obj || typeof path !== 'string') {
