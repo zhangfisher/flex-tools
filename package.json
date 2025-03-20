@@ -1,6 +1,6 @@
 {
   "name": "flex-tools",
-  "version": "1.4.38",
+  "version": "1.4.39",
   "description": "typescript modular utilities.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -35,12 +35,12 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./array": {      
+    "./array": {
       "types": "./dist/array/index.d.ts",
       "import": "./dist/array/index.mjs",
       "require": "./dist/array/index.js"
     },
-    "./array/*": {      
+    "./array/*": {
       "types": "./dist/array/*.d.ts",
       "import": "./dist/array/*.mjs",
       "require": "./dist/array/*.js"
@@ -55,7 +55,7 @@
       "import": "./dist/async/*.mjs",
       "require": "./dist/async/*.js"
     },
-    "./chinese": {      
+    "./chinese": {
       "types": "./dist/chinese/index.d.ts",
       "import": "./dist/chinese/index.mjs",
       "require": "./dist/chinese/index.js"
@@ -65,7 +65,7 @@
       "import": "./dist/chinese/*.mjs",
       "require": "./dist/chinese/*.js"
     },
-    "./classs": {      
+    "./classs": {
       "types": "./dist/classs/index.d.ts",
       "import": "./dist/classs/index.mjs",
       "require": "./dist/classs/index.js"
@@ -90,12 +90,12 @@
       "import": "./dist/events/index.mjs",
       "require": "./dist/events/index.js"
     },
-    "./events/*": {      
+    "./events/*": {
       "types": "./dist/events/*.d.ts",
       "import": "./dist/events/*.mjs",
       "require": "./dist/events/*.js"
     },
-    "./fs": {      
+    "./fs": {
       "types": "./dist/fs/index.d.ts",
       "import": "./dist/fs/index.mjs",
       "require": "./dist/fs/index.js"
@@ -135,12 +135,12 @@
       "import": "./dist/misc/*.mjs",
       "require": "./dist/misc/*.js"
     },
-    "./object": {      
+    "./object": {
       "types": "./dist/object/index.d.ts",
       "import": "./dist/object/index.mjs",
       "require": "./dist/object/index.js"
     },
-    "./object/*": {      
+    "./object/*": {
       "types": "./dist/object/*.d.ts",
       "import": "./dist/object/*.mjs",
       "require": "./dist/object/*.js"
@@ -183,7 +183,7 @@
     "./typecheck/*": {
       "types": "./dist/typecheck/*.d.ts",
       "import": "./dist/typecheck/*.mjs",
-      "require": "./dist/typecheck/*.js"     
+      "require": "./dist/typecheck/*.js"
     },
     "./types": {
       "types": "./dist/types/index.d.ts",
