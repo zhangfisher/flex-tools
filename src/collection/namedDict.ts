@@ -1,6 +1,6 @@
 import { isNothing } from "../typecheck/isNothing"
 import { isPlainObject } from "../typecheck/isPlainObject"
-import { get as getByPath} from "../object/get"
+import { getByPath} from "../object/getByPath"
 import { deepMerge } from "../object/deepMerge"
 import { assignObject } from "../object"
 /**

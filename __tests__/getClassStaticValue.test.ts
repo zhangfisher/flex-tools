@@ -1,5 +1,5 @@
 import { describe, test,expect } from 'vitest';
-import { getClassStaticValue } from '../classs/getClassStaticValue';
+import { getClassStaticValue } from '../src/classs/getClassStaticValue';
 
 
 describe('getClassStaticValue', ()=>{

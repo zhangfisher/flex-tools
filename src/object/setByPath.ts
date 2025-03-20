@@ -1,9 +1,9 @@
  
 
 export interface SetByPathOptions { 
-    delimiter?: string; // 路径分隔符，默认为 '.'
-    // 如果指定的路径不存在，则回调返回一个值目标路径的值
-    infer?: (path:string[]) => any; // 自定义路径解析器
+    delimiter?          : string; // 路径分隔符，默认为 '.'
+    onlyUpdateUndefined?: boolean; // 仅当目标值为undefined时才更新    
+    infer?              : (path:string[]) => any;  // 如果指定的路径不存在，则回调返回一个值目标路径的值
 }
  
 /**
@@ -88,10 +88,11 @@ export interface SetByPathOptions {
  * @param options 
  */
 
-export function setByPath<T = object>(obj: T, path: string, value:any,options?: SetByPathOptions): T {
+export function setByPath<P extends string = string,T = object>(obj: T, path: P, value:any,options?: SetByPathOptions): T {
 
-    const {  delimiter ,infer   } = Object.assign({
+    const {  delimiter, infer, onlyUpdateUndefined   } = Object.assign({
         delimiter:".",
+        onlyUpdateUndefined:false,
         infer: ()=>({})
     }, options )
 
@@ -103,6 +104,14 @@ export function setByPath<T = object>(obj: T, path: string, value:any,options?: 
     const keys = path.split(delimiter);
     let current: any = obj;
     const curPath:string[] = []
+
+    const update = (oldValue:any,newValue:any)=>{
+        if(onlyUpdateUndefined){
+            return oldValue===undefined ? newValue : oldValue
+        }else{
+            return newValue
+        }
+    }
     
     for (let i=0;i<keys.length;i++){
         const key = keys[i];
@@ -110,10 +119,14 @@ export function setByPath<T = object>(obj: T, path: string, value:any,options?: 
         if(current){
             if(Array.isArray(current)){          
                 const index = parseInt(key, 10)
-                if( Number.isNaN(index) || index<0 || index>=current.length){
+                if( Number.isNaN(key) || index<0 || index>=current.length){
                     throw new Error(`setByPath: invalid array index ${curPath.join('.')}`);
                 }else{
-                    current = current[index]
+                    if(i===keys.length - 1){
+                        current[index] = update(current[index],value)
+                    }else{
+                        current = current[index]
+                    }
                 }
             }else if(current instanceof Map || current instanceof WeakMap) {
                 if (current.has(key as any)) {
@@ -123,16 +136,16 @@ export function setByPath<T = object>(obj: T, path: string, value:any,options?: 
                 }                    
             } else if (typeof current === 'object' && key in current) {
                 if(i===keys.length - 1){
-                    current[key] = value
+                    current[key] = update(current[key],value)
                 }else{
                     current = current[key]
                 }                    
             } else {
-                current[key] = i===keys.length -1 ? value : infer(curPath)
+                current[key] = i===keys.length -1 ? update(current[key],value) : infer(curPath)
                 current = current[key];
             }
         }else{ // 如果当前对象不存在，则创建 
-            current[key] = i===keys.length -1 ? value : infer(curPath)
+            current[key] = i===keys.length -1 ? update(current[key],value) : infer(curPath)
             current = current[key];
         }  
     }

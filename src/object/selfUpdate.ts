@@ -1,5 +1,5 @@
-import {get as getByPath} from "./get" 
-import {setByPath} from "./setByPath"
+import { getByPath } from "./getByPath" 
+import { setByPath } from "./setByPath"
 import { isNothing } from "../typecheck/isNothing"
 import { isPlainObject } from "../typecheck/isPlainObject"
 

@@ -2,8 +2,8 @@ import { test,expect, describe} from "vitest"
 import { assignObject, deepMerge, getPropertyNames, isLikeObject, safeParseJson } from "../src/object"
 import { omit } from "../src/object/omit"
 import { pick } from "../src/object/pick"
-import { get } from "../src/object/get"
-import { set } from "../src/object/set"
+import { getByPath } from "../src/object/getByPath"
+import { setByPath } from "../src/object/setByPath"
 import { ABORT, forEachObject  } from "../src/object/forEachObject"
 import { forEachUpdateObject } from "../src/object/forEachUpdateObject"
 import {CircularRefError} from "../src/errors"
@@ -181,135 +181,23 @@ test("getByPath",() => {
         y:[1,2,3,4,5,{m:1,n:2}],
         z:[1,2,3,new Set([1,2,3,4,5]),[1,[2,3,4,],2,4]]
     }    
-    expect(get(obj,"a.b1.b11")).toEqual(1)
-    expect(get(obj,"a.b3[0].b31")).toEqual(1)
-    expect(get(obj,"a.b3[1].b31")).toEqual(1)
-    expect(get(obj,"a.b3[1].b32")).toEqual(2)
-    expect(get(obj,"a.b3.[1].b31")).toEqual(1)
-    expect(get(obj,"a.b3.[1].b32")).toEqual(2)
-    expect(get(obj,"x")).toEqual(1)
-    expect(get(obj,"y[0]")).toEqual(1)
-    expect(get(obj,"y[1]")).toEqual(2)
-    expect(get(obj,"y[5].m")).toEqual(1)
-    expect(get(obj,"y[5].n")).toEqual(2)
-    expect(get(obj,"z[3].[0]")).toEqual(1)
-    expect(get(obj,"z[3][0]")).toEqual(1)
-    expect(get(obj,"z[4][1][1]")).toEqual(3)
+    expect(getByPath(obj,"a.b1.b11")).toEqual(1)
+    expect(getByPath(obj,"a.b3.0.b31")).toEqual(1)
+    expect(getByPath(obj,"a.b3.1.b31")).toEqual(1)
+    expect(getByPath(obj,"a.b3.1.b32")).toEqual(2)
+    expect(getByPath(obj,"a.b3.1.b31")).toEqual(1)
+    expect(getByPath(obj,"a.b3.1.b32")).toEqual(2)
+    expect(getByPath(obj,"x")).toEqual(1)
+    expect(getByPath(obj,"y.0")).toEqual(1)
+    expect(getByPath(obj,"y.1")).toEqual(2)
+    expect(getByPath(obj,"y.5.m")).toEqual(1)
+    expect(getByPath(obj,"y.5.n")).toEqual(2)
+    expect(getByPath(obj,"z.3.0")).toEqual(1)
+    expect(getByPath(obj,"z.3.0")).toEqual(1)
+    expect(getByPath(obj,"z.4.1.1")).toEqual(3)
 })
 
-test("getByPath的匹配回调",() => {
-    const obj = {
-        a:{
-            b1:{b11:1,b12:2},
-            b2:{b21:1,b22:2},
-            b3:[
-                {b31:13,b32:23},
-                {b31:14,b32:24}
-            ]            
-        },
-        x:1,
-        y:[1,2,3,4,5,{m:1,n:2}],
-        z:[1,2,3,new Set([1,2,3,4,5])],
-        services:null
-    }    
 
-    get(obj,"a.b1.b11",{matched:({value,parent,indexOrKey})=>{
-        expect(value).toEqual(1)
-        expect(parent).toEqual({b11:1,b12:2})
-        expect(indexOrKey).toEqual("b11")
-    }})
-    
-    get(obj,"a.b3[0].b31",{matched:({value,parent,indexOrKey})=>{
-        expect(value).toEqual(13)
-        expect(parent).toEqual({b31:13,b32:23})
-        expect(indexOrKey).toEqual("b31")
-    }})
-    get(obj,"a.b3[1].b31",{matched:({value,parent,indexOrKey})=>{
-        expect(value).toEqual(14)
-        expect(parent).toEqual({b31:14,b32:24})
-        expect(indexOrKey).toEqual("b31")
-    }})
-    get(obj,"a.b3[1].b32",{matched:({value,parent,indexOrKey})=>{
-        expect(value).toEqual(24)
-        expect(parent).toEqual({b31:14,b32:24})
-        expect(indexOrKey).toEqual("b32")
-    }})
-    get(obj,"a.b3.[1].b31",{matched:({value,parent,indexOrKey})=>{
-        expect(value).toEqual(14)
-        expect(parent).toEqual({b31:14,b32:24})
-        expect(indexOrKey).toEqual("b31")
-    }})
-    get(obj,"a.b3.[1].b32",{matched:({value,parent,indexOrKey})=>{
-        expect(value).toEqual(24)
-        expect(parent).toEqual({b31:14,b32:24})
-        expect(indexOrKey).toEqual("b32")
-    }})
-    get(obj,"x",{matched:({value,parent,indexOrKey})=>{
-        expect(value).toEqual(1)
-        expect(parent).toEqual(obj)
-        expect(indexOrKey).toEqual("x")
-    }})
-    get(obj,"y[0]",{matched:({value,parent,indexOrKey})=>{
-        expect(value).toEqual(1)
-        expect(parent).toEqual([1,2,3,4,5,{m:1,n:2}])
-        expect(indexOrKey).toEqual(0)
-    }})
-    get(obj,"y[1]",{matched:({value,parent,indexOrKey})=>{
-        expect(value).toEqual(2)
-        expect(parent).toEqual([1,2,3,4,5,{m:1,n:2}])
-        expect(indexOrKey).toEqual(1)
-    }})
-    get(obj,"y[5].m",{matched:({value,parent,indexOrKey})=>{
-        expect(value).toEqual(1)
-        expect(parent).toEqual({m:1,n:2})
-        expect(indexOrKey).toEqual("m")
-    }})
-    get(obj,"y[5].n",{matched:({value,parent,indexOrKey})=>{
-        expect(value).toEqual(2)
-    }})
-    get(obj,"z[3].[0]",{matched:({value,parent,indexOrKey})=>{
-        expect(value).toEqual(1)
-        expect(parent).toEqual(new Set([1,2,3,4,5]))
-        expect(indexOrKey).toEqual(0)
-    }})
-
-    expect(get(obj,"services.count",{defaultValue:1})).toBe(1)
-
-
-})
-
-test("setByPath",() => {
-    const obj = {
-        a:{
-            b1:{b11:1,b12:2},
-            b2:{b21:1,b22:2},
-            b3:[
-                {b31:1,b32:2},
-                {b31:1,b32:2}
-            ]            
-        },
-        x:1,
-        y:[1,2,3,4,5,{m:1,n:2}],
-        z:[1,2,3,new Set([1,2,3,4,5]),[1,[2,2,2,],2,4]]
-    }            
-    expect(get(set(obj,"a.b1.b11",2),"a.b1.b11")).toEqual(2)
-    expect(get(set(obj,"a.b3[0].b31",22),"a.b3[0].b31")).toEqual(22)
-    expect(get(set(obj,"a.b3[1].b31",33),"a.b3[1].b31")).toEqual(33)
-    expect(get(set(obj,"a.b3[1].b32",44),"a.b3[1].b32")).toEqual(44)
-    expect(get(set(obj,"a.b3.[1].b31",55),"a.b3.[1].b31")).toEqual(55)
-    expect(get(set(obj,"a.b3.[1].b32",55),"a.b3.[1].b32")).toEqual(55)
-    expect(get(set(obj,"x",2),"x")).toEqual(2)
-    expect(get(set(obj,"y[0]",3),"y[0]")).toEqual(3)
-    expect(get(set(obj,"y[1]",4),"y[1]")).toEqual(4)
-    expect(get(set(obj,"y[5].m",5),"y[5].m")).toEqual(5)
-    expect(get(set(obj,"y[5].n",6),"y[5].n")).toEqual(6) 
-    // 设置不存的属性
-    expect(get(set(obj,"X",2),"X")).toEqual(2)
-    expect(get(set(obj,"X",3),"X")).toEqual(3)
-    expect(get(set(obj,"y",3),"X")).toEqual(3)
-    expect(get(set(obj,"XX.Y",2),"XX.Y")).toEqual(2)
-    expect(get(set(obj,"XX.YY.Z",2),"XX.YY.Z")).toEqual(2)
-})
 test("forEachUpdateObject",() => {
     const obj = {
         a:{

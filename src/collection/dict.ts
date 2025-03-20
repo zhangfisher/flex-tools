@@ -1,5 +1,5 @@
-import { get as getByPath } from '../object/get';
-import { set as setByPath, setByPathOptions } from '../object/set';
+import {  getByPath } from '../object/getByPath';
+import { setByPath, SetByPathOptions } from '../object/setByPath';
 import { hasKey } from '../object/hasKey';
 
 /**
@@ -25,9 +25,9 @@ export class Dict<T extends Record<string,any>=Record<string,any>>{
         this._values = obj || {} as T
     }
     get(keyOrPath:string,defaultValue?:any):any{
-        return getByPath(this._values,keyOrPath,{defaultValue})
+        return getByPath(this._values,keyOrPath,{defaultValue:defaultValue})
     }
-    set(keyOrPath:string,value:any,options?:setByPathOptions){
+    set(keyOrPath:string,value:any,options?:SetByPathOptions){
         setByPath(this._values,keyOrPath,value,options)
     }
     has(keyOrPath:string):boolean{

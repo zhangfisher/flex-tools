@@ -35,6 +35,16 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
+    "./errors":{
+      "types": "./dist/errors.d.ts",
+      "import": "./dist/errors.mjs",
+      "require": "./dist/errors.js"
+    },
+    "./consts":{
+      "types": "./dist/consts.d.ts",
+      "import": "./dist/consts.mjs",
+      "require": "./dist/consts.js"
+    },
     "./array": {      
       "types": "./dist/array/index.d.ts",
       "import": "./dist/array/index.mjs",

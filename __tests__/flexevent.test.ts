@@ -1,5 +1,6 @@
 import { test, expect, describe, afterEach, beforeEach,vi } from "vitest"
-import { FlexEvent, FlexEventBus, FlexEventBusMessage, FlexEventBusNode, FlexEventListener, TimeoutError } from "../src"
+import { FlexEvent, FlexEventBus, FlexEventBusMessage, FlexEventBusNode, FlexEventListener  } from "../src/events"
+import { TimeoutError } from "../src/errors"
 import { delay } from "../src/async"
 import { LiteEvent } from '../src/events/liteEvent';
 
