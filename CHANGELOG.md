@@ -4,6 +4,12 @@
 
 ### Patch Changes
 
+- f6503b3: fix: remove get/set and add getByPath/setByPath
+
+## 1.4.39
+
+### Patch Changes
+
 - d16b138: add setByPath
 - eb8f6cc: fix setByPath
 
