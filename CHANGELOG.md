@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.41
+
+### Patch Changes
+
+- cf19fb6: fix export error
+
 ## 1.4.40
 
 ### Patch Changes
