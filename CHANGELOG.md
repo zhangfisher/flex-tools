@@ -1,5 +1,12 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.40
+
+### Patch Changes
+
+- faf90d5: fix index export error
+- 4e9bdf9: update setbypath
+
 ## 1.4.39
 
 ### Patch Changes
