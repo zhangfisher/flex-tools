@@ -1,4 +1,4 @@
-export interface GetByPathOptions {
+export interface GetByPathArgs {
     defaultValue?: any; // 默认值
     delimiter?: string; // 路径分隔符，默认为 '.',
     matched?: ({ value, parent, indexOrKey }: {
@@ -8,7 +8,7 @@ export interface GetByPathOptions {
     }) => void;
 }
 
-export function getByPath<R = any, T = object>(obj: T, path: string, options?: GetByPathOptions): R {
+export function getByPath<R = any, T = object>(obj: T, path: string, options?: GetByPathArgs): R {
     const { defaultValue, delimiter,matched } = Object.assign({
         delimiter : '.'
     },options)
