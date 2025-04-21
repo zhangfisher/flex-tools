@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.42
+
+### Patch Changes
+
+- 7e5bfd9: fix trimChars export error
+
 ## 1.4.41
 
 ### Patch Changes
