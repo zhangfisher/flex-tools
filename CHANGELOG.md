@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.43
+
+### Patch Changes
+
+- 680aab5: fix trimChars types error
+
 ## 1.4.42
 
 ### Patch Changes
