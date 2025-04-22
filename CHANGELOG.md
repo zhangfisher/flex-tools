@@ -1,5 +1,12 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.44
+
+### Patch Changes
+
+- 9ff5bf2: 修复 remove 函数的返回值类型
+- 7181502: 优化 array/remove 函数
+
 ## 1.4.43
 
 ### Patch Changes
