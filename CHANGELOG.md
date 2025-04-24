@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.4.45
+
+### Patch Changes
+
+- a5f8194: add object/WeakObjectMap and upgeade target to es2021
+
 ## 1.4.44
 
 ### Patch Changes
