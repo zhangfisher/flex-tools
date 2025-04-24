@@ -678,3 +678,13 @@ obj.a       // 首先访问时执行懒加载函数的返回值
 
 ```
 
+## WeakObjectMap
+
+一个弱引用对象映射，当对象被垃圾回收时，会自动移除映射中的对象。
+
+```typescript
+const map = new WeakObjectMap()
+const obj = {a:1}
+map.set("key",obj)
+obj = null // 此时map中的对象会被自动移除
+```

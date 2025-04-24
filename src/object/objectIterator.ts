@@ -36,7 +36,7 @@ export function objectIterator(obj:Collection,options?:ObjectIteratorOptions):It
         },options) as Required<ObjectIteratorOptions>
     
         const stack:any[] = [obj]
-        const parents:Node[] = []
+        const parents:any[] = []
         const keyOrIndexs:(number | string | symbol)[]=[]
         let count:number = 0
         let curItem:any
