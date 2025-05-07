@@ -1,7 +1,6 @@
 # 异步工具
 
 ```typescript
-import { <函数名称> } from "flex-tools"
 import { <函数名称> } from "flex-tools/async"
 ```
 

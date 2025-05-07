@@ -1,7 +1,6 @@
 # 类型检查
 
 ```typescript
-import { <函数名称> } from "flex-tools"
 import { <函数名称> } from "flex-tools/typecheck"
 ```
 

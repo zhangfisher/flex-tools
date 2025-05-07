@@ -1,7 +1,6 @@
 # 事件工具
 
 ```typescript
-import { <函数名称> } from "flex-tools"
 import { <函数名称> } from "flex-tools/events"
 ```
 
@@ -9,6 +8,11 @@ import { <函数名称> } from "flex-tools/events"
 ## FlexEvent
 
 一个简单的事件发生器，可以用来替代`eventemitter2`。
+
+:::warning 提示
+`FlexEvent`已经废弃，推荐使用[FastEvent](https://github.com/zhangfisher/fastevent)
+:::
+
 
 ### 实例化
 

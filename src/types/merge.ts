@@ -1,14 +1,84 @@
+import { Expand } from "./Expand";
+
  
 /**
- * 合并输入的多个类型
- * type Foo = { a: number};
-type Bar = { b: string };
-type Baz = { c: boolean };
-
-type Merged = Merge<[Foo, Bar, Baz]>;
-
-返回 { a: string; b: number; c: boolean; } ，它包含了输入数组中所有类型的属性。
+ * 将数组中的多个类型合并为一个交叉类型。
+ * 这个类型工具可以将多个接口或类型合并为一个包含所有属性的新类型。
+ * 
+ * @template T - 要合并的类型数组
+ * 
+ * @example
+ * ```typescript
+ * // 基本用法
+ * interface User {
+ *   name: string;
+ * }
+ * 
+ * interface UserAge {
+ *   age: number;
+ * }
+ * 
+ * interface UserEmail {
+ *   email: string;
+ * }
+ * 
+ * type FullUser = Merge<[User, UserAge, UserEmail]>;
+ * // 结果：
+ * // {
+ * //   name: string;
+ * //   age: number;
+ * //   email: string;
+ * // }
+ * 
+ * // 处理重叠属性
+ * interface BaseConfig {
+ *   debug: boolean;
+ *   version: string;
+ * }
+ * 
+ * interface DevConfig {
+ *   debug: boolean;
+ *   devTools: boolean;
+ * }
+ * 
+ * interface ProdConfig {
+ *   cache: boolean;
+ * }
+ * 
+ * type Config = Merge<[BaseConfig, DevConfig, ProdConfig]>;
+ * // 结果：
+ * // {
+ * //   debug: boolean;    // 来自 DevConfig（后面的覆盖前面的）
+ * //   version: string;
+ * //   devTools: boolean;
+ * //   cache: boolean;
+ * // }
+ * 
+ * // 实际应用场景
+ * interface Theme {
+ *   primary: string;
+ *   secondary: string;
+ * }
+ * 
+ * interface ThemeExtension {
+ *   success: string;
+ *   error: string;
+ * }
+ * 
+ * interface CustomTheme {
+ *   custom: string;
+ * }
+ * 
+ * // 创建完整的主题类型
+ * type FullTheme = Merge<[Theme, ThemeExtension, CustomTheme]>;
+ * 
+ * const theme: FullTheme = {
+ *   primary: '#007bff',
+ *   secondary: '#6c757d',
+ *   success: '#28a745',
+ *   error: '#dc3545',
+ *   custom: '#ff4081'
+ * };
+ * ```
  */
-export type Merge<T extends any[]> =  T extends [infer I, ...infer rest] ?  I & Merge<rest> : {}
-
-  
+export type Merge<T extends any[]> = Expand<T extends [infer I, ...infer rest] ? I & Merge<rest> : {}>

@@ -1,7 +1,6 @@
 # 数据容器
 
 ```typescript
-import { <函数名称> } from "flex-tools"
 import { <函数名称> } from "flex-tools/collection"
 ```
 

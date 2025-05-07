@@ -1,175 +1,14 @@
 # TypeScript类型
 
 ```typescript
-import type { <函数名称> } from "flex-tools"
-import type { <函数名称> } from "flex-tools/types"
+import type { <类型名称> } from "flex-tools/types"
 ```
 
-## Class
+## Object
 
-类类型
+### MutableRecord
 
-```typescript
-    export type Class = new (...args: any[]) => any
-```
-
-## ArrayMember
-
-返回数组成员类型
-
-```typescript
-// 提取数组成员的类型
-export type ArrayMember<T> = T extends (infer T)[] ? T : never
-```
-
-## AsyncFunction
-
-异步函数
-
-```typescript
-export type AsyncFunction = (...args: any[]) => Awaited<Promise<any>>;
-```
-
-## Argument
-
-获取函数的第`n`个参数类型
-
-```typescript
-
-function fn(a:number,b:boolean,c:string,d:any[]){
-}
-
-
-type arg1 = Argument<typeof fn,0>  // == number
-type arg2 = Argument<typeof fn,1>   // == boolean
-type arg3 = Argument<typeof fn,2>   // string
-// -1代表最后一个参数，不支持-2,-3等
-type arg4 = Argument<typeof fn,-1>  // any[]
-
-```
-
-## LastArgument
-
-获取函数的最后一个参数类型
-
-```typescript
-export type LastArgument<T> = T extends (...args:infer Args) => any ? (Args extends [...infer _,infer L] ? L :never) : never
-```
-
-## AllowEmpty
-
-允许为空
-
-```typescript
-export type AllowEmpty<T> = T | null | undefined
-```
-## Constructor
-
-构造类
-
-```typescript
-export type Constructor = { new (...args: any[]): any };
-```
-
-## TypedClassDecorator
-
-用来声明类的装饰器函数
-
-```typescript
-export type TypedClassDecorator<T> = <T extends Constructor>(target: T) => T | void; 
-
-
-```
-
-## WithReturnFunction
-
-用来声明一个函数，该函数必须返回指定类型
-
-```typescript
-export type WithReturnFunction<T> = (...args: any)=>T
-
-type MyFunc = WithReturnFunction<number>
-
-const f1:MyFunc =getCount():number=>1  // OK
-const f2:MyFunc =getCount():string=>""  // ERROR
-
-```
-
-## ImplementOf
-
-实现某个指定的类接口
-
-```typescript
-export type ImplementOf<T> = new (...args: any) => T
-
-```
-
-## Rename
-
-用来更名接口中的类型名称
-
-```typescript
-export type Rename<T,NameMaps extends Partial<Record<keyof T,any>>> = {
-    [K in keyof NameMaps as NameMaps[K] ]:K extends keyof T ? T[K] : never
-} & Omit<T,keyof NameMaps>
-
-// 示例：
-
-interface X{
-  a:number
-  b:boolean
-  c:()=>boolean
-}
-
-// 将a更名为A
-type R1 = Rename<X,{'a':'A'}>  
-// {  A:number, 
-//    b:boolean
-//    c:()=>boolean
-// }
-type R2 = Rename<X,{'a':'A','b':'B'}>  
-// {  A:number, 
-//    B:boolean
-//    c:()=>boolean
-// }
-
-```
-
-## FileSize
-
-文件尺寸表示，可以调用`parseFileSize`函数解析。
-
-**例：**:  `1kb`、`23MB`、`123GB`、`1MB`、`32E`、`41TB`、`13Bytes`
-
-```typescript
-type FileSize = number | `${number}${
-    'B' | 'Byte' | 'b' | 'Bytes' 
-    | 'K' | 'KB' | 'k' | 'kb' 
-    | 'M' | 'MB' | 'm' | 'mb'
-    | 'G' | 'GB' | 'g' | 'gb'
-    | 'T' | 'TB' | 't' | 'tb' 
-    | 'P' | 'PB' | 'p' | 'pb' 
-    | 'E' | 'EB' | 'e' | 'eb'
-}`
-```
-
-## TimeDuration
-
-时间表示，可以使用`parseTimeDuration`函数返回毫秒数。
-
-**例：**:  `1ms`, `12s` , `98m`, `100h`,`12Hours`,`8Days`, `6Weeks`, `8Years`, `1Minute`
-
-```typescript
-type TimeInterval = number | `${number}` | `${number}${
-    'ms' | 's' | 'm' | 'h'              // 毫秒/秒/分钟/小时/
-    | 'Milliseconds' | 'Seconds' | 'Minutes' |'Hours' 
-    | 'd' | 'D' | 'W' | 'w' | 'M' | 'Y' | 'y'                // 天/周/月/年
-    | 'Days' | 'Weeks' |'Months' | 'Years'
-}` 
- 
-``` 
- 
-## MutableRecord
+**类型：**`MutableRecord<T,Name extends string>`
 
 可变记录类型,其类型是由记录上的`type`字段推断出来的。
 
@@ -179,11 +18,7 @@ type Animal = MutableRecord<{
     dog:{bark:boolean,wagging:boolean},
     cat:{mew:number},
     chicken:{egg:number}      
-}>
-// {type:'dog',bark:boolean,wagging:boolean } 
-// | {type: 'cat', mew:number}
-// | {type: 'chicken', egg:number}
-
+}> 
 let animals:Animal = {
     type:"dog",
     bark:true,
@@ -210,7 +45,9 @@ type Animal = MutableRecord<{
 // | {kind: 'chicken', egg:number}
 ```
 
-## MutableRecordList
+### MutableRecordList
+
+**类型：**`MutableRecordList<T,Name extends string>`
 
 可变记录数组,其数组成员中`Record`类型，并且类型是根据`Record`的`type`字段值来推断的。
 
@@ -250,98 +87,49 @@ type Animals = MutableRecordList<{
 // )[]
 ```
 
+### ChangeFieldType
 
-## ChangeFieldType
+**类型：**`ChangeFieldType<Record,Name extends string,Type=any>`
 
 改变记录类型中某个字段的类型。
 
-```typescript
-export type ChangeFieldType<Record,Name extends string,Type=any> = Omit<Record,Name> & {
-    [K in Name]:Type
-}
+```typescript twoslash
+import { ChangeFieldType } from 'flex-tools/types'
 
 interface MyRecord{
   a:number
   b:boolean
   c:string
 }
-
 type newRecord = ChangeFieldType<MyRecord,'a' ,boolean> 
 /** {
   a:boolean
   b:boolean
   c:string
 }*/
-
 ```
 
-## Merge
+### ValueOf
 
- 合并输入的多个类型
-
-```typescript 
-type Foo = { a: number};
-type Bar = { b: string };
-type Baz = { c: boolean };
-type Merged = Merge<[Foo, Bar, Baz]>;
-// == Foo & Bar & Baz
-// 返回 { a: string; b: number; c: boolean; } ，它包含了输入数组中所有类型的属性。
-```
-
-## JsonObject
-
-支持嵌套的JSON对象类型
-
-## Overloads
-
-用来获取函数的重载类型
- 
- 当一个函数具有多个重载时，我们可以使用`Overloads<T>`来获取函数的重载类型
- 
-```typescript
-
-function foo(a: string): string;
-function foo(a: number): number;
-function foo(a: any): any 
- 
-typeof foo    // (a: string)=>string, 只能返回第一个重载的类型 
- 
-//  可以返回所有重载的类型
-Overloads<typeof foo>  == (a: string)=>string | (a: number)=>number | (a: any)=>any
- 
-```
-
-- `Overloads<T>` 只能获取最多8个重载的类型。
-
-
-## ChangeReturns
-
-改变函数的返回类型
-
-```typescript
-
-type fn = (a:number,b:boolean)=>void
-
-type fn2 = ChangeReturns<fn,string>
-
-// fn2 == (a:number,b:boolean)=>string
-
-
-```
-
-## ValueOf
+**类型：**`ValueOf<T>`
 
 获取`Record`类型的值类型
 
-```typescript
-type A = ValueOf<Record<string,number>>
-// A == number
+```typescript twoslash
+import { ValueOf } from 'flex-tools/types'
+
+type Value = ValueOf<Record<string,number>>
+//   ^^^^^
+// Value == number
 ```
-## Optional
+### Optional
 
-将类型中除指定属性外的所有属性变为可选属性，
+**类型：**`Optional<T, ExcludeKeys extends keyof T = never>`
 
-```typescript
+将类型中的所有属性变为可选属性，可以通过`ExcludeKeys`排除指定的属性。
+
+```typescript twoslash
+import { Optional } from 'flex-tools/types'
 export interface SiteOptions{
     id:string                           
     icon:string                         
@@ -351,7 +139,7 @@ export interface SiteOptions{
 }
 
 type mysite = Optional<SiteOptions,'id' | 'path'>
-
+//   ^^^^^^ 
 // type mysite == {
 //     id:string                           
 //     icon?:string                         
@@ -360,116 +148,678 @@ type mysite = Optional<SiteOptions,'id' | 'path'>
 //     path:string 
 // }
 
+``` 
+
+### Dict
+
+**类型：**`Dict<T>`
+
+创建一个字典类型，键为字符串，值为指定类型（不允许为函数类型）
+
+```ts
+type StringDict = Dict<string>;
+const dict1: StringDict = {
+  key1: "value1",
+  key2: "value2"
+};
+
+// 使用复杂类型
+interface User {
+  name: string;
+  age: number;
+}
+type UserDict = Dict<User>;
+const dict2: UserDict = {
+  user1: { name: "Alice", age: 25 },
+  user2: { name: "Bob", age: 30 }
+};
+
+// 函数类型会返回 never
+type FuncDict = Dict<() => void>; // never
+
 ```
  
+### JSONObject
 
- 
-## ObjectKeyOf
+**类型：**`JSONObject`
+
+支持嵌套的`JSON`对象类型，`Key`为字符串，值类型为`any`。
+
+### DeepPartial
+
+**类型：**`DeepPartial<T>`
+
+将对象类型`T`中的所有属性变为可选属性,包含嵌套对象。
+
+```typescript twoslash
+import { DeepPartial } from 'flex-tools/types'
+
+interface Order {
+    orderNo: string;
+    amount: number;
+    status: 'pending' | 'paid' | 'canceled';    
+    custom:{
+        name: string;
+        age: number;
+        address: string;
+    }    
+}
+
+type PartialOrder = DeepPartial<Order>
+//   ^^^^^^^^^^^^
+
+```
+
+- `DeepPartial`还有一个别名`DeepOptional`。
+
+### DeepRequired
+
+**类型：**`DeepRequired<T>`
+
+```typescript twoslash
+import { DeepRequired } from 'flex-tools/types'
+type Example = {
+  a?: {
+    b?: number;
+  };
+  c?: string[];
+};
+
+type RequiredExample = DeepRequired<Example>;
+// 结果类型：
+// {
+//   a: {
+//     b: number;
+//   };
+//   c: string[];
+// }
+
+```
+
+### ObjectKeys
+
+**类型：**`ObjectKeys<T>`
 
 获取对象的键名类型
 
-```typescript 
-  
+```typescript twoslash
+import { ObjectKeys } from 'flex-tools/types'
+
 interface Animal {
-    [key: string]: string;
+    name: string;
+    age: number;
+    address: string;
 }
 
 type name = keyof Animal
 
 // 此时name的类型是string | number,而不是预想的string
 
-type KeyType = ObjectKeyOf<Animal>
+type KeyType = ObjectKeys<Animal>
+//   ^^^^^^^ 
 
+```
+
+### RequiredKeys
+
+**类型：**`RequiredKeys<T extends object, Keys extends keyof T> `
+
+用于获取对象 `T` 中指定的属性键 Keys，并将这些键对应的属性设置为必选。
+
+```ts twoslash
+import { RequiredKeys } from 'flex-tools/types'
+
+type Person  = {
+   name?: string;
+   age?: number;
+   address?: string;
+   sex?: 'male' | 'female';
+}
+
+ // 我们想要创建一个新的类型，其中 name,age 属性是必选的：
+type NewPerson = RequiredKeys<Person, 'name' | 'age'>;
+//   ^^^^^^^^^
+  
+```
+
+
+### ObjectKeyPaths
+
+**类型：**`ObjectKeyPaths<T,Delimiter extends string = '.'> `
+
+获取对象的所有路径
+
+```ts twoslash 
+import { ObjectKeyPaths } from 'flex-tools/types'
+const obj = {
+  "store": {
+    "book": [ 
+      {
+        "category": "reference",
+        "author": "Nigel Rees",
+        "title": "Sayings of the Century",
+        "price": 8.95,
+        "tabs":['1','2']
+      }, {
+        "category": "fiction",
+        "author": "Evelyn Waugh",
+        "title": "Sword of Honour",
+        "price": 12.99,
+        "tags":['a','b']
+      }
+    ],
+    "bicycle": {
+      "color": "red",
+      "price": 19.95
+    }
+  }
+}
+
+type paths = ObjectKeyPaths<typeof obj>
+//   ^^^^^
+
+```
+
+默认情况下，路径分割符是`.`，你也可以通过第二个参数指定其他的分割符。
+
+```ts twoslash 
+import { ObjectKeyPaths } from 'flex-tools/types'
+
+const obj = {
+  "store": {
+    "book": [ 
+      {
+        "category": "reference",
+        "author": "Nigel Rees",
+        "title": "Sayings of the Century",
+        "price": 8.95,
+        "tabs":['1','2']
+      }, {
+        "category": "fiction",
+        "author": "Evelyn Waugh",
+        "title": "Sword of Honour",
+        "price": 12.99,
+        "tags":['a','b']
+      }
+    ],
+    "bicycle": {
+      "color": "red",
+      "price": 19.95
+    }
+  }
+}
+
+type paths = ObjectKeyPaths<typeof obj, '/'>
+//   ^^^^^
+
+```
+
+:::warning 注意
+对象深度限制为30
+:::
+
+### GetTypeByPath
+
+**类型：**`GetTypeByPath<State extends Dict, Path extends string,Delimiter extends string = '.'> `
+
+获取对象的所有路径
+
+```ts twoslash 
+import { GetTypeByPath } from 'flex-tools/types'
+const obj = {
+    a: {
+        b: {
+            b1: '1',
+            b2: '1',
+            b3: 1,
+            b4:{
+              b41:1,b42:2,b43:[1,2]
+            }
+        },
+        e: 1,
+        y:1
+    },
+    f: 1,
+    e:8,
+    y:'',
+    z:[],
+    d1:()=>{},
+    d2:new Set(),
+    d3:new Map(),
+    d4: Symbol()
+} 
+
+type type1 = GetTypeByPath<typeof obj,'a.b'>
+type type2 = GetTypeByPath<typeof obj,'a.b.b1'>
+type type3 = GetTypeByPath<typeof obj,'a.b.b4.b41'>
+type type4 = GetTypeByPath<typeof obj,'a.b.b4.b43.0'>
+type type5 = GetTypeByPath<typeof obj,'a.b.b4.b43.1'>
+type type6 = GetTypeByPath<typeof obj,'d1'>
+type type7 = GetTypeByPath<typeof obj,'z.0'>
+```
+
+默认情况下，路径分割符是`.`，你也可以通过第二个参数指定其他的分割符。
+
+```ts twoslash 
+import { GetTypeByPath } from 'flex-tools/types'
+const obj = {
+    a: {
+        b: {
+            b1: '1',
+            b2: '1',
+            b3: 1,
+            b4:{
+              b41:1,b42:2,b43:[1,2]
+            }
+        },
+        e: 1,
+        y:1
+    },
+    f: 1,
+    e:8,
+    y:'',
+    z:[],
+    d1:()=>{},
+    d2:new Set(),
+    d3:new Map(),
+    d4: Symbol()
+} 
+
+type type1 = GetTypeByPath<typeof obj,'a/b','/'>
+type type2 = GetTypeByPath<typeof obj,'a/b/b1','/'>
+type type3 = GetTypeByPath<typeof obj,'a/b/b4/b41','/'>
+type type4 = GetTypeByPath<typeof obj,'a/b/b4/b43/0','/'>
+type type5 = GetTypeByPath<typeof obj,'a/b/b4/b43/1','/'>
+type type6 = GetTypeByPath<typeof obj,'d1','/'>
+type type7 = GetTypeByPath<typeof obj,'z/0','/'>
+```
+
+
+
+## Array
+### ArrayMember
+
+**类型：**`ArrayMember<T> `
+
+提取数组成员的类型。如果传入的类型不是数组，则返回`never`。
+
+```typescript  twoslash
+import type { ArrayMember } from "flex-tools/types";
+// 基本类型数组
+type NumberArray = number[];
+type NumberType = ArrayMember<NumberArray>;  // number
+//   ^^^^^^^^^^
+// 对象数组
+type User = { id: number; name: string };
+type Users = User[];
+type UserType = ArrayMember<Users>;  // { id: number; name: string }
+//   ^^^^^^^^
+// 联合类型数组
+type MixedArray = (string | number)[];
+type MixedType = ArrayMember<MixedArray>;  // string | number
+//   ^^^^^^^^^
+// 非数组类型
+type NotArray = string;
+type Result = ArrayMember<NotArray>;  // never
+//   ^^^^^^
+```
+ 
+### Unique
+
+**类型：**`Unique<T>`
+
+将数组中的类型元素去重。
+
+```typescript twoslash
+import { Unique } from 'flex-tools/types'
+
+type T1 = Unique<[number, string, number]>;  // [number, string]
+//   ^^
+type T2 = Unique<[1, 2, 2, 3]>;              // [1, 2, 3]
+//   ^^
+type T3 = Unique<['a', 'b', 'a']>;           // ['a', 'b']
+//   ^^
+```
+
+## Function
+
+### SyncFunction
+
+**类型：**`SyncFunction<T>`
+
+用来声明一个函数，该函数必须返回指定类型
+
+```typescript  
+import type { SyncFunction } from "flex-tools/types";
+
+function getCount(fn:SyncFunction<number>){
+}
+getCount(()=>100)  // ✅ Correct
+getCount(()=>true) // ❌ ERROR
+getCount(async ()=>100)  // ❌ ERROR
+getCount(async()=>true) // ❌ ERROR
+
+```
+### AsyncFunction
+
+**类型：**`AsyncFunction<Returns=void | any>`
+
+表示异步函数类型。
+
+```typescript 
+ import type { AsyncFunction } from "flex-tools/types";
+
+// 声明异步函数
+const fetchData: AsyncFunction = async (url: string) => {};
+
+// 用作参数类型
+function executeAsync(fn: AsyncFunction) {
+  return fn();
+}
+executeAsync(async ()=>{}) ✅ Correct 
+executeAsync(()=>{})❌ Error 
+
+// 限制返回值类型
+function executeAsync(fn: AsyncFunction<boolean>) {
+  return fn();
+}
+executeAsync(async ()=>true)✅ Correct
+executeAsync(()=>true) ❌ Error 
+```
+ 
+
+### Argument
+**类型：**`Argument<T extends (...args:any[])=>any,index extends number>`
+
+- `T`: 要提取参数类型的函数类型
+- `index`: 要提取的参数索引（从0开始），使用 -1 表示最后一个参数
+
+提取函数的第 `n`个参数的类型。当索引为 `-1`时，返回最后一个参数的类型。
+
+```typescript twoslash
+ import type { Argument } from "flex-tools/types";
+
+function greet(name: string, age: number, isAdmin: boolean) {
+  // 函数实现
+}
+// 提取各个位置参数的类型
+type FirstParam = Argument<typeof greet, 0>;   // string
+type SecondParam = Argument<typeof greet, 1>;  // number
+type ThirdParam = Argument<typeof greet, 2>;   // boolean
+type LastParam = Argument<typeof greet, -1>;   // boolean
+```
+ 
+
+### LastArgument
+
+**类型：** `LastArgument<T> `
+
+- `T`: 要提取参数类型的函数类型
+
+获取函数的最后一个参数类型
+
+```typescript twoslash
+import type { LastArgument } from "flex-tools/types";
+
+function greet(name: string, age: number, isAdmin: boolean) {
+  // 函数实现
+}
+// 提取各个位置参数的类型 
+type LastParam = LastArgument<typeof greet>;   // boolean
 
 ```
 
 
-# requiredKeys
+### ChangeReturns
 
- 用于获取对象 `T` 中指定的属性键 Keys，并将这些键对应的属性设置为必选。
+**类型：**`ChangeReturns<T,NewReturn>`
 
- ```ts
-  type Person {
-   name?: string;
-   age?: number;
- }
- // 我们想要创建一个新的类型，其中 name 属性是必选的：
- type PersonWithRequiredName = RequiredKeys<Person, 'name'>;
+改变函数的返回类型
 
- // 这将创建一个新的类型，等同于：
- type PersonWithRequiredName = {
-   name: string;
-   age?: number;
- }
-  
- ```
+```typescript twoslash
+import { ChangeReturns } from 'flex-tools/types'
+type fn = (a:number,b:boolean)=>void
+
+type newFn = ChangeReturns<fn,string>
+//   ^^^^^
+// newFn == (a:number,b:boolean)=>string
+
+```
+
+### Overloads
+
+**类型：**`Overloads<T>`
+
+用来获取函数的重载类型
+ 
+ 当一个函数具有多个重载时，我们可以使用`Overloads<T>`来获取函数的重载类型
+ 
+```typescript twoslash
+import { Overloads } from 'flex-tools/types'
+
+function foo(a: string): string;
+function foo(a: number): number;
+function foo(a: boolean): boolean;
+function foo(): any {
+
+}
+ 
+type Fun = typeof foo    
+ 
+//  可以返回所有重载的类型
+type Funs = Overloads<typeof foo>
+//   ^^^^
 
 
  
-# FixedRecord
+```
 
-创建一个`Record`类型，其中指定的键名称的项是固定的。
+- `Overloads<T>` 只能获取最多10个重载的类型。 
 
-```ts
-type FixedRecord<DefaultType,FixedType extends Record<string,any>> 
+## Class
 
-// 
-// type VoerkaI18nMessages = FixedRecord<string | string[], {    
-//     $config: Record<string,Record<string,any>>;
-//     $remote: boolean;
-// }>
+### Class
 
-// const messages: VoerkaI18nMessages = {
-//     $config: {
-//         add: {
-//             a:""
-//         }
-//     },
-//     $remote: true, 
-//     b:  "1",
-//     a:  ['1', '2'],
-//     c:  1
+**类型：**`Class<T = any>`
+
+表示任意类的构造函数类型。可用于需要接受任意类作为参数的场景。
+
+```typescript  
+// 基本用法
+class AClass { private a: string=''; }
+class BClass { private b: string=''; }
+
+// 函数接受任意类作为参数
+function createInstance(ClassType: Class) {
+  return new ClassType();
+}
+createInstance(AClass); // ✅ Correct
+// 限制类
+function createInstance(ClassType: Class<AClass>) {
+  return new ClassType();
+}
+
+createInstance(AClass); //  ✅ Correct
+createInstance(BClass); //  ❌ Error 
+``` 
+
+
+### ImplementOf
+
+**类型：**`ImplementOf<T>`
+
+实现某个指定的类接口，效果与`Class`相同，在某些情况下语义更准备。
+
+```typescript
+interface Animal {
+   name: string;
+   run(): void;
+ }
+ 
+ // 使用 ImplementOf 定义工厂函数
+ function createAnimal(AnimalClass: ImplementOf<Animal>) {
+   return new AnimalClass();
+ }
+ 
+ // 实现接口的类
+ class Dog implements Animal {
+   name = "Dog";
+   run() {  }
+ }
+class Cat  {  }
+
+createAnimal(Dog);  // ✅ Correct
+createAnimal(Cat); // ❌ ERROR
+```
+
+## Misc
+
+### Expand
+
+**类型：**`Expand<T>`
+
+将类型 `T` 展开为其所有属性的联合类型, 用于展开复杂的类型定义,使其更易读和理解 
+ 
+```ts twoslash
+import type { Expand } from "flex-tools/types";
+type Complex = { a: string } & { b: number };
+type Expanded = Expand<Complex>; // { a: string; b: number }
+//   ^^^^^^^^             
+```
+
+
+
+
+### AllowEmpty
+**类型：**`AllowEmpty<T>`
+
+将类型转换为可为空（`null` 或 `undefined`）的类型
+
+```typescript  twoslash
+import type { AllowEmpty } from "flex-tools/types";
+
+type Value = string
+type ValueParam = AllowEmpty<Value>;
+
+const str1: ValueParam = "hello";     // ✅ Correct 
+const str2: ValueParam = null;        // ✅ Correct 
+const str3: ValueParam = undefined;   // ✅ Correct 
+``` 
+
+### Rename
+
+**类型：**`Rename<T,NameMaps extends Partial<Record<keyof T,any>>>`
+
+重命名类型中的属性。
+
+```typescript  twoslash
+import type { Rename } from "flex-tools/types";
+interface X{
+  a:number
+  b:boolean
+  c:()=>boolean
+}
+
+// 将a更名为A
+type R1 = Rename<X,{'a':'A'}>  
+// {  A:number, 
+//    b:boolean
+//    c:()=>boolean
+// }
+type R2 = Rename<X,{'a':'A','b':'B'}>  
+// {  A:number, 
+//    B:boolean
+//    c:()=>boolean
 // }
 
 ```
 
- - `VoerkaI18nMessages`类型指定`$config`和`$remote`键的类型，其他键类型均为`string | string[]`类型。
+### FileSize
 
+**类型：**`FileSize`
 
-# GetTypeByPath
+表示文件大小的类型，支持纯数字（字节数）或带单位的字符串格式，可以调用`parseFileSize`函数解析。
 
-根据路径获取对象的类型
+支持的单位包括：
+- B/Byte/Bytes：字节
+- K/KB/kb：千字节
+- M/MB/mb：兆字节
+- G/GB/gb：吉字节
+- T/TB/tb：太字节
+- P/PB/pb：拍字节
+- E/EB/eb：艾字节
 
-```ts
-type A = {
-    a:{
-        b:{
-            c:number
-        }
-    }
+**例：**:  `1kb`、`23MB`、`123GB`、`1MB`、`32E`、`41TB`、`13Bytes`
+
+```typescript
+// 函数参数类型
+function validateFileSize(size: FileSize): boolean {
+   // 实现文件大小验证逻辑
+   return true;
 }
 
-type B = GetTypeByPath<A,'a.b.c'>  // number
+validateFileSize("100MB") // ✅ Correct
+validateFileSize(100) // ✅ Correct
+validateFileSize("100") // ❌ ERROR
 
 ```
 
-# ObjectKeyPaths
+### TimeDuration
 
-获取对象的所有键路径
+**类型：**`TimeDuration`
 
-```ts
-type A = {
-    a:{
-        b:{
-            c:number
-        }
-    }
-}
-type B = ObjectKeyPaths<A>  // ['a','a.b','a.b.c']
+时间表示，可以使用`parseTimeDuration`函数返回毫秒数。
 
+支持以下格式：
+- 纯数字（毫秒）：`1000` 或 `'1000'`
+- 带单位简写：
+  - 毫秒: `'100ms'`
+  - 秒: `'30s'`
+  - 分钟: `'5m'`
+  - 小时: `'2h'`
+  - 天: `'1d'` 或 `'1D'`
+  - 周: `'2w'` 或 `'2W'`
+  - 月: `'3M'`
+  - 年: `'1y'` 或 `'1Y'`
+- 带单位全称：
+  - `'500Milliseconds'`
+  - `'30Seconds'`
+  - `'5Minutes'`
+  - `'2Hours'`
+  - `'1Days'`
+  - `'2Weeks'`
+  - `'3Months'`
+  - `'1Years'`
+
+```typescript
+const short: TimeDuration = '30s';    // ✅ Correct
+const long: TimeDuration = '1h30m';   // ✅ Correct
+const days: TimeDuration = '7d';      // ✅ Correct
+const ms: TimeDuration = 5000;       // ✅ Correct
+const strMs: TimeDuration = '5000';  // ✅ Correct
+const full: TimeDuration = '2Weeks'; // ✅ Correct
+
+``` 
+ 
+
+
+### Merge
+
+**类型：**`Merge<T extends any[]> `
+
+合并输入的多个类型
+
+```typescript twoslash
+import { Merge } from 'flex-tools/types'
+type Foo = { a: number};
+type Bar = { b: string };
+type Baz = { c: boolean };
+type Merged = Merge<[Foo, Bar, Baz]>;
+// == Foo & Bar & Baz
+// 返回 { a: string; b: number; c: boolean; } ，它包含了输入数组中所有类型的属性。
 ```
 
-# Primitive
+### Primitive
 
 原始类型
 
@@ -484,11 +834,13 @@ type Primitive =
 	| bigint
 ```
 
-# IsNumberLike
+### IsNumberLike
 
 判断是否是数字类型
 
-```ts
+```ts twoslash
+import { IsNumberLike } from 'flex-tools/types'
+
 type A = IsNumberLike<'1'>;
 //=> true
 
@@ -501,3 +853,20 @@ type C = IsNumberLike<1>;
 type D = IsNumberLike<'a'>;
 //=> false
 ```
+
+### Fallback
+
+**类型：**`Fallback<T, F>`
+
+当`T`为`never`时，返回`F`，否则返回`T`。
+
+```typescript twoslash
+import { Fallback } from 'flex-tools/types'
+
+type A = Fallback<never, 'a'>;
+//=> 'a'
+
+type B = Fallback<'a', 'b'>;
+//=> 'a'
+```
+

@@ -6,7 +6,6 @@
 - **引入方式**
 
 ```typescript
-import { <函数名称> } from "flex-tools"
 import { <函数名称> } from "flex-tools/tree"
 ```
 

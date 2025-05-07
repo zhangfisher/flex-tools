@@ -1,4 +1,7 @@
+// @ts-nocheck
 import { defineConfig } from 'vitepress'
+import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
+// import { createFileSystemTypesCache } from '@shikijs/vitepress-twoslash/cache-fs'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -14,6 +17,7 @@ export default defineConfig({
     nav: [
       { text: '首页', link: '/' },
       { text: '指南', link: '/guide/' },
+      { text: '更新历史', link: '/CHANGELOG' },
       { text: '开源推荐', link: 'https://zhangfisher.github.io/repos/' }
     ],
     sidebar: [
@@ -43,5 +47,20 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/zhangfisher/flex-tools' }
     ]
+  },
+  vue: {
+      template: {
+          compilerOptions: {
+              whitespace: 'preserve'
+          }
+      }
+  },
+  markdown: {
+      codeTransformers: [
+          transformerTwoslash({
+            // typesCache: createFileSystemTypesCache()
+          })          
+      ],
+      languages: ['js', 'jsx', 'ts', 'tsx']
   }
 })
