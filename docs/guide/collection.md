@@ -96,3 +96,14 @@ let dict = NamedDict([
 }
 
 ```
+
+## WeakObjectMap
+
+一个基于弱引用（WeakRef）的键值映射集合
+
+```ts
+const map = new WeakObjectMap();
+map.set('key1', obj1);
+// 返回 obj1 或 undefined（如果已被垃圾回收）
+const retrieved = map.get('key1'); 
+```
