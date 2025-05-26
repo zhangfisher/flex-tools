@@ -45,10 +45,12 @@ jobs:
         with:
           node-version: 22
           cache: pnpm # 或 pnpm / yarn
+      - name: Build FlexTools
+        run: pnpm build 
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Install dependencies
-        run: pnpm install # 或 pnpm install / yarn install / bun install
+        run: pnpm install # 或 pnpm install / yarn install / bun install      
       - name: Build with VitePress
         run: pnpm run docs:build # 或 pnpm docs:build / yarn docs:build / bun run docs:build
       - name: Upload artifact
