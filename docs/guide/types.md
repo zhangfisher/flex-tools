@@ -12,7 +12,8 @@ import type { <类型名称> } from "flex-tools/types"
 
 可变记录类型,其类型是由记录上的`type`字段推断出来的。
 
-```typescript
+```typescript twoslash
+import { MutableRecord } from 'flex-tools/types'
 
 type Animal = MutableRecord<{
     dog:{bark:boolean,wagging:boolean},
@@ -24,7 +25,7 @@ let animals:Animal = {
     bark:true,
     wagging:true
 }
-let animals:Animal = {
+let animals2:Animal = {
     type:"cat",
     mew:23
 }
@@ -33,13 +34,19 @@ let animals:Animal = {
 
 也可以通过第二个泛型参数来指定，类型字段。如下：
 
-```typescript
-
+```ts twoslash
+import { MutableRecord } from 'flex-tools/types'
 type Animal = MutableRecord<{
     dog:{bark:boolean,wagging:boolean},
     cat:{mew:number},
     chicken:{egg:number}      
 },'kind'>
+
+let animals:Animal = {
+    kind:"dog",
+    bark:true,
+    wagging:true
+}
 // {kind:'dog',bark:boolean,wagging:boolean } 
 // | {kind: 'cat', mew:number}
 // | {kind: 'chicken', egg:number}
@@ -51,8 +58,9 @@ type Animal = MutableRecord<{
 
 可变记录数组,其数组成员中`Record`类型，并且类型是根据`Record`的`type`字段值来推断的。
 
-```typescript
-
+```ts twoslash
+import { MutableRecordList } from 'flex-tools/types'
+ 
 type Animals = MutableRecordList<{
     dog:{bark:boolean,wagging:boolean},
     cat:{mew:number},
@@ -64,22 +72,30 @@ type Animals = MutableRecordList<{
 //     | {type: 'chicken', egg:number}
 // )[]
 
-let animals:Animal = [
+let animals:Animals = [
     { type:"dog", bark:true,wagging:true},
-    { type:"cat", mew:23 }
+    { type:"cat", mew:23 } 
 ]
 
 ```
 
 也可以通过第二个泛型参数来指定`type`类型字段。如下：
 
-```typescript
+```ts twoslash
+import { MutableRecordList } from 'flex-tools/types'
+ 
 
 type Animals = MutableRecordList<{
     dog:{bark:boolean,wagging:boolean},
     cat:{mew:number},
     chicken:{egg:number}      
 },'kind'>
+
+
+let animals:Animals = [
+    { kind:"dog", bark:true,wagging:true},
+    { kind:"cat", mew:23 } 
+]
 // (
 //     {kind:'dog',bark:boolean,wagging:boolean } 
 //     | {kind: 'cat', mew:number}
