@@ -1,5 +1,13 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.5.1
+
+### Patch Changes
+
+- 881b48f: fix WeakObjectMap exports
+- 43ffdd6: fix DeepOptional type
+- 4e66624: fix DeepRequired type
+
 ## 1.5.0
 
 ### Minor Changes
