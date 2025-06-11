@@ -1,4 +1,4 @@
-import { Expand } from "./Expand"
+import { Union } from "./union"
 
 /**
  * 修改对象中指定字段的类型，保持其他字段不变。
@@ -39,6 +39,6 @@ import { Expand } from "./Expand"
  * // }
  * ```
  */
-export type ChangeFieldType<Record, Name extends string, Type = any> = Expand<Omit<Record, Name> & {
+export type ChangeFieldType<Record, Name extends string, Type = any> = Union<Omit<Record, Name> & {
     [K in Name]: Type
 }>

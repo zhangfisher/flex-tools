@@ -1,4 +1,4 @@
-import { Expand } from "./Expand"
+import { Union } from "./union"
 
  
 
@@ -30,5 +30,5 @@ import { Expand } from "./Expand"
  * // }
  * ```
  */
-export type RequiredKeys<T extends object, Keys extends keyof T> = Expand<T & Required<Pick<T,Keys>>>
+export type RequiredKeys<T extends object, Keys extends keyof T> = Union<T & Required<Pick<T,Keys>>>
  

@@ -2,7 +2,7 @@
  * 将类型中的所有属性变为可选属性，排除指定的键名。
  */
 
-import { Expand } from "./Expand";
+import { Union } from "./union";
 
 /**
  * 将类型中的所有属性变为可选属性，同时可以指定某些属性保持必需。
@@ -92,7 +92,7 @@ import { Expand } from "./Expand";
  * };
  * ```
  */
-export type Optional<T, ExcludeKeys extends keyof T = never> = Expand<Partial<T> & Required<Pick<T, ExcludeKeys>>>;
+export type Optional<T, ExcludeKeys extends keyof T = never> = Union<Partial<T> & Required<Pick<T, ExcludeKeys>>>;
 
 // export interface SiteOptions{
 //     id:string                           // 站点ID   

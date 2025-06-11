@@ -11,13 +11,13 @@
  * type A = { a: string };
  * type B = { b: number };
  * type AB = A & B;
- * type ExpandedAB = Expand<AB>;
+ * type ExpandedAB = Union<AB>;
  * // 结果：{ a: string; b: number }
  * 
  * // 展开嵌套的交叉类型
  * type C = { c: boolean };
  * type Complex = AB & C & { d: Date };
- * type ExpandedComplex = Expand<Complex>;
+ * type ExpandedComplex = Union<Complex>;
  * // 结果：{ a: string; b: number; c: boolean; d: Date }
  * 
  * // 展开条件类型
@@ -25,7 +25,7 @@
  *   ? { type: "string"; value: string }
  *   : { type: "other"; value: unknown };
  * 
- * type StringCase = Expand<ConditionalType<string>>;
+ * type StringCase = Union<ConditionalType<string>>;
  * // 结果：{ type: "string"; value: string }
  * 
  * // 展开带有可选属性的类型
@@ -36,7 +36,7 @@
  *   another?: boolean;
  * };
  * 
- * type ExpandedOptional = Expand<WithOptional>;
+ * type ExpandedOptional = Union<WithOptional>;
  * // 结果：{
  * //   required: string;
  * //   optional?: number;
@@ -44,4 +44,4 @@
  * // }
  * ```
  */
-export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+export type Union<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;

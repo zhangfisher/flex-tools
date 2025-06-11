@@ -1,3 +1,4 @@
+import { Union } from "./union"
 
 
 /**
@@ -86,8 +87,24 @@
  * }
  * ```
  */
- export type MutableRecord<Items,KindKey extends string='type'> = {
-    [ Kind in keyof Items]: {
+ export type MutableRecord<Items,KindKey extends string='type',Share = unknown> = {
+    [ Kind in keyof Items]: Union<{
         [type in KindKey]: Kind;
-    } & Items[Kind]
+    } & Items[Kind] & Share>
 }[keyof Items]
+
+
+// type Animal = MutableRecord<{
+//     dog:{bark:boolean,wagging:boolean},
+//     cat:{mew:number},
+//     chicken:{egg:number}      
+// },'type',{a?:1,b?:2,c?:3}> 
+// let animals:Animal = {
+//     type:"dog",
+//     bark:true,
+//     wagging:true
+// }
+// let animals2:Animal = {
+//     type:"cat",
+//     mew:23
+// }

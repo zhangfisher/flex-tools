@@ -1,4 +1,4 @@
-import { Expand } from "./Expand";
+import { Union } from "./union";
 
  
 /**
@@ -81,4 +81,4 @@ import { Expand } from "./Expand";
  * };
  * ```
  */
-export type Merge<T extends any[]> = Expand<T extends [infer I, ...infer rest] ? I & Merge<rest> : {}>
+export type Merge<T extends any[]> = Union<T extends [infer I, ...infer rest] ? I & Merge<rest> : {}>

@@ -1,3 +1,4 @@
+import { Union } from "./union"
 
 /**
  * 创建一个可变记录数组类型，数组中的每个元素都是一个可变记录，其具体类型由指定的类型字段（默认为'type'）决定。
@@ -117,8 +118,26 @@
  * }
  * ```
  */
- export type MutableRecordList<Items,KindKey extends string='type'> = {
-    [ Kind in keyof Items]: {
+ export type MutableRecordList<Items,KindKey extends string='type',Share=unknown> = {
+    [ Kind in keyof Items]:Union<{
         [type in KindKey]: Kind;
-    } & Items[Kind]
+    } & Items[Kind] & Share>
 }[keyof Items][]
+
+
+
+// type Animals = MutableRecordList<{
+//     dog:{bark:boolean,wagging:boolean},
+//     cat:{mew:number},
+//     chicken:{egg:number}      
+// },'type',{x?:number,y?:boolean,z?:string}>
+// // (
+// //     {type:'dog',bark:boolean,wagging:boolean } 
+// //     | {type: 'cat', mew:number}
+// //     | {type: 'chicken', egg:number}
+// // )[]
+
+// let animals:Animals = [
+//     { type:"dog", bark:true,wagging:true},
+//     { type:"cat", mew:23 } 
+// ]

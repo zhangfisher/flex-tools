@@ -1,4 +1,4 @@
-import { Expand } from "./Expand"
+import { Union } from "./union"
 
 /**
  * 重命名类型中的属性
@@ -15,7 +15,7 @@ import { Expand } from "./Expand"
  * type RenamedPerson = Rename<Person, { age: 'years' }>;
  * // 等同于 { name: string; years: number }
  */
-export type Rename<T, NameMaps extends Partial<Record<keyof T, any>>> = Expand<{
+export type Rename<T, NameMaps extends Partial<Record<keyof T, any>>> = Union<{
     [K in keyof NameMaps as NameMaps[K] ]:K extends keyof T ? T[K] : never
 } & Omit<T,keyof NameMaps>>
 

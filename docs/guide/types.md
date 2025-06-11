@@ -52,6 +52,33 @@ let animals:Animal = {
 // | {kind: 'chicken', egg:number}
 ```
 
+也可以通过第3个泛型参数来指定`share`公共字段。如下：
+
+```ts twoslash
+import { MutableRecord } from 'flex-tools/types'
+type Animal = MutableRecord<{
+    dog:{bark:boolean,wagging:boolean},
+    cat:{mew:number},
+    chicken:{egg:number}      
+},'kind',{
+    name:string
+    age:number
+}>
+
+let animals:Animal = {
+    kind:"dog",
+    bark:true,
+    wagging:true,
+    name:"Jack",
+    age:3
+}
+// {kind:'dog',bark:boolean,wagging:boolean,name:string,age:number } 
+// | {kind: 'cat', mew:number,name:string,age:number}
+// | {kind: 'chicken', egg:number,name:string,age:number}
+```
+
+
+
 ### MutableRecordList
 
 **类型：**`MutableRecordList<T,Name extends string>`
@@ -103,6 +130,34 @@ let animals:Animals = [
 // )[]
 ```
 
+`MutableRecordList`也可以通过第3个泛型参数来指定`share`公共字段。
+
+
+
+```ts twoslash
+import { MutableRecordList } from 'flex-tools/types'
+ 
+
+type Animals = MutableRecordList<{
+    dog:{bark:boolean,wagging:boolean},
+    cat:{mew:number},
+    chicken:{egg:number}      
+},'kind',{
+    name:string
+    age:number
+}>
+
+
+let animals:Animals = [
+    { kind:"dog", bark:true,wagging:true,name:'tom',age:3},
+    { kind:"cat", mew:23 ,name:'bob',age:1} 
+]
+// (
+//     {kind:'dog',bark:boolean,wagging:boolean ,name:string,age:number} 
+//     | {kind: 'cat', mew:number,name:string,age:number}
+//     | {kind: 'chicken', egg:number,name:string,age:number}
+// )[]
+```
 ### ChangeFieldType
 
 **类型：**`ChangeFieldType<Record,Name extends string,Type=any>`
@@ -690,21 +745,18 @@ createAnimal(Cat); // ❌ ERROR
 
 ## Misc
 
-### Expand
+### Union
 
-**类型：**`Expand<T>`
+**类型：**`Union<T>`
 
-将类型 `T` 展开为其所有属性的联合类型, 用于展开复杂的类型定义,使其更易读和理解 
+将类型 `T` 所有成员合并为一个类型, 用于展开复杂的类型定义,使其更易读和理解 
  
 ```ts twoslash
-import type { Expand } from "flex-tools/types";
+import type { Union } from "flex-tools/types";
 type Complex = { a: string } & { b: number };
-type Expanded = Expand<Complex>; // { a: string; b: number }
+type Unioned = Union<Complex>; // { a: string; b: number }
 //   ^^^^^^^^             
 ```
-
-
-
 
 ### AllowEmpty
 **类型：**`AllowEmpty<T>`
