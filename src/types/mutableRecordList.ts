@@ -1,3 +1,4 @@
+import { MutableRecord } from "./mutableRecord"
 import { Union } from "./union"
 
 /**
@@ -118,11 +119,8 @@ import { Union } from "./union"
  * }
  * ```
  */
- export type MutableRecordList<Items,KindKey extends string='type',Share=unknown> = {
-    [ Kind in keyof Items]:Union<{
-        [type in KindKey]: Kind;
-    } & Items[Kind] & Share>
-}[keyof Items][]
+ export type MutableRecordList<Items,KindKey extends string='type',Share=unknown,DefaultKind extends keyof Items = never> =
+ MutableRecord<Items,KindKey,Share,DefaultKind>[]
 
 
 
@@ -139,5 +137,24 @@ import { Union } from "./union"
 
 // let animals:Animals = [
 //     { type:"dog", bark:true,wagging:true},
+//     { type:"cat", mew:23 } 
+// ]
+
+
+
+// type AnimalsDefault = MutableRecordList<{
+//     dog:{bark:boolean,wagging:boolean},
+//     cat:{mew:number},
+//     chicken:{egg:number}      
+// },'type',{x?:number,y?:boolean,z?:string},'dog'>
+// // (
+// //     {type:'dog',bark:boolean,wagging:boolean } 
+// //     | {type: 'cat', mew:number}
+// //     | {type: 'chicken', egg:number}
+// // )[]
+
+// let animals2:AnimalsDefault = [
+//     { type:"dog", bark:true,wagging:true},
+//     { bark:true,wagging:true},
 //     { type:"cat", mew:23 } 
 // ]

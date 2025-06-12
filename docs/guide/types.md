@@ -8,9 +8,9 @@ import type { <类型名称> } from "flex-tools/types"
 
 ### MutableRecord
 
-**类型：**`MutableRecord<T,Name extends string>`
+**类型：**`MutableRecord<Items,KindKey extends string='type',Share = unknown,DefaultKind extends keyof Items = never>`
 
-可变记录类型,其类型是由记录上的`type`字段推断出来的。
+- **可变记录类型,其类型是由记录上的`type`字段推断出来的。**
 
 ```typescript twoslash
 import { MutableRecord } from 'flex-tools/types'
@@ -32,7 +32,7 @@ let animals2:Animal = {
 
 ```
 
-也可以通过第二个泛型参数来指定，类型字段。如下：
+- **也可以通过第二个泛型参数来指定，类型字段。如下：**
 
 ```ts twoslash
 import { MutableRecord } from 'flex-tools/types'
@@ -52,9 +52,9 @@ let animals:Animal = {
 // | {kind: 'chicken', egg:number}
 ```
 
-也可以通过第3个泛型参数来指定`share`公共字段。如下：
+- **第3个泛型参数用来指定`share`公共字段。**
 
-```ts twoslash
+```ts twoslash {7,8}
 import { MutableRecord } from 'flex-tools/types'
 type Animal = MutableRecord<{
     dog:{bark:boolean,wagging:boolean},
@@ -77,6 +77,25 @@ let animals:Animal = {
 // | {kind: 'chicken', egg:number,name:string,age:number}
 ```
 
+- **第4个泛型参数用于指定kind默认类型。**
+
+```ts twoslash {7,8}
+import { MutableRecord } from 'flex-tools/types'
+type Animal = MutableRecord<{
+    dog:{bark:boolean,wagging:boolean},
+    cat:{mew:number},
+    chicken:{egg:number}      
+},'kind',{
+    name:string
+    age:number
+},'cat'>
+// 以下没有指定kind时，默认为cat类型。
+let animals:Animal = {
+    mew:5, 
+    name:"Jack",
+    age:3
+} 
+```
 
 
 ### MutableRecordList
@@ -106,7 +125,7 @@ let animals:Animals = [
 
 ```
 
-也可以通过第二个泛型参数来指定`type`类型字段。如下：
+- **也可以通过第二个泛型参数来指定`type`类型字段。如下：**
 
 ```ts twoslash
 import { MutableRecordList } from 'flex-tools/types'
@@ -130,9 +149,7 @@ let animals:Animals = [
 // )[]
 ```
 
-`MutableRecordList`也可以通过第3个泛型参数来指定`share`公共字段。
-
-
+**`MutableRecordList`也可以通过第3个泛型参数来指定`share`公共字段。**
 
 ```ts twoslash
 import { MutableRecordList } from 'flex-tools/types'
@@ -158,6 +175,35 @@ let animals:Animals = [
 //     | {kind: 'chicken', egg:number,name:string,age:number}
 // )[]
 ```
+
+- **第4个泛型参数用于指定kind默认类型。**
+
+
+```ts twoslash
+import { MutableRecordList } from 'flex-tools/types'
+ 
+
+type Animals = MutableRecordList<{
+    dog:{bark:boolean,wagging:boolean},
+    cat:{mew:number},
+    chicken:{egg:number}      
+},'kind',{
+    name:string
+    age:number
+},'cat'>
+
+
+let animals:Animals = [
+    { kind:"dog", bark:true,wagging:true,name:'tom',age:3},
+    {mew:23 ,name:'bob',age:1}  // [!code ++]
+]
+// (
+//     {kind:'dog',bark:boolean,wagging:boolean ,name:string,age:number} 
+//     | {kind?: 'cat' | undefined, mew:number,name:string,age:number}
+//     | {kind: 'chicken', egg:number,name:string,age:number}
+// )[]
+```
+
 ### ChangeFieldType
 
 **类型：**`ChangeFieldType<Record,Name extends string,Type=any>`

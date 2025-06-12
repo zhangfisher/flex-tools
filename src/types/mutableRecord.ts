@@ -87,24 +87,78 @@ import { Union } from "./union"
  * }
  * ```
  */
- export type MutableRecord<Items,KindKey extends string='type',Share = unknown> = {
+export type MutableRecord<Items,KindKey extends string='type',Share = unknown,DefaultKind extends keyof Items = never> = {
     [ Kind in keyof Items]: Union<{
         [type in KindKey]: Kind;
     } & Items[Kind] & Share>
-}[keyof Items]
+}[Exclude<keyof Items, DefaultKind>]  | (
+    DefaultKind extends never ? never : (
+        Union<{[K in KindKey]?:DefaultKind} & Items[DefaultKind] & Share> 
+    )
+)
 
+
+
+ 
+type AnimalWithDefault = MutableRecord<{
+    dog: { bark: boolean; wagging: boolean };
+    cat: { mew: number };
+    chicken: { egg: number };
+  }, 'type', { a?: 1; b?: 2; c?: 3 },'cat'>;
+  
+  // 测试用例
+  let animals: AnimalWithDefault = {  // ✅ 显式指定 type="dog"
+    type: "dog",
+    bark: true,
+    wagging: true,
+    a: 1
+  };
+  
+  let animals2: AnimalWithDefault = {  // ✅ 显式指定 type="cat"
+    type: "cat",
+    mew: 23,
+    b: 2
+  };
+  
+  let animals3: AnimalWithDefault = {  // ✅ 默认 type="cat"（无 type 字段）
+    mew: 23, 
+    c: 3
+  };
+  animals3.type==='cat'
+  
+function getAnimal(ani: AnimalWithDefault): AnimalWithDefault{
+    return ani
+}
+type f = keyof AnimalWithDefault 
+   
+getAnimal({
+    type:'cat',
+    mew:''
+})
 
 // type Animal = MutableRecord<{
-//     dog:{bark:boolean,wagging:boolean},
-//     cat:{mew:number},
-//     chicken:{egg:number}      
-// },'type',{a?:1,b?:2,c?:3}> 
-// let animals:Animal = {
-//     type:"dog",
-//     bark:true,
-//     wagging:true
-// }
-// let animals2:Animal = {
-//     type:"cat",
-//     mew:23
-// }
+//     dog: { bark: boolean; wagging: boolean };
+//     cat: { mew: number };
+//     chicken: { egg: number };
+//   }, 'type', { a?: 1; b?: 2; c?: 3 }>;
+  
+//   // 测试用例
+//   let animals21: Animal = {  // ✅ 显式指定 type="dog"
+//     type: "dog",
+//     bark: true,
+//     wagging: true,
+//     a: 1
+//   };
+  
+//   let animals22: Animal = {  // ✅ 显式指定 type="cat"
+//     type: "cat",
+//     mew: 23,
+//     b: 2
+//   };
+  
+//   let animals23: Animal = {  // ✅ 默认 type="cat"（无 type 字段）
+//     type:'cat',
+//     mew: 23, 
+//     c: 3
+//   };
+   
