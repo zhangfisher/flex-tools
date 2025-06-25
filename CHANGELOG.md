@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.5.2
+
+### Patch Changes
+
+- a77d20d: MutableRecord 和 MutableRecordList 新支持指定公共字段，Expand 更名为 Union
+
 ## 1.5.1
 
 ### Patch Changes
