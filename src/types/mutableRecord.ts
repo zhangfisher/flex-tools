@@ -100,41 +100,41 @@ export type MutableRecord<Items,KindKey extends string='type',Share = unknown,De
 
 
  
-type AnimalWithDefault = MutableRecord<{
-    dog: { bark: boolean; wagging: boolean };
-    cat: { mew: number };
-    chicken: { egg: number };
-  }, 'type', { a?: 1; b?: 2; c?: 3 },'cat'>;
+// type AnimalWithDefault = MutableRecord<{
+//     dog: { bark: boolean; wagging: boolean };
+//     cat: { mew: number };
+//     chicken: { egg: number };
+//   }, 'type', { a?: 1; b?: 2; c?: 3 },'cat'>;
   
-  // 测试用例
-  let animals: AnimalWithDefault = {  // ✅ 显式指定 type="dog"
-    type: "dog",
-    bark: true,
-    wagging: true,
-    a: 1
-  };
+//   // 测试用例
+//   let animals: AnimalWithDefault = {  // ✅ 显式指定 type="dog"
+//     type: "dog",
+//     bark: true,
+//     wagging: true,
+//     a: 1
+//   };
   
-  let animals2: AnimalWithDefault = {  // ✅ 显式指定 type="cat"
-    type: "cat",
-    mew: 23,
-    b: 2
-  };
+//   let animals2: AnimalWithDefault = {  // ✅ 显式指定 type="cat"
+//     type: "cat",
+//     mew: 23,
+//     b: 2
+//   };
   
-  let animals3: AnimalWithDefault = {  // ✅ 默认 type="cat"（无 type 字段）
-    mew: 23, 
-    c: 3
-  };
-  animals3.type==='cat'
+//   let animals3: AnimalWithDefault = {  // ✅ 默认 type="cat"（无 type 字段）
+//     mew: 23, 
+//     c: 3
+//   };
+//   animals3.type==='cat'
   
-function getAnimal(ani: AnimalWithDefault): AnimalWithDefault{
-    return ani
-}
-type f = keyof AnimalWithDefault 
+// function getAnimal(ani: AnimalWithDefault): AnimalWithDefault{
+//     return ani
+// }
+// type f = keyof AnimalWithDefault 
    
-getAnimal({
-    type:'cat',
-    mew:''
-})
+// getAnimal({
+//     type:'cat',
+//     mew:1
+// })
 
 // type Animal = MutableRecord<{
 //     dog: { bark: boolean; wagging: boolean };
