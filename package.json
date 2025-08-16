@@ -205,6 +205,7 @@
   "author": "wxzhang",
   "license": "ISC",
   "devDependencies": {
+    "@biomejs/biome": "2.2.0",
     "@changesets/cli": "^2.28.1",
     "@lite-tree/vue": "^1.1.6",
     "@shikijs/vitepress-twoslash": "^3.4.0",
