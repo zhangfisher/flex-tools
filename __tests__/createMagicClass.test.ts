@@ -35,8 +35,10 @@ describe('createMagicClass 函数测试', () => {
         }
         class User {
             name: string
+            prefix: string =''
             constructor(name: string) {
                 this.name = name
+                this.prefix = getMagicClassOptions<UserCreateOptions>(this)?.prefix! 
             }
             get title() {
                 return `${getMagicClassOptions<UserCreateOptions>(this)?.prefix! || ''}${this.name}!`
@@ -102,6 +104,7 @@ describe('createMagicClass 函数测试', () => {
         const instance = new MagicTestClass('测试')
         expect(instance).toBeInstanceOf(ReplacementClass)
         expect(instance.name).toBe('Replaced 测试')
+        // @ts-expect-error
         expect(instance.replaced).toBe(true)
     })
 
@@ -109,12 +112,15 @@ describe('createMagicClass 函数测试', () => {
         const mockInstance = { name: '预创建实例', customProp: true }
         
         const MagicTestClass = createMagicClass(TestClass, {
-            onBeforeInstance: () => mockInstance
+            onBeforeInstance: () => {
+                return mockInstance
+            }
         })
-
-        const instance = new MagicTestClass('测试')
+        class X extends MagicTestClass{}
+        const instance = new X('测试')
         expect(instance).toBe(mockInstance)
         expect(instance.name).toBe('预创建实例')
+        // @ts-expect-error
         expect(instance.customProp).toBe(true)
     })
 
@@ -168,7 +174,8 @@ describe('createMagicClass 函数测试', () => {
         const MagicTestClass = createMagicClass(TestClass, { option1: 'base', option2: 'base' })
         
         const ConfiguredClass = MagicTestClass({ option2: 'override', option3: 'new' })
-        const instance = new ConfiguredClass('测试')
+        class X extends ConfiguredClass{}
+        const instance = new X('测试')
         
         expect(getMagicClassOptions(instance)).toEqual({
             option1: 'base',
@@ -189,4 +196,5 @@ describe('createMagicClass 函数测试', () => {
         expect(isInstance(TestClass)).toBe(false)
         expect(isInstance(null)).toBe(false)
     })
+ 
 })

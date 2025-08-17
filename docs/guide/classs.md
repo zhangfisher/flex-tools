@@ -89,7 +89,7 @@ getClassMethods(new AA(), { includePrototype: false, excludes: ["x"] }); //   ['
 
 ## createMagicClass
 
-创建一个魔术类，该类既可以作为构造函数使用，也可以作为函数调用来配置选项。
+创建一个魔术类，既可以作为普通类使用，也可以作为函数调用传入参数返回类
 
 ```typescript
 function createMagicClass<
@@ -101,15 +101,100 @@ function createMagicClass<
 ): MagicClassConstructor<BaseClass, Options>;
 ```
 
-**说明**:
+### 使用方法
 
-- `createMagicClass` 创建的魔术类具有双重身份：既可以作为构造函数使用，也可以作为函数调用来配置选项
-- 支持三个生命周期钩子：`onBeforeInstance`、`onAfterInstance` 和 `onErrorInstance`
-- 可以在 `onBeforeInstance` 钩子中返回 `false` 阻止实例创建，或返回一个类/实例来替换原始类
-- 魔术类可以被继承，保持原有类的所有特性
-- 通过函数调用配置后的类也可以被继承
+`createMagicClass` 创建的魔术类具有双重身份：既可以作为普通类使用，也可以作为函数调用传入参数返回类
 
-**示例**:
+#### 第 1 步: 创建魔术类
+
+```ts
+import { createMagicClass } from "flex-tools/classs"; // [!code ++]
+// 基类
+class User {
+  name: string;
+  prefix: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+  get title() {
+    return `${this.prefix}${this.name}!`;
+  }
+}
+
+const MagicUser = createMagicClass<typeof User>(User); // [!code ++]
+```
+
+#### 第 2 步: 继承魔术类
+
+可以用两种方法来继承魔术类，直接继承魔术类，或通过函数调用为类传入配置参数。
+
+```ts
+class Admin extends MagicUser {}
+class Guest extends MagicUser() {}
+class Customer extends MagicUser() {}
+```
+
+:::warning 注意
+不能直接实例化`MagicUser`类。
+:::
+
+#### 第 3 步: 魔术类配置选项
+
+通过函数调用 `MagicUser()` 时，可以传入参数 `options` 来提供额外配置选项给魔术类，可用于实例化。
+
+```ts
+type UserCreateOptions = {
+  prefix?: string;
+  x?: number;
+};
+
+// 基类
+class User {
+  name: string;
+  prefix: string;
+  constructor(name: string) {
+    this.name = name;
+    this.prefix = getMagicClassOptions(this)?.prefix!; // [!code ++]
+  }
+  get title() {
+    return `${this.prefix}${this.name}!`;
+  }
+}
+
+const MagicUser = createMagicClass<typeof User, UserCreateOptions>(User, {
+  prefix: "Hi,", // 默认配置
+});
+
+// 覆盖默认配置选项
+class Guest extends MagicUser({ prifix: "Hello" }) {}
+class Customer extends MagicUser({ prefix: "welcome" }) {}
+```
+
+- 在基类中通过`getMagicClassOptions()`方法获取传入的参数选项
+
+#### 第 4 步: 魔术类 HOOK
+
+支持三个生命周期钩子：`onBeforeInstance`、`onAfterInstance` 和 `onErrorInstance`，可以在实例化类前后进行拦截处理。
+
+- **onBeforeInstance**
+
+在实例魔术类之前先执行钩子，可以在此修改实例化参数或者阻止实例化类。
+
+`onBeforeInstance?: (cls: Base, args: any[], options: Options) => void | boolean | object`
+
+可以在 `onBeforeInstance` 钩子中返回 `false` 阻止实例创建，或返回一个类/实例来替换原始类
+
+- **onAfterInstance**
+
+在实例化类后执行钩子。
+
+`onAfterInstance?: (inst: InstanceType<Base>, options: Options) => void`
+
+- **onErrorInstance**
+
+在实例化类后出现异常执行钩子。
+
+### 示例
 
 ```ts
 type UserCreateOptions = {
@@ -118,13 +203,13 @@ type UserCreateOptions = {
 };
 class User {
   name: string;
+  prefix: string;
   constructor(name: string) {
     this.name = name;
+    this.prefix = getMagicClassOptions(this)?.prefix!;
   }
   get title() {
-    return `${getMagicClassOptions<UserCreateOptions>(this)?.prefix! || ""}${
-      this.name
-    }!`;
+    return `${this.prefix}${this.name}!`;
   }
 }
 

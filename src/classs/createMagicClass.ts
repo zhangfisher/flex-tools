@@ -109,15 +109,17 @@ export function createMagicClass<
                     } else if (isClass(result)) {
                         // 替换构造函数
                         instance = Reflect.construct(result as unknown as T, args)
-                    } else if (isInstance(result)) {
+                    } else if (result !== undefined) {
                         instance = result
                     }
                 }
                 if (!instance) {
+                    //@ts-ignore
+                    new.target._magicClassOptions = finalOptions
                     // 创建实例
                     instance = Reflect.construct(ctor, args, new.target)
                 }
-                instance._magicClassOptions = finalOptions
+                //instance._magicClassOptions = finalOptions
 
                 // 调用onAfterInstance钩子
                 if (typeof options?.onAfterInstance === 'function') {
