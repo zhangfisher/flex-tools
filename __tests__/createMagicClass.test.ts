@@ -1,253 +1,271 @@
 import { describe, test, expect, vi } from 'vitest'
-import { createMagicClass, getMagicClassOptions } from '../src/classs/createMagicClass'
-import { isClass } from '../src/typecheck/isClass'
-import { isInstance } from '../src/typecheck/isInstance'
-import { get } from 'node:http'
-import { getClassStaticValue } from '../src'
+import { createMagicClass } from '../src/classs/createMagicClass' 
 
 describe('createMagicClass 函数测试', () => {
-    // 定义一个基础测试类
-    class TestClass {
-        name: string
-
-        constructor(name: string) {
-            this.name = name
+ 
+    test('魔术类构造参数的默认重载合并', () => { 
+        type UserType = 'admin' | 'guest' | 'root' | 'vip' | 'customer'  | 'manager'
+        class User{
+            name?:string
+            age?:number
+            sex?:'m'|'f'
+            type?: UserType
+            constructor(data:{name?:string,age?:number,sex?:'m'|'f',type?:UserType }){
+                this.name = data.name
+                this.age = data.age
+                this.sex = data.sex
+                this.type = data.type            
+            }
         }
+        const MagicUser = createMagicClass(User, {
+            params:[
+                {
+                    sex: 'm',
+                    age: 1
+                }
+            ]
+        })
+        const Admin = MagicUser({type: 'admin' , age: 10})
+        
+        const admin1= new Admin({age:21})
 
-        sayHello() {
-            return `Hello, ${this.name}!`
-        }
-    }
+        expect(admin1.age).toEqual(21)
+        expect(admin1.type).toEqual('admin')
+        expect((admin1 instanceof User)).toBe(true)
+        expect((admin1 instanceof MagicUser)).toBe(true)
+        expect((admin1 instanceof Admin)).toBe(true)
 
-    test('应该能够创建魔术类并正确实例化', () => {
-        const MagicTestClass = createMagicClass(TestClass)
-        const instance = new MagicTestClass('测试')
+        const admin2= new Admin({age:22})
+        expect(admin2.age).toEqual(22)
+        expect(admin2.type).toEqual('admin')
+        expect((admin2 instanceof User)).toBe(true)
+        expect((admin2 instanceof MagicUser)).toBe(true)
+        expect((admin2 instanceof Admin)).toBe(true)
 
-        expect(instance).toBeInstanceOf(TestClass)
-        expect(instance.name).toBe('测试')
-        expect(instance.sayHello()).toBe('Hello, 测试!')
+        
+        const Guest = MagicUser({type: 'guest' , age: 20})
+        const guest = new Guest({age:23})
+        expect(guest.age).toEqual(23)
+        expect(guest.type).toEqual('guest')
+        expect((guest instanceof User)).toBe(true)
+        expect((guest instanceof MagicUser)).toBe(true)
+        expect((guest instanceof Guest)).toBe(true)
+
+        const Root = MagicUser({type: 'root' , age: 30})
+        const root= new Root({})
+        expect(root.age).toEqual(30)
+        expect(root.type).toEqual('root')
+        expect((root instanceof User)).toBe(true)
+        expect((root instanceof MagicUser)).toBe(true)
+        expect((root instanceof Root)).toBe(true)
+
+        const Customer = MagicUser({type: 'customer' , age: 40})
+        const customer = new Customer({})
+        expect(customer.age).toEqual(40)
+        expect(customer.type).toEqual('customer')
+        expect((customer instanceof User)).toBe(true)
+        expect((customer instanceof MagicUser)).toBe(true)
+        expect((customer instanceof Customer)).toBe(true)
+
+        const VIP = MagicUser({type: 'vip' , age: 50})
+        const vip= new VIP({})
+        expect(vip.age).toEqual(50)
+        expect(vip.type).toEqual('vip')
+        expect((vip instanceof User)).toBe(true)
+        expect((vip instanceof MagicUser)).toBe(true)
+        expect((vip instanceof VIP)).toBe(true)
+
+        const Manager = MagicUser({type: 'manager' , age: 60})
+        const manager = new Manager({})
+        expect(manager.age).toEqual(60)
+        expect(manager.type).toEqual('manager')
+        expect((manager instanceof User)).toBe(true)
+        expect((manager instanceof MagicUser)).toBe(true)
+        expect((manager instanceof Manager)).toBe(true)
     })
-    
 
-    test('创建魔术类的配置选项', () => {
-        type UserCreateOptions = {
-            prefix?: string
-            x?: number
-        }
-        class User {
+    test('魔术类可以直接作为构造函数使用', () => {
+        class Person {
             name: string
-            prefix: string =''
             constructor(name: string) {
                 this.name = name
-                this.prefix = getMagicClassOptions<UserCreateOptions>(this)?.prefix! 
-            }
-            get title() {
-                return `${getMagicClassOptions<UserCreateOptions>(this)?.prefix! || ''}${this.name}!`
-            }
-            toString(){
-                return `${this.constructor.name}<${this.name}>`
             }
         }
-
-        const clss = []
-        const insts = []
-        // 创建魔术类
-        const MagicUser = createMagicClass<typeof User, UserCreateOptions>(User, {
-            prefix: 'Hi,', // 默认配置
-            x: 1,
-            onBeforeInstance: (cls, args, _options) => {
-                clss.push([cls, args])
-            }, 
-            onAfterInstance: (inst, _options) => {
-                insts.push(inst)
-            },
-        })
-        //  直接作为类使用
-        class Admin extends MagicUser {}
-        class Guest extends MagicUser({ x: 2, prefix: '欢迎,' }) {}
-        class Customer extends MagicUser({ prefix: '尊贵的' }) {}
-
-        const user = new User('用户')
-        const admin = new Admin('管理员')
-        const guest = new Guest('访客')
-        const customer = new Customer('客户')
-
-        expect(user.title).toBe('用户!')
-        expect(admin.title).toBe('Hi,管理员!')
-        expect(guest.title).toBe('欢迎,访客!')
-        expect(customer.title).toBe('尊贵的客户!') 
-    })
-
-    test('onBeforeInstance钩子可以阻止实例创建', () => {
-        const mockOnBeforeInstance = vi.fn().mockReturnValue(false)
-        const MagicTestClass = createMagicClass(TestClass, {
-            onBeforeInstance: mockOnBeforeInstance
-        })
-
-        expect(() => new MagicTestClass('测试')).toThrow('createMagicClass is blocked by onBeforeInstance hook')
-        expect(mockOnBeforeInstance).toHaveBeenCalled()
-    })
-
-    test('onBeforeInstance钩子可以替换构造函数', () => {
-        class ReplacementClass {
-            name: string
-            replaced: boolean = true
-            
-            constructor(name: string) {
-                this.name = `Replaced ${name}`
-            }
-        }
-
-        const MagicTestClass = createMagicClass(TestClass, {
-            onBeforeInstance: () => ReplacementClass
-        })
-
-        const instance = new MagicTestClass('测试')
-        expect(instance).toBeInstanceOf(ReplacementClass)
-        expect(instance.name).toBe('Replaced 测试')
-        // @ts-expect-error
-        expect(instance.replaced).toBe(true)
-    })
-
-    test('onBeforeInstance钩子可以直接返回实例', () => {
-        const mockInstance = { name: '预创建实例', customProp: true }
         
-        const MagicTestClass = createMagicClass(TestClass, {
-            onBeforeInstance: () => {
-                return mockInstance
+        const MagicPerson = createMagicClass(Person)
+        const person = new MagicPerson('张三')
+        
+        expect(person.name).toBe('张三')
+        expect(person instanceof Person).toBe(true)
+        expect(person instanceof MagicPerson).toBe(true)
+    })
+    
+    test('魔术类支持自定义参数处理函数', () => {
+        class Counter {
+            count: number
+            constructor(initialCount: number) {
+                this.count = initialCount
+            }
+        }
+        
+        const onParametersSpy = vi.fn((params, scopeParams, baseParams) => {
+            return [params[0] + (scopeParams?.[0] || 0) + (baseParams?.[0] || 0)]
+        })
+        
+        const MagicCounter = createMagicClass(Counter, {
+            params: [10],
+            onParameters: onParametersSpy
+        })
+        
+        const CustomCounter = MagicCounter(5)
+        const counter = new CustomCounter(2)
+        
+        expect(onParametersSpy).toHaveBeenCalled()
+        expect(counter.count).toBe(17) // 2 + 5 + 10
+        expect(counter instanceof Counter).toBe(true)
+    })
+    
+    test('魔术类的生命周期钩子：onBeforeInstance', () => {
+        class Product {
+            name: string
+            price: number
+            constructor(name: string, price: number) {
+                this.name = name
+                this.price = price
+            }
+        }
+        
+        const onBeforeInstanceSpy = vi.fn((cls, args) => {
+            expect(args).toEqual(['手机', 1999])
+            return false // 阻止实例创建
+        })
+        
+        const MagicProduct = createMagicClass(Product, {
+            onBeforeInstance: onBeforeInstanceSpy
+        })
+        
+        expect(() => new MagicProduct('手机', 1999)).toThrow('createMagicClass is blocked by onBeforeInstance hook')
+        expect(onBeforeInstanceSpy).toHaveBeenCalled()
+    })
+    
+    test('魔术类的生命周期钩子：onBeforeInstance返回新实例', () => {
+        class Animal {
+            type: string
+            constructor(type: string) {
+                this.type = type
+            }
+        }
+        
+        const MagicAnimal = createMagicClass(Animal, {
+            onBeforeInstance: (cls, args) => {
+                return { type: args[0], custom: true }
             }
         })
-        class X extends MagicTestClass{}
-        const instance = new X('测试')
-        expect(instance).toBe(mockInstance)
-        expect(instance.name).toBe('预创建实例')
-        // @ts-expect-error
-        expect(instance.customProp).toBe(true)
+        
+        const animal = new MagicAnimal('猫')
+        expect(animal.type).toBe('猫')
+        expect(animal.custom).toBe(true)
     })
-
-    test('onAfterInstance钩子应该在实例创建后被调用', () => {
-        const mockOnAfterInstance = vi.fn()
-        const MagicTestClass = createMagicClass(TestClass, {
-            extraOption: 'test',
-            onAfterInstance: mockOnAfterInstance
+    
+    test('魔术类的生命周期钩子：onAfterInstance', () => {
+        class Book {
+            title: string
+            constructor(title: string) {
+                this.title = title
+            }
+        }
+        
+        const onAfterInstanceSpy = vi.fn((instance) => {
+            instance.modified = true
         })
-
-        const instance = new MagicTestClass('测试')
-        expect(mockOnAfterInstance).toHaveBeenCalledWith(instance, expect.objectContaining({
-            extraOption: 'test'
-        }))
+        
+        const MagicBook = createMagicClass(Book, {
+            onAfterInstance: onAfterInstanceSpy
+        })
+        
+        const book = new MagicBook('JavaScript高级编程')
+        
+        expect(onAfterInstanceSpy).toHaveBeenCalled()
+        expect(book.title).toBe('JavaScript高级编程')
+        expect(book.modified).toBe(true)
     })
-
-    test('onErrorInstance钩子应该在实例创建出错时被调用', () => {
-        class ErrorClass {
+    
+    test('魔术类的生命周期钩子：onErrorInstance', () => {
+        class BuggyClass {
             constructor() {
                 throw new Error('构造函数错误')
             }
         }
-
-        const mockOnErrorInstance = vi.fn()
-        const MagicErrorClass = createMagicClass(ErrorClass, {
-            onErrorInstance: mockOnErrorInstance
+        
+        const onErrorInstanceSpy = vi.fn()
+        
+        const MagicBuggy = createMagicClass(BuggyClass, {
+            onErrorInstance: onErrorInstanceSpy
         })
-
-        expect(() => new MagicErrorClass()).toThrow('构造函数错误')
-        expect(mockOnErrorInstance).toHaveBeenCalledWith(
-            expect.objectContaining({ message: '构造函数错误' }),
-            expect.anything(),
-            expect.anything()
-        )
+        
+        expect(() => new MagicBuggy()).toThrow('构造函数错误')
+        expect(onErrorInstanceSpy).toHaveBeenCalled()
+        expect(onErrorInstanceSpy.mock.calls[0][0].message).toBe('构造函数错误')
     })
-
-    test('魔术类应该保留原始类的名称', () => {
-        const MagicTestClass = createMagicClass(TestClass)
-        expect(MagicTestClass.name).toBe('TestClass')
-    })
-
-    test('getMagicClassOptions应该返回实例的魔术类选项', () => {
-        const options = { customOption: 'value' }
-        const MagicTestClass = createMagicClass(TestClass, options)
-        const instance = new MagicTestClass('测试')
-        
-        expect(getMagicClassOptions(instance)).toEqual(options)
-    })
-
-    test('函数调用配置应该正确合并选项', () => { 
-        const MagicTestClass = createMagicClass(TestClass, { option1: 'base', option2: 'base' })
-        // @ts-expect-error
-        const ConfiguredClass = MagicTestClass({ option2: 'override', option3: 'new' })
-        class X extends ConfiguredClass{}
-        const instance = new X('测试')
-        
-        expect(getMagicClassOptions(instance)).toEqual({
-            option1: 'base',
-            option2: 'override',
-            option3: 'new'
-        })
-    })
-
-    test('isClass和isInstance工具函数应该正确识别类和实例', () => {
-        class TestClass {}
-        const instance = new TestClass()
-        
-        expect(isClass(TestClass)).toBe(true)
-        expect(isClass(instance)).toBe(false)
-        expect(isClass({})).toBe(false)
-        
-        expect(isInstance(instance)).toBe(true)
-        expect(isInstance(TestClass)).toBe(false)
-        expect(isInstance(null)).toBe(false)
-    })
-     test('直接实例化包装类', () => { 
-        const MagicTestClass = createMagicClass(TestClass, { option1: 'base', option2: 'base' })
-        // @ts-expect-error
-        const ConfiguredClass = MagicTestClass({ option2: 'override 1', option3: 'new 1' })
-        // @ts-expect-error
-        const ConfiguredClass2 = MagicTestClass({ option2: 'override 2', option3: 'new 2' })
-
-
-        const instance = new ConfiguredClass('测试1')
-        expect(instance instanceof TestClass).toBe(true)
-        expect(instance instanceof ConfiguredClass).toBe(true)
-        expect(getMagicClassOptions(instance)).toEqual({
-            option1: 'base',
-            option2: 'override 1',
-            option3: 'new 1' 
-        }) 
-        
-        const instance2 = new ConfiguredClass2('测试2')
-        expect(instance2 instanceof TestClass).toBe(true)
-        expect(instance2 instanceof ConfiguredClass2).toBe(true)
-        expect(getMagicClassOptions(instance2)).toEqual({
-            option1: 'base',
-            option2: 'override 2',
-            option3: 'new 2' 
-        })
-
-        const orgiInstance = new MagicTestClass('hello')
-        
-        expect(orgiInstance instanceof TestClass).toBe(true)
-        expect(orgiInstance instanceof MagicTestClass).toBe(true)
-        expect(getMagicClassOptions(orgiInstance)).toEqual({
-            option1: 'base',
-            option2: 'base'
-        })
-    }) 
-    test('魔术类的包装类', () => { 
-        const MagicTestClass = createMagicClass(TestClass, { option1: 'base', option2: 'base' })
-        // @ts-expect-error
-        const ConfiguredClass = MagicTestClass({ option2: 'override 1', option3: 'new 1' })
-
-        class MyClass extends ConfiguredClass{
-            constructor(){
-                super('')
-               
-
+    
+    test('魔术类支持多级继承和参数传递', () => {
+        class Vehicle {
+            type?: string
+            constructor(config: { type?: string }) {
+                this.type = config.type
             }
         }
-        const instance = new MyClass()
-        expect(instance instanceof TestClass).toBe(true)
-        expect(instance instanceof ConfiguredClass).toBe(true)
-        expect(instance instanceof MyClass).toBe(true)
-
-    }) 
+        
+        const MagicVehicle = createMagicClass(Vehicle)
+        const Car = MagicVehicle({ type: '汽车' })
+        const SportsCar = Car({ type: '跑车' })
+        const LuxurySportsCar = SportsCar({ type: '豪华跑车' })
+        
+        const vehicle = new MagicVehicle({ type: '交通工具' })
+        const car = new Car({ type: '小轿车' })
+        const sportsCar = new SportsCar({})
+        const luxurySportsCar = new LuxurySportsCar({})
+        
+        expect(vehicle.type).toBe('交通工具')
+        expect(car.type).toBe('小轿车')
+        expect(sportsCar.type).toBe('跑车')
+        expect(luxurySportsCar.type).toBe('豪华跑车')
+        
+        expect(vehicle instanceof Vehicle).toBe(true)
+        expect(car instanceof Vehicle).toBe(true)
+        expect(sportsCar instanceof Vehicle).toBe(true)
+        expect(luxurySportsCar instanceof Vehicle).toBe(true)
+    })
+    
+    test('魔术类处理非对象参数', () => {
+        class Calculator {
+            a: number
+            b: number
+            constructor(a: number, b: number) {
+                this.a = a
+                this.b = b
+            }
+            
+            add() {
+                return this.a + this.b
+            }
+        }
+        
+        const MagicCalculator = createMagicClass(Calculator, {
+            params: [5, 10]
+        })
+        
+        const AddCalculator = MagicCalculator(0, 0)
+        
+        const calc1 = new MagicCalculator(1, 2)
+        const calc2 = new AddCalculator(3, 4)
+        
+        expect(calc1.a).toBe(1)
+        expect(calc1.b).toBe(2)
+        expect(calc1.add()).toBe(3)
+        
+        expect(calc2.a).toBe(3)
+        expect(calc2.b).toBe(4)
+        expect(calc2.add()).toBe(7)
+    })
 })
