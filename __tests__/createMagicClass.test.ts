@@ -3,6 +3,7 @@ import { createMagicClass, getMagicClassOptions } from '../src/classs/createMagi
 import { isClass } from '../src/typecheck/isClass'
 import { isInstance } from '../src/typecheck/isInstance'
 import { get } from 'node:http'
+import { getClassStaticValue } from '../src'
 
 describe('createMagicClass 函数测试', () => {
     // 定义一个基础测试类
@@ -172,7 +173,7 @@ describe('createMagicClass 函数测试', () => {
 
     test('函数调用配置应该正确合并选项', () => { 
         const MagicTestClass = createMagicClass(TestClass, { option1: 'base', option2: 'base' })
-        
+        // @ts-expect-error
         const ConfiguredClass = MagicTestClass({ option2: 'override', option3: 'new' })
         class X extends ConfiguredClass{}
         const instance = new X('测试')
@@ -196,5 +197,57 @@ describe('createMagicClass 函数测试', () => {
         expect(isInstance(TestClass)).toBe(false)
         expect(isInstance(null)).toBe(false)
     })
- 
+     test('直接实例化包装类', () => { 
+        const MagicTestClass = createMagicClass(TestClass, { option1: 'base', option2: 'base' })
+        // @ts-expect-error
+        const ConfiguredClass = MagicTestClass({ option2: 'override 1', option3: 'new 1' })
+        // @ts-expect-error
+        const ConfiguredClass2 = MagicTestClass({ option2: 'override 2', option3: 'new 2' })
+
+
+        const instance = new ConfiguredClass('测试1')
+        expect(instance instanceof TestClass).toBe(true)
+        expect(instance instanceof ConfiguredClass).toBe(true)
+        expect(getMagicClassOptions(instance)).toEqual({
+            option1: 'base',
+            option2: 'override 1',
+            option3: 'new 1' 
+        }) 
+        
+        const instance2 = new ConfiguredClass2('测试2')
+        expect(instance2 instanceof TestClass).toBe(true)
+        expect(instance2 instanceof ConfiguredClass2).toBe(true)
+        expect(getMagicClassOptions(instance2)).toEqual({
+            option1: 'base',
+            option2: 'override 2',
+            option3: 'new 2' 
+        })
+
+        const orgiInstance = new MagicTestClass('hello')
+        
+        expect(orgiInstance instanceof TestClass).toBe(true)
+        expect(orgiInstance instanceof MagicTestClass).toBe(true)
+        expect(getMagicClassOptions(orgiInstance)).toEqual({
+            option1: 'base',
+            option2: 'base'
+        })
+    }) 
+    test('魔术类的包装类', () => { 
+        const MagicTestClass = createMagicClass(TestClass, { option1: 'base', option2: 'base' })
+        // @ts-expect-error
+        const ConfiguredClass = MagicTestClass({ option2: 'override 1', option3: 'new 1' })
+
+        class MyClass extends ConfiguredClass{
+            constructor(){
+                super('')
+               
+
+            }
+        }
+        const instance = new MyClass()
+        expect(instance instanceof TestClass).toBe(true)
+        expect(instance instanceof ConfiguredClass).toBe(true)
+        expect(instance instanceof MyClass).toBe(true)
+
+    }) 
 })

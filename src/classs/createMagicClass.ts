@@ -1,5 +1,4 @@
 import { isClass } from '../typecheck/isClass'
-import { isInstance } from '../typecheck/isInstance'
 import type { Class } from '../types'
 
 /**
@@ -80,20 +79,35 @@ export function createMagicClass<
     BaseClass extends Class,
     Options extends Record<string, any> = Record<string, any>,
 >(classBase: BaseClass, options?: CreateMagicClassOptions<BaseClass, Options>) {
+    const optMap:WeakMap<any,any>=new WeakMap()
     function makeInheritable<T extends Function>(ctor: T): T {
         
-        function Wrapper(this: any, ...args: any[]) {
+        function Wrapper(this: any,...args: any[]) {
             if (!new.target) {
-                // 如果是函数调用而非构造函数调用，存储传入的options                
-                const wrapperFunction =  Wrapper.bind(null)
-                // @ts-expect-error
-                wrapperFunction._magicClassOptions=Object.assign({},options,arguments[0] )            
-                wrapperFunction.prototype = ctor.prototype    
-                return wrapperFunction
+                const wrapperFunction =  Wrapper.bind(null)                
+                wrapperFunction.prototype = ctor.prototype      
+                const opts = Object.assign({
+                    __MAGIC_CLASS_OPTIONS:true
+                },options,arguments[0] )                
+                const newWrapper = function(this: any, ...args: any[]) {
+                    // 重点: 只能通过new来创建类，而不是通过构造函数调用(不能直接执行)
+                    // @ts-ignore
+                    return new Wrapper(opts,...args)
+                }
+                newWrapper.prototype = ctor.prototype     
+                Object.defineProperty(newWrapper, 'name', {
+                    value: ctor.name,
+                    configurable: true,
+                })
+                return newWrapper
             }
-            // 合并选项：基础选项 + 实例的魔术类选项
-            // @ts-expect-error
-            const finalOptions = Object.assign({}, options, new.target._magicClassOptions || {})
+            const hasMagicOpts = args.length > 0 ? args[0].__MAGIC_CLASS_OPTIONS : {}
+            const opts = hasMagicOpts ? args[0] : {}
+            const finalArgs = hasMagicOpts ? args.slice(1) : args
+
+            // 合并选项：基础选项 + 实例的魔术类选项         
+            const finalOptions = Object.assign({}, options,opts )
+            delete finalOptions.__MAGIC_CLASS_OPTIONS
 
             let instance: any
             try {
@@ -101,7 +115,7 @@ export function createMagicClass<
                 if (typeof options?.onBeforeInstance === 'function') {
                     const result = options.onBeforeInstance(
                         new.target as unknown as BaseClass,
-                        args,
+                        finalArgs,
                         finalOptions,
                     )
                     if (result === false) {
@@ -117,9 +131,9 @@ export function createMagicClass<
                     //@ts-ignore
                     new.target._magicClassOptions = finalOptions
                     // 创建实例
-                    instance = Reflect.construct(ctor, args, new.target)
+                    instance = Reflect.construct(ctor, finalArgs, new.target)
                 }
-                //instance._magicClassOptions = finalOptions
+                instance._magicClassOptions = finalOptions
 
                 // 调用onAfterInstance钩子
                 if (typeof options?.onAfterInstance === 'function') {
@@ -149,5 +163,5 @@ export function createMagicClass<
 
 export function getMagicClassOptions<T = Record<string, any>>(instance: any): T {
     // 优先返回实例自身的_magicClassOptions，如果没有则返回构造函数的_magicClassOptions
-    return (instance._magicClassOptions || instance.constructor?._magicClassOptions) as T
+    return (instance._magicClassOptions|| instance.constructor?._magicClassOptions) as T
 }
