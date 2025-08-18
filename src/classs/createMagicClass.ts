@@ -1,11 +1,7 @@
 import { isPlainObject } from '../typecheck'
 import { isClass } from '../typecheck/isClass'
 import type { Class } from '../types'
-import { params } from '../string/params';
 
-export type MagicClassScopeOptions = {
-    
-}
 /**
  * 表示一个魔术类构造函数，既可以作为构造函数使用，也可以作为函数调用来配置选项
  * @template Base 基础类类型
@@ -18,14 +14,14 @@ export interface MagicClassConstructor<
     /** 作为构造函数使用，创建基础类的实例 */
     new (...args: Args): InstanceType<Base>
     /** 作为函数调用，配置选项并返回配置后的构造函数 */
-    <RefactorArgs extends any[] = ConstructorParameters<Base> >(...args: ConstructorParameters<Base>): MagicClassConstructor<Base,RefactorArgs>
-    <RefactorArgs extends any[] = ConstructorParameters<Base> >(createOptions:CreateMagicClassOptions<Base>): MagicClassConstructor<Base,RefactorArgs>    
+    <RefactorArgs extends any[] = ConstructorParameters<Base> >(
+        ...args: ConstructorParameters<Base>): MagicClassConstructor<Base,RefactorArgs>
+    <RefactorArgs extends any[] = ConstructorParameters<Base> >(
+        createOptions:CreateMagicClassOptions<Base>): MagicClassConstructor<Base,RefactorArgs>    
     (): MagicClassConstructor<Base>
     /** 原型属性，继承自基础类 */
     prototype: InstanceType<Base>
 }
-
-
 
 /**
  * 创建魔术类的配置选项
@@ -125,12 +121,13 @@ export function createMagicClass<BaseClass extends Class>(classBase: BaseClass, 
 
     function getClassScope(this:any,args:any[]){
         const isMagicOptions = isMagicClassOptions(args)
-        const scope:MagicClassScope = Object.assign({
-            __MAGIC_CLASS_SCOPE:true,
+        const scope:MagicClassScope = Object.assign({          
+            __MAGIC_CLASS_SCOPE:false, 
             finalParams:[]
-        },isMagicOptions ? args : undefined) 
+        },isMagicOptions ? args[0] : undefined) 
 
         if(isMagicOptions){
+            scope.__MAGIC_CLASS_SCOPE = true
             return scope
         }else{
             // @ts-ignore
@@ -142,6 +139,7 @@ export function createMagicClass<BaseClass extends Class>(classBase: BaseClass, 
                 const handleScopeParams = typeof args[0].params==='function' ? args[0].params : handleParameters
                 const finalParams = handleScopeParams.call(this,params,scopeParams)                       
                 scope.finalParams = finalParams
+                scope.__MAGIC_CLASS_SCOPE = true
             }else{
                 scope.finalParams = args as Params
             }

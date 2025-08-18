@@ -323,14 +323,32 @@ describe('createMagicClass 函数测试', () => {
             const animal = new MagicAnimal('tom',5) 
             const Dog = MagicAnimal({
                 params:(params,scopeParams)=>{
-                    return ['狗',10]
+                    return ['hi,'+params[0],params[1]+10]
                 },
             })
 
             const dog = new Dog('jack',3)
+            expect(dog.name).toBe('hi,jack')
+            expect(dog.age).toBe(13)
+            const dog2 = new Dog('tom',4)
+            expect(dog2.name).toBe('hi,tom')
+            expect(dog2.age).toBe(14)
+        })
+         test('修改魔术类的参数', () => {
+             const MagicAnimal = createMagicClass(Animal)  
+             
+            const animal = new MagicAnimal('tom',5) 
+            const Dog = MagicAnimal<[number]>({
+                params:(params,scopeParams)=>{
+                    return ['DOG'+params[0],params[0]]
+                },
+            })
 
-
-
-
+            const dog = new Dog(1)
+            expect(dog.name).toBe('DOG1')
+            expect(dog.age).toBe(1)
+            const dog2 = new Dog(2)
+            expect(dog2.name).toBe('DOG2')
+            expect(dog2.age).toBe(2)
         })
 })
