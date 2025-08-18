@@ -1,6 +1,15 @@
 import { describe, test, expect, vi } from 'vitest'
 import { createMagicClass } from '../src/classs/createMagicClass' 
-
+class Animal{
+    constructor(public name: string,public  age: number) {
+    }
+    run(){
+        return this.name
+    }
+    eat(food: string): void{
+        console.log(food)
+    }
+}   
 describe('createMagicClass 函数测试', () => {
  
     test('魔术类构造参数的默认重载合并', () => { 
@@ -100,28 +109,28 @@ describe('createMagicClass 函数测试', () => {
         expect(person instanceof MagicPerson).toBe(true)
     })
     
-    test('魔术类支持自定义参数处理函数', () => {
+    test('魔术类支持自定义参数处理函数', () => {        
         class Counter {
             count: number
             constructor(initialCount: number) {
                 this.count = initialCount
             }
         }
+        type Params = ConstructorParameters<typeof Counter>
         
-        const onParametersSpy = vi.fn((params, scopeParams, baseParams) => {
-            return [params[0] + (scopeParams?.[0] || 0) + (baseParams?.[0] || 0)]
+        const onParametersSpy = vi.fn((params:Params, parentParams:Params ):Params => {
+            return [params[0] + (parentParams?.[0] || 0)]
         })
         
         const MagicCounter = createMagicClass(Counter, {
-            params: [10],
-            onParameters: onParametersSpy
+            params: onParametersSpy
         })
         
         const CustomCounter = MagicCounter(5)
         const counter = new CustomCounter(2)
         
         expect(onParametersSpy).toHaveBeenCalled()
-        expect(counter.count).toBe(17) // 2 + 5 + 10
+        expect(counter.count).toBe(7) 
         expect(counter instanceof Counter).toBe(true)
     })
     
@@ -153,8 +162,8 @@ describe('createMagicClass 函数测试', () => {
             type: string
             constructor(type: string) {
                 this.type = type
-            }
-        }
+            }            
+        }        
         
         const MagicAnimal = createMagicClass(Animal, {
             onBeforeInstance: (cls, args) => {
@@ -164,6 +173,7 @@ describe('createMagicClass 函数测试', () => {
         
         const animal = new MagicAnimal('猫')
         expect(animal.type).toBe('猫')
+        //@ts-expect-error
         expect(animal.custom).toBe(true)
     })
     
@@ -187,6 +197,7 @@ describe('createMagicClass 函数测试', () => {
         
         expect(onAfterInstanceSpy).toHaveBeenCalled()
         expect(book.title).toBe('JavaScript高级编程')
+        // @ts-expect-error
         expect(book.modified).toBe(true)
     })
     
@@ -222,9 +233,24 @@ describe('createMagicClass 函数测试', () => {
         const LuxurySportsCar = SportsCar({ type: '豪华跑车' })
         
         const vehicle = new MagicVehicle({ type: '交通工具' })
-        const car = new Car({ type: '小轿车' })
+        const car = new Car({ type: '小轿车' }) 
         const sportsCar = new SportsCar({})
         const luxurySportsCar = new LuxurySportsCar({})
+
+        expect(vehicle).toBeInstanceOf(Vehicle)
+        expect(vehicle).toBeInstanceOf(MagicVehicle)
+        expect(car).toBeInstanceOf(MagicVehicle)
+        expect(car).toBeInstanceOf(Vehicle)
+        expect(car).toBeInstanceOf(Car)
+        
+        expect(sportsCar).toBeInstanceOf(Vehicle)
+        expect(sportsCar).toBeInstanceOf(MagicVehicle)
+        expect(sportsCar).toBeInstanceOf(Car)
+
+        expect(luxurySportsCar).toBeInstanceOf(Vehicle)
+        expect(luxurySportsCar).toBeInstanceOf(MagicVehicle)
+        expect(luxurySportsCar).toBeInstanceOf(Car)
+        expect(luxurySportsCar).toBeInstanceOf(SportsCar)
         
         expect(vehicle.type).toBe('交通工具')
         expect(car.type).toBe('小轿车')
@@ -268,4 +294,43 @@ describe('createMagicClass 函数测试', () => {
         expect(calc2.b).toBe(4)
         expect(calc2.add()).toBe(7)
     })
+        test('魔术类的级继承', () => {
+         
+            const MagicAnimal = createMagicClass(Animal)  
+
+            class Dog extends MagicAnimal {
+                bark(): void{
+                    this.eat("吃肉")
+                }
+            }
+            class PolicDog extends Dog{
+                track():void{
+                    console.log("追捕")
+                    this.bark()
+                }
+            }
+
+            const animal = new Animal('tom',5)
+            const dog = new Dog('jack',3)
+            const polic = new PolicDog('jack',3)
+            
+            expect(dog instanceof Dog).toBe(true)
+            expect(dog instanceof MagicAnimal).toBe(true)
+        })
+        test('继承链上的魔术类构造参数', () => {
+             const MagicAnimal = createMagicClass(Animal)  
+             
+            const animal = new MagicAnimal('tom',5) 
+            const Dog = MagicAnimal({
+                params:(params,scopeParams)=>{
+                    return ['狗',10]
+                },
+            })
+
+            const dog = new Dog('jack',3)
+
+
+
+
+        })
 })
