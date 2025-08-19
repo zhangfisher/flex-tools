@@ -2,6 +2,7 @@ import { describe, test, expect, vi } from 'vitest'
 import { createMagicClass } from '../src/classs/createMagicClass' 
 class Animal{
     constructor(public name: string,public  age: number) {
+        
     }
     run(){
         return this.name
@@ -318,9 +319,8 @@ describe('createMagicClass 函数测试', () => {
             expect(dog instanceof MagicAnimal).toBe(true)
         })
         test('继承链上的魔术类构造参数', () => {
-             const MagicAnimal = createMagicClass(Animal)  
+            const MagicAnimal = createMagicClass(Animal)  
              
-            const animal = new MagicAnimal('tom',5) 
             const Dog = MagicAnimal({
                 params:(params,parentParams)=>{
                     return ['hi,'+params[0],params[1]+10]
@@ -368,6 +368,45 @@ describe('createMagicClass 函数测试', () => {
             expect(dog5.name).toBe('5')
             expect(dog5.age).toBe(7)
         })
+        test('多级继承链上的魔术类使用函数重载覆盖构造参数', () => {
+            const MagicAnimal = createMagicClass(Animal)  
+            
+            const Dog1 = MagicAnimal<[]>({
+                params: (params,parentParams) => (['1',3])
+            })
+            const Dog2 = Dog1<[]>({
+                params: (params,parentParams) => (['2',4])
+            })
+            const Dog3 = Dog2<[]>({
+                params: (params,parentParams) => (['3',5])
+            })
+            const Dog4 = Dog3<[]>({
+                params: (params,parentParams) => (['4',6])
+            })
+            const Dog5 = Dog4<[]>({
+                params: (params,parentParams) => (['5',7])
+            })
+            const dog = new Dog1()
+            expect(dog.name).toBe('1')
+            expect(dog.age).toBe(3)
+
+            const dog2 = new Dog2()
+            expect(dog2.name).toBe('2')
+            expect(dog2.age).toBe(4)
+
+            const dog3 = new Dog3()
+            expect(dog3.name).toBe('3')
+            expect(dog3.age).toBe(5)
+
+            const dog4 = new Dog4()
+            expect(dog4.name).toBe('4')
+            expect(dog4.age).toBe(6)
+
+            const dog5 = new Dog5()
+            expect(dog5.name).toBe('5')
+            expect(dog5.age).toBe(7)
+
+        })
         test('从多级继承链上的魔术类中读取构造参数', () => {
             const MagicAnimal = createMagicClass(Animal)  
             const Dog1 = MagicAnimal<[]>({
@@ -393,6 +432,50 @@ describe('createMagicClass 函数测试', () => {
             const dog5 = new Dog5()
             expect(dog5.name).toBe('root')
             expect(dog5.age).toBe(1)
+        })
+        test('从多级继承链上的魔术类中构造参数覆盖重载', () => {
+            const MagicAnimal = createMagicClass(Animal)  
+            const Dog1 = MagicAnimal<[]>({
+                params:['root',1]
+            })
+            const Dog2 = Dog1()
+            const Dog3 = Dog2()
+            const Dog4 = Dog3()
+            const Dog5 = Dog4()
+            const Dog6 = Dog5({
+                params:['666',2]
+            })
+            const Dog7 = Dog6()
+            const Dog8 = Dog7()
+            const Dog9 = Dog8()
+
+            const dog = new Dog1()
+            expect(dog.name).toBe('root')
+            expect(dog.age).toBe(1)
+            const dog2 = new Dog2()
+            expect(dog2.name).toBe('root')
+            expect(dog2.age).toBe(1)
+            const dog3 = new Dog3()
+            expect(dog3.name).toBe('root')
+            expect(dog3.age).toBe(1)
+            const dog4 = new Dog4()
+            expect(dog4.name).toBe('root')
+            expect(dog4.age).toBe(1)
+            const dog5 = new Dog5()
+            expect(dog5.name).toBe('root')
+            expect(dog5.age).toBe(1)
+            const dog6 = new Dog6()
+            expect(dog6.name).toBe('666')
+            expect(dog6.age).toBe(2)
+            const dog7 = new Dog7()
+            expect(dog7.name).toBe('666')
+            expect(dog7.age).toBe(2)
+            const dog8 = new Dog8()
+            expect(dog8.name).toBe('666')
+            expect(dog8.age).toBe(2)
+            const dog9 = new Dog9()
+            expect(dog9.name).toBe('666')
+            expect(dog9.age).toBe(2)
         })
          test('通过自定义函数修改修改魔术类的构造参数', () => {
              const MagicAnimal = createMagicClass(Animal)        

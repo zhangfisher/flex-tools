@@ -1,6 +1,7 @@
 import { isPlainObject } from '../typecheck'
 import { isClass } from '../typecheck/isClass'
 import type { Class, Fallback } from '../types'
+import { params } from '../string/params';
 
 
 type StrictTuple<T> = T extends readonly [...infer E] ? E : [...never];
@@ -110,53 +111,79 @@ function isMagicClassOptions(args:any[]):boolean {
  */
 export function createMagicClass<BaseClass extends Class>(classBase: BaseClass, options?: CreateMagicClassOptions<BaseClass>) {
     type Params = ConstructorParameters<BaseClass>
-    const { params,onBeforeInstance,onAfterInstance,onErrorInstance } = Object.assign({
-        
-    },options)
+    const { params,onBeforeInstance,onAfterInstance,onErrorInstance } = Object.assign({},options)
 
     const defaultParams = Array.isArray(params) ? params : undefined
 
     // 默认的参数合并方式
-    const defaultHandleParams =   (params:Params,parentParms:Params | undefined):Params=>{
-        const fparams = Array.isArray(parentParms) ? (parentParms.length > params.length ? parentParms : params) : params
-        return fparams.map((param,i)=>{
+    const defaultHandleParams = (params:Params,parentParms:Params | undefined):Params=>{
+        const len = Math.max(params.length,parentParms?.length || 0)
+        return Array.from({length:len}).map((_,i)=>{
+            const param = params[i]
             if(isPlainObject(param)){
-                return Object.assign({},parentParms?.[i],param)
+                return Object.assign({},defaultParams?.[i] ,parentParms?.[i],param)
             }else{
                 return param || parentParms?.[i] || defaultParams?.[i] 
             }
         }) as Params
     }
     const handleParameters = (typeof params === 'function' ? params : defaultHandleParams) as Function
+ 
 
     function makeInheritable<T extends Function>(ctor: T): T {
         function createCallWrapper(Wrapper:any,...args: any[]){
             if(isMagicClassOptions(args)){
-                return createMagicClass(Wrapper,args[0])
-            }
+                // const paramHandler = typeof(args[0]).params === 'function' ? args[0].params : handleParameters
+                // Wrapper._magic_class_options = Object.assign({},options,{
+                //     paramHandler: paramHandler,
+                //     params: defaultParams     
+                // })
+
+                return createMagicClass(Wrapper,Object.assign({},options,args[0]))
+            } 
             const bindWrapper =  Wrapper.bind(null)                
             bindWrapper.prototype = Wrapper.prototype      
             const newWrapper = function(this: any, ...args: Params) { 
-                const newArgs = handleParameters(args,newWrapper._magic_class_params) as Params
-                if (!new.target) {
+                if(isMagicClassOptions(args)){                     
+                    // @ts-ignore
+                    return createMagicClass(bindWrapper,args[0])
+                }
+                const handleParams = newWrapper._magic_class_options?.paramHandler || handleParameters
+                const newArgs = handleParams(args ,newWrapper._magic_class_options.params) as Params
+                if (!new.target) {                    
                     return createCallWrapper(bindWrapper,...newArgs)
-                }                
-                return new Wrapper(...newArgs)
-            }
-            newWrapper._magic_class_params = handleParameters(args,defaultParams) as Params          
-            newWrapper.prototype = Wrapper.prototype  
+                }                       
+                return  new bindWrapper(...newArgs)      
+            } 
+            // 魔术类选项
+            newWrapper._magic_class_options = Object.assign({},options,{
+                paramHandler: handleParameters,
+                params: handleParameters(args,defaultParams)       
+            },Wrapper._magic_class_options)
+            newWrapper.prototype = bindWrapper.prototype  
             Object.defineProperty(newWrapper, 'name', {
                 value: ctor.name,
                 configurable: true,
-            })            
+            })
             return newWrapper
         }
         function Wrapper(this: any,...args: any[]) {
             if (!new.target) { // 函数调用方式
-                return createCallWrapper(Wrapper,...arguments)  
+                return createCallWrapper(Wrapper,...arguments)
             }
             let instance: any
-            const finalArgs = handleParameters(args,defaultParams) as Params          
+            // @ts-ignore
+            const classOptions = new.target._magic_class_options
+            // const finalArgs = (classOptions?.paramHandler || handleParameters) (args,defaultParams) as Params                      
+            // @ts-ignore
+            const finalArgs = new.target._magicing ? args : handleParameters(args,defaultParams) 
+            // @ts-ignore
+            new.target._magicing = true
+
+            if(classOptions){
+                // @ts-ignore
+                new.target._magic_class_options =undefined
+            }
             try {
                 // 调用onBeforeInstance钩子
                 if (typeof onBeforeInstance === 'function') {
@@ -173,6 +200,7 @@ export function createMagicClass<BaseClass extends Class>(classBase: BaseClass, 
                         instance = result
                     }
                 }
+                
                 if (!instance) { 
                     // 创建实例
                     instance = Reflect.construct(ctor,finalArgs, new.target)
@@ -188,13 +216,22 @@ export function createMagicClass<BaseClass extends Class>(classBase: BaseClass, 
                     onErrorInstance(e, new.target as unknown as BaseClass)
                 }
                 throw e // 重新抛出错误，确保错误能够传播
+            }finally{
+                // @ts-ignore
+                new.target._magicing = false
             }
         }
         Wrapper.prototype = ctor.prototype
+        // @ts-ignore
+        // Wrapper._magic_class_options =  {
+        //     paramHandler:handleParameters,
+        //     params:defaultParams
+        // }
         Object.defineProperty(Wrapper, 'name', {
             value: ctor.name,
             configurable: true,
         })
+        // @ts-ignore
         return Wrapper as unknown as T
     }
     return makeInheritable(classBase as unknown as any) as unknown as MagicClassConstructor<BaseClass>
