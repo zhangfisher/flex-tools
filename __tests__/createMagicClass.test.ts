@@ -368,6 +368,9 @@ describe('createMagicClass 函数测试', () => {
             expect(dog5.name).toBe('5')
             expect(dog5.age).toBe(7)
         })
+
+
+
         test('多级继承链上的魔术类使用函数重载覆盖构造参数', () => {
             const MagicAnimal = createMagicClass(Animal)  
             
@@ -433,6 +436,65 @@ describe('createMagicClass 函数测试', () => {
             expect(dog5.name).toBe('root')
             expect(dog5.age).toBe(1)
         })
+          test('创建多个魔术类实例', () => {
+            const MagicAnimal = createMagicClass(Animal)  
+            const Dog = MagicAnimal<[string]>({
+                params:['root',1]
+            })            
+
+            const dog1 = new Dog('dog-1')
+            expect(dog1.name).toBe('dog-1')
+            expect(dog1.age).toBe(1)
+            const dog2 = new Dog('dog-2')
+            expect(dog2.name).toBe('dog-2')
+            expect(dog2.age).toBe(1)
+            const dog3 = new Dog('dog-3')
+            expect(dog3.name).toBe('dog-3')
+            expect(dog3.age).toBe(1)
+            const dog4 = new Dog('dog-4')
+            expect(dog4.name).toBe('dog-4')
+            expect(dog4.age).toBe(1)
+            const dog5 = new Dog('dog-5')
+            expect(dog5.name).toBe('dog-5')
+            expect(dog5.age).toBe(1)
+            const dog6 = new Dog('dog-6')
+            expect(dog6.name).toBe('dog-6')
+            expect(dog6.age).toBe(1)
+            const dog7 = new Dog('dog-7')
+            expect(dog7.name).toBe('dog-7')
+            expect(dog7.age).toBe(1)
+            const dog8 = new Dog('dog-8')
+            expect(dog8.name).toBe('dog-8')
+            expect(dog8.age).toBe(1)
+            const dog9 = new Dog('dog-9')
+            expect(dog9.name).toBe('dog-9')
+            expect(dog9.age).toBe(1)
+        })
+        test('创建多个魔术类实例时的默认参数合并', () => {
+            class User{
+                constructor(public options:{name:string,age:number}){}
+            }
+            const MagicUser = createMagicClass(User)  
+            const AdminUser = MagicUser({
+                params:[{name:'guest',age:18}]
+            })            
+
+            const user1 = new AdminUser({ name: 'user-1', age: 1})
+            expect(user1.options.name).toBe('user-1')
+            expect(user1.options.age).toBe(1)
+            const user2 = new AdminUser({ name: 'user-2', age: 2})
+            expect(user2.options.name).toBe('user-2')
+            expect(user2.options.age).toBe(2)
+            const user3 = new AdminUser({ name: 'user-3', age: 3})
+            expect(user3.options.name).toBe('user-3')
+            expect(user3.options.age).toBe(3)
+            const user4 = new AdminUser({ name: 'user-4', age: 4})
+            expect(user4.options.name).toBe('user-4')
+            expect(user4.options.age).toBe(4)
+            const user5 = new AdminUser({ name: 'user-5', age: 5})
+            expect(user5.options.name).toBe('user-5')
+            expect(user5.options.age).toBe(5)
+        })
         test('从多级继承链上的魔术类中构造参数覆盖重载', () => {
             const MagicAnimal = createMagicClass(Animal)  
             const Dog1 = MagicAnimal<[]>({
@@ -492,5 +554,212 @@ describe('createMagicClass 函数测试', () => {
             const dog2 = new Dog(2)
             expect(dog2.name).toBe('DOG2')
             expect(dog2.age).toBe(2)
+        })
+
+
+        test('多级继承链上的魔术类的onBeforeInstance钩子函数', () => {
+            const MagicAnimal = createMagicClass(Animal)  
+            
+            const classs:any[]=[]
+            const paramss:any[]=[]
+            const Dog1 = MagicAnimal<[]>({
+                params:['1',3],
+                onBeforeInstance:(cls,params)=>{
+                    classs.push(cls)
+                    paramss.push(params)
+                }
+            })
+            const Dog2 = Dog1<[]>({
+                params:['2',4]
+            })
+            const Dog3 = Dog2<[]>({
+                params:['3',5]
+            })
+            const Dog4 = Dog3<[]>({
+                params:['4',6]
+            })
+            const Dog5 = Dog4<[]>({
+                params:['5',7]
+            })
+            const dog = new Dog1() 
+            const dog2 = new Dog2() 
+            const dog3 = new Dog3() 
+            const dog4 = new Dog4() 
+            const dog5 = new Dog5() 
+            expect(classs).toEqual([Dog1,Dog2,Dog3,Dog4,Dog5])
+            expect(paramss).toEqual([['1',3],['2',4],['3',5],['4',6],['5',7]])
+
+        })
+        test('多级继承链上的魔术类的onAfter钩子函数', () => {
+            const MagicAnimal = createMagicClass(Animal,{
+                onAfterInstance:(inst)=>{
+                    insts.push(inst)
+                }
+            })  
+            
+            const insts:any[]=[]
+            const Dog1 = MagicAnimal<[]>({
+                params:['1',3]
+            })
+            const Dog2 = Dog1<[]>({
+                params:['2',4]
+            })
+            const Dog3 = Dog2<[]>({
+                params:['3',5]
+            })
+            const Dog4 = Dog3<[]>({
+                params:['4',6]
+            })
+            const Dog5 = Dog4<[]>({
+                params:['5',7]
+            })
+            const dog1 = new Dog1() 
+            const dog2 = new Dog2() 
+            const dog3 = new Dog3() 
+            const dog4 = new Dog4() 
+            const dog5 = new Dog5() 
+            expect(insts).toEqual([dog1,dog2,dog3,dog4,dog5])
+
+        })
+         test('多级继承链上的魔术类的独立的onAfterInstance钩子函数', () => {
+            const MagicAnimal = createMagicClass(Animal,{
+                onAfterInstance:(inst)=>{
+                    insts.push(inst)
+                }
+            })  
+            
+            const insts:any[]=[]
+            const Dog1 = MagicAnimal<[]>({
+                params:['1',3],
+                onAfterInstance:(inst)=>{
+                    insts.push([1,inst])
+                }
+            })
+            const Dog2 = Dog1<[]>({
+                params:['2',4],
+                onAfterInstance:(inst)=>{
+                    insts.push([2,inst])
+                }
+            })
+            const Dog3 = Dog2<[]>({
+                params:['3',5],
+                onAfterInstance:(inst)=>{
+                    insts.push([3,inst])
+                }
+            })
+            const Dog4 = Dog3<[]>({
+                params:['4',6],
+                onAfterInstance:(inst)=>{
+                    insts.push([4,inst])
+                }
+            })
+            const Dog5 = Dog4<[]>({
+                params:['5',7],
+                onAfterInstance:(inst)=>{
+                    insts.push([5,inst])
+                }
+            })
+            const dog1 = new Dog1() 
+            const dog2 = new Dog2() 
+            const dog3 = new Dog3() 
+            const dog4 = new Dog4() 
+            const dog5 = new Dog5() 
+            expect(insts).toEqual([[1,dog1],[2,dog2],[3,dog3],[4,dog4],[5,dog5]])
+
+        })
+        test("模块化示例", () => {
+            class ModuleBase{
+                id:string
+                count:number
+                constructor(options:{id:string,count:number}){
+                    this.id = options.id
+                    this.count = options.count
+                }
+                getCount(){
+                    return this.count
+                }
+            }
+            const modules:any[]=[]
+            const Module = createMagicClass(ModuleBase,{
+                onAfterInstance:(module:ModuleBase)=>{
+                    modules.push(module)
+                }
+            })
+
+            class Module1 extends Module{
+                getTotal1(n:number){
+                    return this.getCount() + n
+                }
+            }
+            class Module2 extends Module{
+                getTotal2(n:number){
+                    return this.getCount() + n
+                }   
+            }
+
+            const module1 = new Module1({id:'a',count:1})
+            const module2 = new Module2({id:'b',count:2})
+
+            expect(module1.getTotal1(10)).toBe(11)
+            expect(module1).toBeInstanceOf(Module1)
+            expect(module1).toBeInstanceOf(Module)
+            expect(module1).toBeInstanceOf(ModuleBase)
+
+            expect(module2.getTotal2(10)).toBe(12)
+            expect(module2).toBeInstanceOf(Module2)
+            expect(module2).toBeInstanceOf(Module)
+            expect(module2).toBeInstanceOf(ModuleBase) 
+
+            expect(modules).toEqual([module1,module2])
+
+        })
+        test("重写模块化示例的构造参数", () => {
+            class ModuleBase{
+                id:string
+                count:number
+                constructor(options:{id:string,count:number}){
+                    this.id = options.id
+                    this.count = options.count
+                }
+                getCount(){
+                    return this.count
+                }
+            }
+            const modules:any[]=[]
+            const Module = createMagicClass(ModuleBase,{
+                onAfterInstance:(module:ModuleBase)=>{
+                    modules.push(module)
+                }
+            })
+
+            const Module1 = Module<[string]>({
+                params:(params,parentParams)=>{
+                    return [{id:params[0],count:10}]
+                }
+            })
+            const Module2 = Module<[number]>({
+                params:(params,parentParams)=>{
+                    return [{id:'y',count:params[0]}]
+                }
+            })
+            
+
+            const module1 = new Module1('x')
+            const module2 = new Module2(100)
+ 
+            expect(module1).toBeInstanceOf(Module1)            
+            expect(module1).toBeInstanceOf(Module)
+            expect(module1).toBeInstanceOf(ModuleBase)
+            expect(module1.id).toBe('x')
+            expect(module1.count).toBe(10)
+ 
+            expect(module2).toBeInstanceOf(Module2)
+            expect(module2).toBeInstanceOf(Module)
+            expect(module2).toBeInstanceOf(ModuleBase) 
+            expect(module2.id).toBe('y')
+            expect(module2.count).toBe(100)
+
+            expect(modules).toEqual([module1,module2])
+
         })
 })

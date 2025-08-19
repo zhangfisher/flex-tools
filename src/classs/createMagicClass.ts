@@ -1,8 +1,6 @@
 import { isPlainObject } from '../typecheck'
 import { isClass } from '../typecheck/isClass'
-import type { Class, Fallback } from '../types'
-import { params } from '../string/params';
-
+import type { Class, Fallback } from '../types' 
 
 type StrictTuple<T> = T extends readonly [...infer E] ? E : [...never];
 
@@ -171,22 +169,16 @@ export function createMagicClass<BaseClass extends Class>(classBase: BaseClass, 
             if (!new.target) { // 函数调用方式
                 return createCallWrapper(Wrapper,...arguments)
             }
+            //@ts-ignore
+            const isMagicing:boolean = new.target._magicing ?? false
             let instance: any
-            // @ts-ignore
-            const classOptions = new.target._magic_class_options
-            // const finalArgs = (classOptions?.paramHandler || handleParameters) (args,defaultParams) as Params                      
-            // @ts-ignore
+            // @ts-ignore 
             const finalArgs = new.target._magicing ? args : handleParameters(args,defaultParams) 
-            // @ts-ignore
-            new.target._magicing = true
-
-            if(classOptions){
-                // @ts-ignore
-                new.target._magic_class_options =undefined
-            }
+            
+            
             try {
-                // 调用onBeforeInstance钩子
-                if (typeof onBeforeInstance === 'function') {
+                // @ts-ignore 
+                if (typeof onBeforeInstance === 'function' && !isMagicing) {
                     const result = onBeforeInstance(
                         new.target as unknown as BaseClass,
                         finalArgs as any
@@ -203,16 +195,18 @@ export function createMagicClass<BaseClass extends Class>(classBase: BaseClass, 
                 
                 if (!instance) { 
                     // 创建实例
+                    // @ts-ignore
+                    new.target._magicing = true
                     instance = Reflect.construct(ctor,finalArgs, new.target)
                 } 
 
                 // 调用onAfterInstance钩子
-                if (typeof onAfterInstance === 'function') {
+                if (typeof onAfterInstance === 'function' && !isMagicing) {
                     onAfterInstance(instance)
                 }
                 return instance
             } catch (e: any) {
-                if (typeof onErrorInstance === 'function') {
+                if (typeof onErrorInstance === 'function' && !isMagicing) {
                     onErrorInstance(e, new.target as unknown as BaseClass)
                 }
                 throw e // 重新抛出错误，确保错误能够传播
@@ -221,12 +215,7 @@ export function createMagicClass<BaseClass extends Class>(classBase: BaseClass, 
                 new.target._magicing = false
             }
         }
-        Wrapper.prototype = ctor.prototype
-        // @ts-ignore
-        // Wrapper._magic_class_options =  {
-        //     paramHandler:handleParameters,
-        //     params:defaultParams
-        // }
+        Wrapper.prototype = ctor.prototype 
         Object.defineProperty(Wrapper, 'name', {
             value: ctor.name,
             configurable: true,
