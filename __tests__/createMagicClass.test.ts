@@ -294,7 +294,7 @@ describe('createMagicClass 函数测试', () => {
         expect(calc2.b).toBe(4)
         expect(calc2.add()).toBe(7)
     })
-        test('魔术类的级继承', () => {
+        test('魔术类的多级继承', () => {
          
             const MagicAnimal = createMagicClass(Animal)  
 
@@ -322,7 +322,7 @@ describe('createMagicClass 函数测试', () => {
              
             const animal = new MagicAnimal('tom',5) 
             const Dog = MagicAnimal({
-                params:(params,scopeParams)=>{
+                params:(params,parentParams)=>{
                     return ['hi,'+params[0],params[1]+10]
                 },
             })
@@ -334,12 +334,71 @@ describe('createMagicClass 函数测试', () => {
             expect(dog2.name).toBe('hi,tom')
             expect(dog2.age).toBe(14)
         })
-         test('修改魔术类的参数', () => {
-             const MagicAnimal = createMagicClass(Animal)  
-             
-            const animal = new MagicAnimal('tom',5) 
+        test('多级继承链上的魔术类重载覆盖构造参数', () => {
+            const MagicAnimal = createMagicClass(Animal)  
+            new MagicAnimal('tom',5) 
+            const Dog1 = MagicAnimal<[]>({
+                params:['1',3]
+            })
+            const Dog2 = Dog1<[]>({
+                params:['2',4]
+            })
+            const Dog3 = Dog2<[]>({
+                params:['3',5]
+            })
+            const Dog4 = Dog3<[]>({
+                params:['4',6]
+            })
+            const Dog5 = Dog4<[]>({
+                params:['5',7]
+            })
+            const dog = new Dog1()
+            expect(dog.name).toBe('1')
+            expect(dog.age).toBe(3)
+            const dog2 = new Dog2()
+            expect(dog2.name).toBe('2')
+            expect(dog2.age).toBe(4)
+            const dog3 = new Dog3()
+            expect(dog3.name).toBe('3')
+            expect(dog3.age).toBe(5)
+            const dog4 = new Dog4()
+            expect(dog4.name).toBe('4')
+            expect(dog4.age).toBe(6)
+            const dog5 = new Dog5()
+            expect(dog5.name).toBe('5')
+            expect(dog5.age).toBe(7)
+        })
+        test('从多级继承链上的魔术类中读取构造参数', () => {
+            const MagicAnimal = createMagicClass(Animal)  
+            const Dog1 = MagicAnimal<[]>({
+                params:['root',1]
+            })
+            const Dog2 = Dog1()
+            const Dog3 = Dog2()
+            const Dog4 = Dog3()
+            const Dog5 = Dog4()
+
+            const dog = new Dog1()
+            expect(dog.name).toBe('root')
+            expect(dog.age).toBe(1)
+            const dog2 = new Dog2()
+            expect(dog2.name).toBe('root')
+            expect(dog2.age).toBe(1)
+            const dog3 = new Dog3()
+            expect(dog3.name).toBe('root')
+            expect(dog3.age).toBe(1)
+            const dog4 = new Dog4()
+            expect(dog4.name).toBe('root')
+            expect(dog4.age).toBe(1)
+            const dog5 = new Dog5()
+            expect(dog5.name).toBe('root')
+            expect(dog5.age).toBe(1)
+        })
+         test('通过自定义函数修改修改魔术类的构造参数', () => {
+             const MagicAnimal = createMagicClass(Animal)        
+
             const Dog = MagicAnimal<[number]>({
-                params:(params,scopeParams)=>{
+                params:(params,parentParams)=>{
                     return ['DOG'+params[0],params[0]]
                 },
             })

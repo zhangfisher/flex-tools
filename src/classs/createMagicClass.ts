@@ -1,7 +1,15 @@
 import { isPlainObject } from '../typecheck'
 import { isClass } from '../typecheck/isClass'
-import type { Class } from '../types'
+import type { Class, Fallback } from '../types'
 
+
+type StrictTuple<T> = T extends readonly [...infer E] ? E : [...never];
+
+/**
+ * 表示一个魔术类构造函数，既可以作为构造函数使用，也可以作为函数调用来配置选项
+ * @template Base 基础类类型
+ * @template Options 配置选项类型
+ */
 /**
  * 表示一个魔术类构造函数，既可以作为构造函数使用，也可以作为函数调用来配置选项
  * @template Base 基础类类型
@@ -9,16 +17,17 @@ import type { Class } from '../types'
  */
 export interface MagicClassConstructor<
     Base extends Class,
-    Args  extends any[] = ConstructorParameters<Base>
+    Args = ConstructorParameters<Base>,
+    Params  = ConstructorParameters<Base>
+    
 > {
     /** 作为构造函数使用，创建基础类的实例 */
-    new (...args: Args): InstanceType<Base>
+    new (...args: StrictTuple<Args>): InstanceType<Base>
     /** 作为函数调用，配置选项并返回配置后的构造函数 */
-    <RefactorArgs extends any[] = ConstructorParameters<Base> >(
-        ...args: ConstructorParameters<Base>): MagicClassConstructor<Base,RefactorArgs>
-    <RefactorArgs extends any[] = ConstructorParameters<Base> >(
-        createOptions:CreateMagicClassOptions<Base>): MagicClassConstructor<Base,RefactorArgs>    
-    (): MagicClassConstructor<Base>
+    <RefArgs = never>(...args: StrictTuple<Args>): MagicClassConstructor<Base,Fallback<RefArgs ,Args>>
+    <RefArgs = never>(
+        createOptions: CreateMagicClassOptions<Base,RefArgs>
+    ): MagicClassConstructor<Base, Fallback<RefArgs ,Args>>
     /** 原型属性，继承自基础类 */
     prototype: InstanceType<Base>
 }
@@ -30,10 +39,11 @@ export interface MagicClassConstructor<
  */
 export type CreateMagicClassOptions<
     Base extends Class,
+    RefParams = ConstructorParameters<Base>,
     Params = ConstructorParameters<Base>
 > = {
     // 处理类构造参数
-    params?:  Params | ((params: Params,scopeParms:Params ) => Params)
+    params?:  Params | ((params: RefParams,scopeParms:Params ) => Params)
     /** 实例创建前的钩子函数，可以阻止实例创建或修改类 */
     onBeforeInstance?: (cls: Base, params: Params) => void | boolean | object
     /** 实例创建后的钩子函数 */
@@ -107,110 +117,65 @@ export function createMagicClass<BaseClass extends Class>(classBase: BaseClass, 
     const defaultParams = Array.isArray(params) ? params : undefined
 
     // 默认的参数合并方式
-    const defaultHandleParams =   (params:Params,scopeParms:Params | undefined):Params=>{
-        return params.map((param,i)=>{
+    const defaultHandleParams =   (params:Params,parentParms:Params | undefined):Params=>{
+        const fparams = Array.isArray(parentParms) ? (parentParms.length > params.length ? parentParms : params) : params
+        return fparams.map((param,i)=>{
             if(isPlainObject(param)){
-                return Object.assign({},scopeParms?.[i],param)
+                return Object.assign({},parentParms?.[i],param)
             }else{
-                return param || scopeParms?.[i] || defaultParams?.[i] 
+                return param || parentParms?.[i] || defaultParams?.[i] 
             }
         }) as Params
     }
+    const handleParameters = (typeof params === 'function' ? params : defaultHandleParams) as Function
 
-    const handleParameters = (typeof params === 'function' ? options?.params : defaultHandleParams) as Function
-
-    function getClassScope(this:any,args:any[]){
-        const isMagicOptions = isMagicClassOptions(args)
-        const scope:MagicClassScope = Object.assign({          
-            __MAGIC_CLASS_SCOPE:false, 
-            finalParams:[]
-        },isMagicOptions ? args[0] : undefined) 
-
-        if(isMagicOptions){
-            scope.__MAGIC_CLASS_SCOPE = true
-            return scope
-        }else{
-            // @ts-ignore
-            const hasMagicScope = args.length > 0 ? (typeof (args[0])==='object' && args[0].__MAGIC_CLASS_SCOPE) : false
-            if(hasMagicScope){
-                Object.assign(scope,args[0])
-                const scopeParams = args[0].finalParams
-                const params = args.slice(1) as Params
-                const handleScopeParams = typeof args[0].params==='function' ? args[0].params : handleParameters
-                const finalParams = handleScopeParams.call(this,params,scopeParams)                       
-                scope.finalParams = finalParams
-                scope.__MAGIC_CLASS_SCOPE = true
-            }else{
-                scope.finalParams = args as Params
-            }
-        }
-        return scope
-
-        // const scopeParams = (hasMagicScope ? args[0] : defaultParams || []) as Params
-        // const params = (hasMagicScope ? args.slice(1) : args) as Params
-        // const finalParams = handleParameters.call(this,params,scopeParams)    
-
-        // return [finalParams,params,scopeParams] 
-        // }
-        // return scope
-        // 检查参数中第一个参数是否是MagicClassScope
-
-                    
-       
-
-
-        // const hasMagicScope = args.length > 0 ? (Array.isArray(args[0]) && args[0].__MAGIC_CLASS_SCOPE) : false
-        // const scopeParams = (hasMagicScope ? args[0] : defaultParams || []) as Params
-        // const params = (hasMagicScope ? args.slice(1) : args) as Params
-        // const finalParams = handleParameters.call(this,params,scopeParams)
-        // return [finalParams,params,scopeParams] 
-
-
-    }
     function makeInheritable<T extends Function>(ctor: T): T {
         function createCallWrapper(Wrapper:any,...args: any[]){
+            if(isMagicClassOptions(args)){
+                return createMagicClass(Wrapper,args[0])
+            }
             const bindWrapper =  Wrapper.bind(null)                
             bindWrapper.prototype = Wrapper.prototype      
-            const  scope = getClassScope.call(bindWrapper,args)    
             const newWrapper = function(this: any, ...args: Params) { 
-                const newArgs = (scope.__MAGIC_CLASS_SCOPE ? [scope,...args] : args) as Params
+                const newArgs = handleParameters(args,newWrapper._magic_class_params) as Params
                 if (!new.target) {
                     return createCallWrapper(bindWrapper,...newArgs)
                 }                
                 return new Wrapper(...newArgs)
             }
+            newWrapper._magic_class_params = handleParameters(args,defaultParams) as Params          
             newWrapper.prototype = Wrapper.prototype  
             Object.defineProperty(newWrapper, 'name', {
                 value: ctor.name,
                 configurable: true,
-            })
+            })            
             return newWrapper
         }
         function Wrapper(this: any,...args: any[]) {
             if (!new.target) { // 函数调用方式
                 return createCallWrapper(Wrapper,...arguments)  
             }
-            const scope  = getClassScope.call(new.target,args)
             let instance: any
+            const finalArgs = handleParameters(args,defaultParams) as Params          
             try {
                 // 调用onBeforeInstance钩子
                 if (typeof onBeforeInstance === 'function') {
                     const result = onBeforeInstance(
                         new.target as unknown as BaseClass,
-                        scope.finalParams as any
+                        finalArgs as any
                     )
                     if (result === false) {
                         throw new Error('createMagicClass is blocked by onBeforeInstance hook')
                     } else if (isClass(result)) {
                         // 替换构造函数
-                        instance = Reflect.construct(result as unknown as T, args)
+                        instance = Reflect.construct(result as unknown as T, finalArgs)
                     } else if (result !== undefined) {
                         instance = result
                     }
                 }
                 if (!instance) { 
                     // 创建实例
-                    instance = Reflect.construct(ctor,scope.finalParams, new.target)
+                    instance = Reflect.construct(ctor,finalArgs, new.target)
                 } 
 
                 // 调用onAfterInstance钩子
