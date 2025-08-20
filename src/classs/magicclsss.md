@@ -111,7 +111,6 @@ const admin = new MagicUser({ type: "admin", name: "admin", age: 18 });
 `(inst: InstanceType<Base>) => void`
 
 在实例化之后执行,可以在此得到实例。
-``
 
 ### onErrorInstance
 
@@ -311,12 +310,12 @@ class Component {
 const MagicComponent = createMagicClass(Component);
 
 // 预配置的组件变体
-const Button = MagicComponent({ type: 'button', theme: 'default' });
-const PrimaryButton = Button({ theme: 'primary' });
-const DangerButton = Button({ theme: 'danger' });
+const Button = MagicComponent({ type: "button", theme: "default" });
+const PrimaryButton = Button({ theme: "primary" });
+const DangerButton = Button({ theme: "danger" });
 
 // 使用时无需重复配置
-new PrimaryButton({ label: '确认' });
+new PrimaryButton({ label: "确认" });
 ```
 
 **优点**：减少重复配置，提高代码复用性，使组件系统更加灵活。
@@ -331,20 +330,24 @@ const dependencies = new Map();
 
 // 依赖装饰器
 function Inject(serviceKey: string) {
-  return function(target: any, propertyKey: string) {
+  return function (target: any, propertyKey: string) {
     dependencies.set(`${target.constructor.name}.${propertyKey}`, serviceKey);
   };
 }
 
 class Service {
-  getData() { return 'service data'; }
+  getData() {
+    return "service data";
+  }
 }
 
 class Controller {
-  @Inject('Service')
+  @Inject("Service")
   private service!: Service;
-  
-  process() { return this.service.getData(); }
+
+  process() {
+    return this.service.getData();
+  }
 }
 
 // 使用魔术类增强Controller
@@ -356,11 +359,11 @@ const MagicController = createMagicClass(Controller, {
     // 实例创建后注入依赖
     for (const [key, serviceKey] of dependencies.entries()) {
       if (key.startsWith(instance.constructor.name)) {
-        const propName = key.split('.')[1];
+        const propName = key.split(".")[1];
         instance[propName] = container.get(serviceKey);
       }
     }
-  }
+  },
 });
 
 // 使用增强后的控制器
@@ -387,18 +390,18 @@ const TimestampModel = MagicModel({
   onAfterInstance: (instance) => {
     instance.createdAt = new Date();
     instance.updatedAt = new Date();
-  }
+  },
 });
 
 const ValidatedModel = TimestampModel({
   onBeforeInstance: (cls, params) => {
     // 验证逻辑
-    if (!params.isValid()) throw new Error('Invalid model data');
-  }
+    if (!params.isValid()) throw new Error("Invalid model data");
+  },
 });
 
 // 业务模型
-const UserModel = ValidatedModel({ tableName: 'users' });
+const UserModel = ValidatedModel({ tableName: "users" });
 ```
 
 **优点**：实现关注点分离，避免深层继承带来的复杂性，使代码更易于维护。
@@ -421,27 +424,29 @@ const MagicApp = createMagicClass(Application);
 const LoggerPlugin = {
   install(app) {
     app.logger = { log: console.log };
-  }
+  },
 };
 
 const RouterPlugin = {
   install(app) {
-    app.router = { /* 路由实现 */ };
-  }
+    app.router = {
+      /* 路由实现 */
+    };
+  },
 };
 
 // 应用插件
 const EnhancedApp = MagicApp({
   onAfterInstance: (instance) => {
-    [LoggerPlugin, RouterPlugin].forEach(plugin => {
+    [LoggerPlugin, RouterPlugin].forEach((plugin) => {
       plugin.install(instance);
       instance.plugins.push(plugin);
     });
-  }
+  },
 });
 
 // 创建应用实例
-const app = new EnhancedApp({ name: 'MyApp' });
+const app = new EnhancedApp({ name: "MyApp" });
 ```
 
 **优点**：实现松耦合的插件架构，便于功能扩展和维护。
@@ -460,19 +465,19 @@ class Product {
 const MagicProductFactory = createMagicClass(Product, {
   onBeforeInstance: (cls, params) => {
     // 根据参数动态决定创建何种产品
-    if (params.type === 'special') {
+    if (params.type === "special") {
       return new SpecialProduct(params);
     }
-  }
+  },
 });
 
 // 预配置产品类型
-const StandardProduct = MagicProductFactory({ quality: 'standard' });
-const PremiumProduct = MagicProductFactory({ quality: 'premium' });
+const StandardProduct = MagicProductFactory({ quality: "standard" });
+const PremiumProduct = MagicProductFactory({ quality: "premium" });
 
 // 创建产品实例
-const product1 = new StandardProduct({ name: 'Product 1' });
-const product2 = new PremiumProduct({ name: 'Product 2', type: 'special' });
+const product1 = new StandardProduct({ name: "Product 1" });
+const product2 = new PremiumProduct({ name: "Product 2", type: "special" });
 ```
 
 **优点**：简化工厂模式实现，提供更灵活的实例创建控制。
@@ -486,7 +491,7 @@ class Handler {
   constructor(config: HandlerConfig) {
     // 处理器实现
   }
-  
+
   handle(request) {
     // 基础处理逻辑
     return request;
@@ -499,30 +504,30 @@ const MagicHandler = createMagicClass(Handler);
 const LoggingHandler = MagicHandler({
   onAfterInstance: (instance) => {
     const originalHandle = instance.handle;
-    instance.handle = function(request) {
-      console.log('Request:', request);
+    instance.handle = function (request) {
+      console.log("Request:", request);
       const result = originalHandle.call(this, request);
-      console.log('Result:', result);
+      console.log("Result:", result);
       return result;
     };
-  }
+  },
 });
 
 const AuthHandler = LoggingHandler({
   onAfterInstance: (instance) => {
     const originalHandle = instance.handle;
-    instance.handle = function(request) {
+    instance.handle = function (request) {
       if (!request.isAuthenticated) {
-        throw new Error('Unauthorized');
+        throw new Error("Unauthorized");
       }
       return originalHandle.call(this, request);
     };
-  }
+  },
 });
 
 // 使用处理器
 const handler = new AuthHandler({});
-handler.handle({ data: 'test', isAuthenticated: true });
+handler.handle({ data: "test", isAuthenticated: true });
 ```
 
 **优点**：实现可组合的处理流程，便于功能扩展和复用。
@@ -533,4 +538,4 @@ handler.handle({ data: 'test', isAuthenticated: true });
 
 无论你是构建复杂的 UI 组件、可配置的工具类，还是需要精细控制实例创建过程的系统，神奇魔法类都能为你提供强大而灵活的解决方案。
 
-详见[flex-tools](https://github.com/zhangfisher/flex-tools)。
+详见[flex-tools](https://github.com/zhangfisher/flex-tools/guide/classs.html#createmagicclass)。
