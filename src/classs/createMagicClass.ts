@@ -48,7 +48,7 @@ export type CreateMagicClassOptions<
     /** 实例创建后的钩子函数 */
     onAfterInstance?: (inst: InstanceType<Base>) => void
     /** 实例创建出错时的钩子函数 */
-    onErrorInstance?: (error: Error, cls: Base) => void
+    onErrorInstance?: (error: Error, cls: Base, params: Params) => void
 }
 
 export type MagicClassScope = CreateMagicClassOptions<any> & {
@@ -207,7 +207,7 @@ export function createMagicClass<BaseClass extends Class>(classBase: BaseClass, 
                 return instance
             } catch (e: any) {
                 if (typeof onErrorInstance === 'function' && !isMagicing) {
-                    onErrorInstance(e, new.target as unknown as BaseClass)
+                    onErrorInstance(e, new.target as unknown as BaseClass,finalArgs)
                 }
                 throw e // 重新抛出错误，确保错误能够传播
             }finally{

@@ -762,4 +762,30 @@ describe('createMagicClass 函数测试', () => {
             expect(modules).toEqual([module1,module2])
 
         })
+    test("用户类重载魔术类", () => {
+        // 定义一个普通类
+        type UserType = "admin" | "guest" | "customer";
+        type UserOptions = { type: UserType;name?: string; age?: number;  };
+        class User {
+        name: string;
+        age: number;
+        type: UserType;
+        constructor(options: UserOptions) {
+            this.name = options.name || '';
+            this.age = options.age || 18;
+            this.type = options.type;
+        }
+        }
+
+        const MagicUser = createMagicClass(User);
+        class Admin extends MagicUser<[{name:string,age:number}]>({ type: "admin" }){}
+        class Guest extends MagicUser<[string]>({ type: "guest" }){} 
+
+        const admin = new Admin({ name: "jack", age: 18 });
+        const guest = new Guest("Jack"); 
+
+
+
+
+    })
 })
