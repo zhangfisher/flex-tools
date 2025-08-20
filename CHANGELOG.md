@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.5.4
+
+### Patch Changes
+
+- 060e2ff: add creaeMagicClass
+
 ## 1.5.3
 
 ### Patch Changes
