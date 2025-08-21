@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.5.5
+
+### Patch Changes
+
+- 739ccdd: fix node:<api> ref
+
 ## 1.5.4
 
 ### Patch Changes
