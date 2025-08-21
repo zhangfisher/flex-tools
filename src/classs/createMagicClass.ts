@@ -14,11 +14,7 @@ type StrictTuple<T> = T extends readonly [...infer E] ? E : [...never]
  * @template Base 基础类类型
  * @template Options 配置选项类型
  */
-export interface MagicClassConstructor<
-    Base extends Class,
-    Args = ConstructorParameters<Base>,
-    Params = ConstructorParameters<Base>,
-> {
+export interface MagicClassConstructor<Base extends Class, Args = ConstructorParameters<Base>> {
     /** 作为构造函数使用，创建基础类的实例 */
     new (...args: StrictTuple<Args>): InstanceType<Base>
     /** 作为函数调用，配置选项并返回配置后的构造函数 */

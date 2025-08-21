@@ -1,34 +1,35 @@
 /**
- * 
- * 
+ *
+ *
  * 获取类方法列表
- *  
- * 
+ *
+ *
  */
- import { assignObject } from '../object/assignObject'; 
+import { assignObject } from '../object/assignObject'
 
-
-export interface GetClassMethodsOptions{
-    includePrototype?:boolean                  // 是否包含原型链上的所有方法
-    excludes?:(string | symbol)[] | ((name:string | symbol)=>boolean)       // 排除
+export interface GetClassMethodsOptions {
+    includePrototype?: boolean // 是否包含原型链上的所有方法
+    excludes?: (string | symbol)[] | ((name: string | symbol) => boolean) // 排除
 }
 
-export function getClassMethods(obj:object,options?:GetClassMethodsOptions){
-    const {excludes,includePrototype} =assignObject({
-        excludes:['constructor'],
-        includePrototype:true
-    },options)
-    if(!excludes.includes('constructor')) excludes.push('constructor')
-    let methods:(string | symbol)[]=[]
-    let proto  = (obj as any).__proto__
-    while (proto && !Object.is(proto,Object.prototype)) {
+export function getClassMethods(obj: object, options?: GetClassMethodsOptions) {
+    const { excludes, includePrototype } = assignObject(
+        {
+            excludes: ['constructor'],
+            includePrototype: true,
+        },
+        options,
+    )
+    if (!excludes.includes('constructor')) excludes.push('constructor')
+    const methods: (string | symbol)[] = []
+    let proto = (obj as any).__proto__
+    while (proto && !Object.is(proto, Object.prototype)) {
         methods.push(...Reflect.ownKeys(proto!))
         proto = proto.__proto__
-        if(!includePrototype) break
+        if (!includePrototype) break
     }
-    return [...new Set(methods)].filter(name=>!excludes.includes(name))
+    return [...new Set(methods)].filter((name) => !excludes.includes(name))
 }
-
 
 // class A{
 //     x=1
@@ -36,7 +37,7 @@ export function getClassMethods(obj:object,options?:GetClassMethodsOptions){
 //     #xx=1
 //     private p1(){}
 //     a1(){
-        
+
 //     }
 //     a2(){
 
@@ -55,5 +56,4 @@ export function getClassMethods(obj:object,options?:GetClassMethodsOptions){
 
 // console.log(getClassMethods(new A()))
 // console.log(getClassMethods(new AA()))
-// console.log(getClassMethods(new AA(),{includePrototype:false})) 
-
+// console.log(getClassMethods(new AA(),{includePrototype:false}))
