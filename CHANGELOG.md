@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.5.6
+
+### Patch Changes
+
+- 9e59891: feat: add FirstUpper and FirstLower
+
 ## 1.5.5
 
 ### Patch Changes
