@@ -38,41 +38,49 @@
  *
  * @module
  */
+// Object
 
-export * from './JsonObject'
-export * from './merge'
-export * from './collection'
 export * from './mutableRecordList'
 export * from './mutableRecord'
-export * from './timeDuration'
-export * from './fileSize'
-export * from './rename'
-export * from './class'
 export * from './changeFieldType'
-export * from './syncFunction'
-export * from './implementOf'
-export * from './argument'
-export * from './lastArgument'
-export * from './allowEmpty'
-export * from './asyncFunction'
-export * from './arrayMember'
-export * from './overloads'
-export * from './optional'
 export * from './valueOf'
-export * from './changeReturns'
+export * from './optional'
 export * from './dict'
-export * from './requiredKeys'
-export * from './primitive'
-export * from './IsNumberLike'
-export * from './getTypeByPath'
-export * from './objectKeyPaths'
-export * from './union'
-export * from './Unique'
-export * from './ObjectKeys'
-export * from './dict'
+export * from './JsonObject'
 export * from './deepPartial'
 export * from './deepRequired'
-export * from './fallback'
+export * from './ObjectKeys'
+export * from './requiredKeys'
+export * from './getTypeByPath'
+export * from './objectKeyPaths'
+// Array
+export * from './arrayMember'
+export * from './Unique'
+// Function
+export * from './syncFunction'
+export * from './argument'
+export * from './lastArgument'
+export * from './asyncFunction'
+export * from './overloads'
+export * from './changeReturns'
+
+// Class
+export * from './implementOf'
+export * from './class'
+
 // String
 export * from './firstUpper'
 export * from './firstLower'
+
+// Misc
+
+export * from './primitive'
+export * from './IsNumberLike'
+export * from './union'
+export * from './merge'
+export * from './collection'
+export * from './timeDuration'
+export * from './fileSize'
+export * from './rename'
+export * from './fallback'
+export * from './allowEmpty'
