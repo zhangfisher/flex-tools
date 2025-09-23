@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.5.8
+
+### Patch Changes
+
+- 3bdb6c8: feat: type Class 现在支持匹配抽象类
+
 ## 1.5.7
 
 ### Patch Changes
