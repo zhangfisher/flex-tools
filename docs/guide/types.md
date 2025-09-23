@@ -401,6 +401,26 @@ type KeyType = ObjectKeys<Animal>;
 //   ^^^^^^^
 ```
 
+### Keys
+
+**类型：**`Keys<T extends Record<string,any>>`
+
+获取对象的键名元组
+
+```typescript twoslash
+import { Keys } from "flex-tools/types";
+
+interface Animal {
+  name: string;
+  age: number;
+  address: string;
+}
+
+type KeyType = Keys<Animal>;
+//   ^^^^^^^
+// ['name', 'age', 'address']
+```
+
 ### RequiredKeys
 
 **类型：**`RequiredKeys<T extends object, Keys extends keyof T> `
