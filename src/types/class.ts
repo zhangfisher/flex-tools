@@ -31,13 +31,31 @@
  * ```
  */
 
-export type ConcreteClass<T = any> = new (...args: any[]) => T;
-export type AbstractClass<T = any> = abstract new (...args: any[]) => T;
-export type Class<T = any> = ConcreteClass<T> | AbstractClass<T>;
+export type ConcreteClass<T = object> = new (...args: any[]) => T;
+export type AbstractClass<T = object> = abstract new (...args: any[]) => T;
+export type Class<T = object> = ConcreteClass<T> | AbstractClass<T>;
 
-// function test(cls: Class) {}
-// abstract class A {}
-// class B {}
+// abstract class A {
+//   abstract methodA(): void;
+// }
 
-// test(A);
-// test(B);
+// class B {
+//   methodB() {
+//     return "B";
+//   }
+// }
+
+// class B1 extends B {
+//   methodB1() {
+//     return "B1";
+//   }
+// }
+
+// // 正确的泛型约束方式
+// function test2<T extends B>(cls: Class<T>): void {
+//   // 现在 cls 必须返回 T 类型，而 T 必须是 B 或其子类
+// }
+
+// test2(B); // ✅ 正确
+// test2(B1); // ✅ 正确 - B1 是 B 的子类
+// test2(A); // ❌ 错误 - A 不是 B 的子类

@@ -774,7 +774,7 @@ type Funs = Overloads<typeof foo>;
 
 **类型：**`Class<T = any>`
 
-表示任意类的构造函数类型。可用于需要接受任意类作为参数的场景。
+表示任意类的构造函数类型，包括普通类和抽象类。可用于需要接受任意类作为参数的场景。
 
 ```typescript
 // 基本用法
@@ -798,6 +798,14 @@ function createInstance(ClassType: Class<AClass>) {
 createInstance(AClass); //  ✅ Correct
 createInstance(BClass); //  ❌ Error
 ```
+
+- `Class<T>` 可以接受泛型参数，用于限制类的构造参数类型。
+
+### AbstractClass
+
+**类型：**`AbstractClass<T = any>`
+
+同`Class`仅表示抽象类
 
 ### ImplementOf
 
