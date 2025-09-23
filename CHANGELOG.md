@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.5.7
+
+### Patch Changes
+
+- 733f045: add Keys type
+
 ## 1.5.6
 
 ### Patch Changes
