@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.5.9
+
+### Patch Changes
+
+- 986f69b: fix: 修复 Class 类型
+
 ## 1.5.8
 
 ### Patch Changes
