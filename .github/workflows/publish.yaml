@@ -1,11 +1,12 @@
 name: Publish Package
-
 on:
   push:
     branches:
-      - master
+      - "master"
     tags:
       - "release-*"
+  # 允许你从 Actions 选项卡手动运行此工作流程
+  # Allows you to run this workflow manually from the Actions tab
   workflow_run:
     workflows: ["publish"]
     types:
@@ -22,11 +23,11 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      # 步骤顺序调整：setup-node 必须紧接在 checkout 之后
       - name: Setup Node.js environment
         uses: actions/setup-node@v6
         with:
@@ -38,7 +39,7 @@ jobs:
           bun-version: latest
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
