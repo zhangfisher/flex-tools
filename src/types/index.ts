@@ -1,3 +1,4 @@
+import { Equal } from "./equal";
 /**
  * 类型工具库的主入口文件。
  * 导出所有可用的类型工具，包括：
@@ -57,6 +58,7 @@ export * from "./keys";
 // Array
 export * from "./arrayMember";
 export * from "./Unique";
+export * from "./includes";
 // Function
 export * from "./syncFunction";
 export * from "./argument";
@@ -85,3 +87,4 @@ export * from "./fileSize";
 export * from "./rename";
 export * from "./fallback";
 export * from "./allowEmpty";
+export * from "./equal";

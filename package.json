@@ -13,11 +13,12 @@
   "scripts": {
     "build": "tsup",
     "publish-packages": "bun run build && changeset version && bun run cpx CHANGELOG.md docs/ && changeset publish",
+    "only-publish-packages": "bun run build && npm publish --workspaces",
     "changeset": "changeset",
     "sync": "cnpm sync flex-tools",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs" 
   },
   "files": [
     "dist",
@@ -208,32 +209,31 @@
   "author": "wxzhang",
   "license": "ISC",
   "devDependencies": {
-    "@biomejs/biome": "2.2.0",
-    "@changesets/cli": "^2.29.8",
+    "@changesets/cli": "^2.30.0",
     "@lite-tree/vue": "^1.1.6",
-    "@shikijs/vitepress-twoslash": "^3.22.0",
-    "@swc/core": "^1.15.13",
+    "@shikijs/vitepress-twoslash": "^3.23.0",
+    "@swc/core": "^1.15.18",
     "@types/fs-extra": "^11.0.1",
-    "@types/node": "^20.19.33",
+    "@types/node": "^20.19.37",
     "@types/semver": "^7.7.1",
-    "@types/shelljs": "^0.8.17",
+    "@types/shelljs": "^0.10.0",
     "cpx": "^1.5.0",
     "esbuild-copy-files-plugin": "^1.1.0",
-    "oxfmt": "^0.35.0",
-    "oxlint": "^1.50.0",
-    "oxlint-tsgolint": "^0.14.2",
+    "oxfmt": "^0.36.0",
+    "oxlint": "^1.51.0",
+    "oxlint-tsgolint": "^0.16.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.1",
     "tsx": "^4.7.0",
     "type-fest": "^5.4.4",
     "typescript": "^5.9.3",
     "vitepress": "^1.6.4",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.18"
   },
   "dependencies": {
     "art-template": "4.13.4",
     "fastevent": "^2.3.6",
-    "glob": "^10.5.0",
+    "glob": "^13.0.6",
     "semver": "^7.7.4"
   }
 }

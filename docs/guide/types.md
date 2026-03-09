@@ -30,18 +30,18 @@ import type { <类型名称> } from "flex-tools/types"
 import { MutableRecord } from "flex-tools/types";
 
 type Animal = MutableRecord<{
-  dog: { bark: boolean; wagging: boolean };
-  cat: { mew: number };
-  chicken: { egg: number };
+    dog: { bark: boolean; wagging: boolean };
+    cat: { mew: number };
+    chicken: { egg: number };
 }>;
 let animals: Animal = {
-  type: "dog",
-  bark: true,
-  wagging: true,
+    type: "dog",
+    bark: true,
+    wagging: true,
 };
 let animals2: Animal = {
-  type: "cat",
-  mew: 23,
+    type: "cat",
+    mew: 23,
 };
 ```
 
@@ -50,18 +50,18 @@ let animals2: Animal = {
 ```ts twoslash
 import { MutableRecord } from "flex-tools/types";
 type Animal = MutableRecord<
-  {
-    dog: { bark: boolean; wagging: boolean };
-    cat: { mew: number };
-    chicken: { egg: number };
-  },
-  "kind"
+    {
+        dog: { bark: boolean; wagging: boolean };
+        cat: { mew: number };
+        chicken: { egg: number };
+    },
+    "kind"
 >;
 
 let animals: Animal = {
-  kind: "dog",
-  bark: true,
-  wagging: true,
+    kind: "dog",
+    bark: true,
+    wagging: true,
 };
 // {kind:'dog',bark:boolean,wagging:boolean }
 // | {kind: 'cat', mew:number}
@@ -73,24 +73,24 @@ let animals: Animal = {
 ```ts twoslash {7,8}
 import { MutableRecord } from "flex-tools/types";
 type Animal = MutableRecord<
-  {
-    dog: { bark: boolean; wagging: boolean };
-    cat: { mew: number };
-    chicken: { egg: number };
-  },
-  "kind",
-  {
-    name: string;
-    age: number;
-  }
+    {
+        dog: { bark: boolean; wagging: boolean };
+        cat: { mew: number };
+        chicken: { egg: number };
+    },
+    "kind",
+    {
+        name: string;
+        age: number;
+    }
 >;
 
 let animals: Animal = {
-  kind: "dog",
-  bark: true,
-  wagging: true,
-  name: "Jack",
-  age: 3,
+    kind: "dog",
+    bark: true,
+    wagging: true,
+    name: "Jack",
+    age: 3,
 };
 // {kind:'dog',bark:boolean,wagging:boolean,name:string,age:number }
 // | {kind: 'cat', mew:number,name:string,age:number}
@@ -102,23 +102,23 @@ let animals: Animal = {
 ```ts twoslash {7,8}
 import { MutableRecord } from "flex-tools/types";
 type Animal = MutableRecord<
-  {
-    dog: { bark: boolean; wagging: boolean };
-    cat: { mew: number };
-    chicken: { egg: number };
-  },
-  "kind",
-  {
-    name: string;
-    age: number;
-  },
-  "cat"
+    {
+        dog: { bark: boolean; wagging: boolean };
+        cat: { mew: number };
+        chicken: { egg: number };
+    },
+    "kind",
+    {
+        name: string;
+        age: number;
+    },
+    "cat"
 >;
 // 以下没有指定kind时，默认为cat类型。
 let animals: Animal = {
-  mew: 5,
-  name: "Jack",
-  age: 3,
+    mew: 5,
+    name: "Jack",
+    age: 3,
 };
 ```
 
@@ -132,9 +132,9 @@ let animals: Animal = {
 import { MutableRecordList } from "flex-tools/types";
 
 type Animals = MutableRecordList<{
-  dog: { bark: boolean; wagging: boolean };
-  cat: { mew: number };
-  chicken: { egg: number };
+    dog: { bark: boolean; wagging: boolean };
+    cat: { mew: number };
+    chicken: { egg: number };
 }>;
 // (
 //     {type:'dog',bark:boolean,wagging:boolean }
@@ -143,8 +143,8 @@ type Animals = MutableRecordList<{
 // )[]
 
 let animals: Animals = [
-  { type: "dog", bark: true, wagging: true },
-  { type: "cat", mew: 23 },
+    { type: "dog", bark: true, wagging: true },
+    { type: "cat", mew: 23 },
 ];
 ```
 
@@ -154,17 +154,17 @@ let animals: Animals = [
 import { MutableRecordList } from "flex-tools/types";
 
 type Animals = MutableRecordList<
-  {
-    dog: { bark: boolean; wagging: boolean };
-    cat: { mew: number };
-    chicken: { egg: number };
-  },
-  "kind"
+    {
+        dog: { bark: boolean; wagging: boolean };
+        cat: { mew: number };
+        chicken: { egg: number };
+    },
+    "kind"
 >;
 
 let animals: Animals = [
-  { kind: "dog", bark: true, wagging: true },
-  { kind: "cat", mew: 23 },
+    { kind: "dog", bark: true, wagging: true },
+    { kind: "cat", mew: 23 },
 ];
 // (
 //     {kind:'dog',bark:boolean,wagging:boolean }
@@ -179,21 +179,21 @@ let animals: Animals = [
 import { MutableRecordList } from "flex-tools/types";
 
 type Animals = MutableRecordList<
-  {
-    dog: { bark: boolean; wagging: boolean };
-    cat: { mew: number };
-    chicken: { egg: number };
-  },
-  "kind",
-  {
-    name: string;
-    age: number;
-  }
+    {
+        dog: { bark: boolean; wagging: boolean };
+        cat: { mew: number };
+        chicken: { egg: number };
+    },
+    "kind",
+    {
+        name: string;
+        age: number;
+    }
 >;
 
 let animals: Animals = [
-  { kind: "dog", bark: true, wagging: true, name: "tom", age: 3 },
-  { kind: "cat", mew: 23, name: "bob", age: 1 },
+    { kind: "dog", bark: true, wagging: true, name: "tom", age: 3 },
+    { kind: "cat", mew: 23, name: "bob", age: 1 },
 ];
 // (
 //     {kind:'dog',bark:boolean,wagging:boolean ,name:string,age:number}
@@ -208,22 +208,22 @@ let animals: Animals = [
 import { MutableRecordList } from "flex-tools/types";
 
 type Animals = MutableRecordList<
-  {
-    dog: { bark: boolean; wagging: boolean };
-    cat: { mew: number };
-    chicken: { egg: number };
-  },
-  "kind",
-  {
-    name: string;
-    age: number;
-  },
-  "cat"
+    {
+        dog: { bark: boolean; wagging: boolean };
+        cat: { mew: number };
+        chicken: { egg: number };
+    },
+    "kind",
+    {
+        name: string;
+        age: number;
+    },
+    "cat"
 >;
 
 let animals: Animals = [
-  { kind: "dog", bark: true, wagging: true, name: "tom", age: 3 },
-  { mew: 23, name: "bob", age: 1 }, // [!code ++]
+    { kind: "dog", bark: true, wagging: true, name: "tom", age: 3 },
+    { mew: 23, name: "bob", age: 1 }, // [!code ++]
 ];
 // (
 //     {kind:'dog',bark:boolean,wagging:boolean ,name:string,age:number}
@@ -242,9 +242,9 @@ let animals: Animals = [
 import { ChangeFieldType } from "flex-tools/types";
 
 interface MyRecord {
-  a: number;
-  b: boolean;
-  c: string;
+    a: number;
+    b: boolean;
+    c: string;
 }
 type newRecord = ChangeFieldType<MyRecord, "a", boolean>;
 /** {
@@ -277,11 +277,11 @@ type Value = ValueOf<Record<string, number>>;
 ```typescript twoslash
 import { Optional } from "flex-tools/types";
 export interface SiteOptions {
-  id: string;
-  icon: string;
-  logo: string;
-  title: string;
-  path: string;
+    id: string;
+    icon: string;
+    logo: string;
+    title: string;
+    path: string;
 }
 
 type mysite = Optional<SiteOptions, "id" | "path">;
@@ -304,19 +304,19 @@ type mysite = Optional<SiteOptions, "id" | "path">;
 ```ts
 type StringDict = Dict<string>;
 const dict1: StringDict = {
-  key1: "value1",
-  key2: "value2",
+    key1: "value1",
+    key2: "value2",
 };
 
 // 使用复杂类型
 interface User {
-  name: string;
-  age: number;
+    name: string;
+    age: number;
 }
 type UserDict = Dict<User>;
 const dict2: UserDict = {
-  user1: { name: "Alice", age: 25 },
-  user2: { name: "Bob", age: 30 },
+    user1: { name: "Alice", age: 25 },
+    user2: { name: "Bob", age: 30 },
 };
 
 // 函数类型会返回 never
@@ -339,14 +339,14 @@ type FuncDict = Dict<() => void>; // never
 import { DeepPartial } from "flex-tools/types";
 
 interface Order {
-  orderNo: string;
-  amount: number;
-  status: "pending" | "paid" | "canceled";
-  custom: {
-    name: string;
-    age: number;
-    address: string;
-  };
+    orderNo: string;
+    amount: number;
+    status: "pending" | "paid" | "canceled";
+    custom: {
+        name: string;
+        age: number;
+        address: string;
+    };
 }
 
 type PartialOrder = DeepPartial<Order>;
@@ -362,10 +362,10 @@ type PartialOrder = DeepPartial<Order>;
 ```typescript twoslash
 import { DeepRequired } from "flex-tools/types";
 type Example = {
-  a?: {
-    b?: number;
-  };
-  c?: string[];
+    a?: {
+        b?: number;
+    };
+    c?: string[];
 };
 
 type RequiredExample = DeepRequired<Example>;
@@ -388,9 +388,9 @@ type RequiredExample = DeepRequired<Example>;
 import { ObjectKeys } from "flex-tools/types";
 
 interface Animal {
-  name: string;
-  age: number;
-  address: string;
+    name: string;
+    age: number;
+    address: string;
 }
 
 type name = keyof Animal;
@@ -411,9 +411,9 @@ type KeyType = ObjectKeys<Animal>;
 import { Keys } from "flex-tools/types";
 
 interface Animal {
-  name: string;
-  age: number;
-  address: string;
+    name: string;
+    age: number;
+    address: string;
 }
 
 type KeyType = Keys<Animal>;
@@ -431,10 +431,10 @@ type KeyType = Keys<Animal>;
 import { RequiredKeys } from "flex-tools/types";
 
 type Person = {
-  name?: string;
-  age?: number;
-  address?: string;
-  sex?: "male" | "female";
+    name?: string;
+    age?: number;
+    address?: string;
+    sex?: "male" | "female";
 };
 
 // 我们想要创建一个新的类型，其中 name,age 属性是必选的：
@@ -451,28 +451,28 @@ type NewPerson = RequiredKeys<Person, "name" | "age">;
 ```ts twoslash
 import { ObjectKeyPaths } from "flex-tools/types";
 const obj = {
-  store: {
-    book: [
-      {
-        category: "reference",
-        author: "Nigel Rees",
-        title: "Sayings of the Century",
-        price: 8.95,
-        tabs: ["1", "2"],
-      },
-      {
-        category: "fiction",
-        author: "Evelyn Waugh",
-        title: "Sword of Honour",
-        price: 12.99,
-        tags: ["a", "b"],
-      },
-    ],
-    bicycle: {
-      color: "red",
-      price: 19.95,
+    store: {
+        book: [
+            {
+                category: "reference",
+                author: "Nigel Rees",
+                title: "Sayings of the Century",
+                price: 8.95,
+                tabs: ["1", "2"],
+            },
+            {
+                category: "fiction",
+                author: "Evelyn Waugh",
+                title: "Sword of Honour",
+                price: 12.99,
+                tags: ["a", "b"],
+            },
+        ],
+        bicycle: {
+            color: "red",
+            price: 19.95,
+        },
     },
-  },
 };
 
 type paths = ObjectKeyPaths<typeof obj>;
@@ -485,28 +485,28 @@ type paths = ObjectKeyPaths<typeof obj>;
 import { ObjectKeyPaths } from "flex-tools/types";
 
 const obj = {
-  store: {
-    book: [
-      {
-        category: "reference",
-        author: "Nigel Rees",
-        title: "Sayings of the Century",
-        price: 8.95,
-        tabs: ["1", "2"],
-      },
-      {
-        category: "fiction",
-        author: "Evelyn Waugh",
-        title: "Sword of Honour",
-        price: 12.99,
-        tags: ["a", "b"],
-      },
-    ],
-    bicycle: {
-      color: "red",
-      price: 19.95,
+    store: {
+        book: [
+            {
+                category: "reference",
+                author: "Nigel Rees",
+                title: "Sayings of the Century",
+                price: 8.95,
+                tabs: ["1", "2"],
+            },
+            {
+                category: "fiction",
+                author: "Evelyn Waugh",
+                title: "Sword of Honour",
+                price: 12.99,
+                tags: ["a", "b"],
+            },
+        ],
+        bicycle: {
+            color: "red",
+            price: 19.95,
+        },
     },
-  },
 };
 
 type paths = ObjectKeyPaths<typeof obj, "/">;
@@ -526,28 +526,28 @@ type paths = ObjectKeyPaths<typeof obj, "/">;
 ```ts twoslash
 import { GetTypeByPath } from "flex-tools/types";
 const obj = {
-  a: {
-    b: {
-      b1: "1",
-      b2: "1",
-      b3: 1,
-      b4: {
-        b41: 1,
-        b42: 2,
-        b43: [1, 2],
-      },
+    a: {
+        b: {
+            b1: "1",
+            b2: "1",
+            b3: 1,
+            b4: {
+                b41: 1,
+                b42: 2,
+                b43: [1, 2],
+            },
+        },
+        e: 1,
+        y: 1,
     },
-    e: 1,
-    y: 1,
-  },
-  f: 1,
-  e: 8,
-  y: "",
-  z: [],
-  d1: () => {},
-  d2: new Set(),
-  d3: new Map(),
-  d4: Symbol(),
+    f: 1,
+    e: 8,
+    y: "",
+    z: [],
+    d1: () => {},
+    d2: new Set(),
+    d3: new Map(),
+    d4: Symbol(),
 };
 
 type type1 = GetTypeByPath<typeof obj, "a.b">;
@@ -564,28 +564,28 @@ type type7 = GetTypeByPath<typeof obj, "z.0">;
 ```ts twoslash
 import { GetTypeByPath } from "flex-tools/types";
 const obj = {
-  a: {
-    b: {
-      b1: "1",
-      b2: "1",
-      b3: 1,
-      b4: {
-        b41: 1,
-        b42: 2,
-        b43: [1, 2],
-      },
+    a: {
+        b: {
+            b1: "1",
+            b2: "1",
+            b3: 1,
+            b4: {
+                b41: 1,
+                b42: 2,
+                b43: [1, 2],
+            },
+        },
+        e: 1,
+        y: 1,
     },
-    e: 1,
-    y: 1,
-  },
-  f: 1,
-  e: 8,
-  y: "",
-  z: [],
-  d1: () => {},
-  d2: new Set(),
-  d3: new Map(),
-  d4: Symbol(),
+    f: 1,
+    e: 8,
+    y: "",
+    z: [],
+    d1: () => {},
+    d2: new Set(),
+    d3: new Map(),
+    d4: Symbol(),
 };
 
 type type1 = GetTypeByPath<typeof obj, "a/b", "/">;
@@ -641,6 +641,29 @@ type T2 = Unique<[1, 2, 2, 3]>; // [1, 2, 3]
 //   ^^
 type T3 = Unique<["a", "b", "a"]>; // ['a', 'b']
 //   ^^
+```
+
+### Includes
+
+检查数组中是否包含某个类型.
+与 `U extends T[number]` 不同，这个工具类型会进行精确的类型匹配，不会因为类型的兼容性而产生误判。
+
+```typescript twoslash
+import { Includes } from "flex-tools/types";
+
+type Result1 = Includes<[1, 2, 3], 2>; // true
+type Result2 = Includes<[1, 2, 3], 4>; // false
+
+// 与 extends 的区别
+type Test1 = Includes<[{ a: 1 }], { a: 1 }>; // true
+// false (因为对象字面量类型的特殊性)
+type Test2 = { a: 1 } extends [{ a: 1 }][number] ? true : false;
+
+// 联合类型检查
+// false (string | number 不等于 string)
+type Result3 = Includes<[string | number, boolean], string>;
+// true
+type Result4 = Includes<[string, number, boolean], string>;
 ```
 
 ## Function
@@ -701,7 +724,7 @@ executeAsync(()=>true) ❌ Error
 import type { Argument } from "flex-tools/types";
 
 function greet(name: string, age: number, isAdmin: boolean) {
-  // 函数实现
+    // 函数实现
 }
 // 提取各个位置参数的类型
 type FirstParam = Argument<typeof greet, 0>; // string
@@ -722,7 +745,7 @@ type LastParam = Argument<typeof greet, -1>; // boolean
 import type { LastArgument } from "flex-tools/types";
 
 function greet(name: string, age: number, isAdmin: boolean) {
-  // 函数实现
+    // 函数实现
 }
 // 提取各个位置参数的类型
 type LastParam = LastArgument<typeof greet>; // boolean
@@ -779,20 +802,20 @@ type Funs = Overloads<typeof foo>;
 ```typescript
 // 基本用法
 class AClass {
-  private a: string = "";
+    private a: string = "";
 }
 class BClass {
-  private b: string = "";
+    private b: string = "";
 }
 
 // 函数接受任意类作为参数
 function createInstance(ClassType: Class) {
-  return new ClassType();
+    return new ClassType();
 }
 createInstance(AClass); // ✅ Correct
 // 限制类
 function createInstance(ClassType: Class<AClass>) {
-  return new ClassType();
+    return new ClassType();
 }
 
 createInstance(AClass); //  ✅ Correct
@@ -815,19 +838,19 @@ createInstance(BClass); //  ❌ Error
 
 ```typescript
 interface Animal {
-  name: string;
-  run(): void;
+    name: string;
+    run(): void;
 }
 
 // 使用 ImplementOf 定义工厂函数
 function createAnimal(AnimalClass: ImplementOf<Animal>) {
-  return new AnimalClass();
+    return new AnimalClass();
 }
 
 // 实现接口的类
 class Dog implements Animal {
-  name = "Dog";
-  run() {}
+    name = "Dog";
+    run() {}
 }
 class Cat {}
 
@@ -876,9 +899,9 @@ const str3: ValueParam = undefined; // ✅ Correct
 ```typescript twoslash
 import type { Rename } from "flex-tools/types";
 interface X {
-  a: number;
-  b: boolean;
-  c: () => boolean;
+    a: number;
+    b: boolean;
+    c: () => boolean;
 }
 
 // 将a更名为A
@@ -915,8 +938,8 @@ type R2 = Rename<X, { a: "A"; b: "B" }>;
 ```typescript
 // 函数参数类型
 function validateFileSize(size: FileSize): boolean {
-  // 实现文件大小验证逻辑
-  return true;
+    // 实现文件大小验证逻辑
+    return true;
 }
 
 validateFileSize("100MB"); // ✅ Correct
@@ -934,23 +957,23 @@ validateFileSize("100"); // ❌ ERROR
 
 - 纯数字（毫秒）：`1000` 或 `'1000'`
 - 带单位简写：
-  - 毫秒: `'100ms'`
-  - 秒: `'30s'`
-  - 分钟: `'5m'`
-  - 小时: `'2h'`
-  - 天: `'1d'` 或 `'1D'`
-  - 周: `'2w'` 或 `'2W'`
-  - 月: `'3M'`
-  - 年: `'1y'` 或 `'1Y'`
+    - 毫秒: `'100ms'`
+    - 秒: `'30s'`
+    - 分钟: `'5m'`
+    - 小时: `'2h'`
+    - 天: `'1d'` 或 `'1D'`
+    - 周: `'2w'` 或 `'2W'`
+    - 月: `'3M'`
+    - 年: `'1y'` 或 `'1Y'`
 - 带单位全称：
-  - `'500Milliseconds'`
-  - `'30Seconds'`
-  - `'5Minutes'`
-  - `'2Hours'`
-  - `'1Days'`
-  - `'2Weeks'`
-  - `'3Months'`
-  - `'1Years'`
+    - `'500Milliseconds'`
+    - `'30Seconds'`
+    - `'5Minutes'`
+    - `'2Hours'`
+    - `'1Days'`
+    - `'2Weeks'`
+    - `'3Months'`
+    - `'1Years'`
 
 ```typescript
 const short: TimeDuration = "30s"; // ✅ Correct
@@ -1020,3 +1043,17 @@ type A = Fallback<never, "a">;
 type B = Fallback<"a", "b">;
 //=> 'a'
 ```
+
+### Equal
+
+判断两个类型是否相等。
+
+```typescript twoslash
+import { Equal } from "flex-tools/types";
+
+type A = Equal<true, true>;
+//=> true
+type B = Equal<"a", "b">;
+//=> false
+ 
+``` 

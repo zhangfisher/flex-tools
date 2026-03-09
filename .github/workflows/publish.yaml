@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - "release-*"
   workflow_run:
     workflows: ["publish"]
     types:
@@ -42,7 +44,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: bun run publish-packages
+          publish: ${{ startsWith(github.ref_name, 'release-') && 'bun run only-publish-packages' || 'bun run publish-packages' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           npm_config_registry: https://registry.npmjs.org
