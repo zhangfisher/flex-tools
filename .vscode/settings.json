@@ -23,5 +23,15 @@
     "editor.formatOnSave": true,
     "[typescript]": {
         "editor.defaultFormatter": "oxc.oxc-vscode"
+    },
+    "files.watcherExclude": {
+        "**/node_modules/**": true,
+        "**/.git/**": true
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "oxc.oxc-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "oxc.oxc-vscode"
     }
 }

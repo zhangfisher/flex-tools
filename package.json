@@ -8,7 +8,7 @@
   "homepage": "https://github.com/zhangfisher/flex-tools",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zhangfisher/flex-tools"
+    "url": "git+https://github.com/zhangfisher/flex-tools.git"
   },
   "scripts": {
     "build": "tsup",
@@ -18,7 +18,8 @@
     "sync": "cnpm sync flex-tools",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "publish-versions": "bun run scripts/publish-versions.js"
   },
   "files": [
     "dist",

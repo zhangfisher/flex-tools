@@ -1,5 +1,5 @@
 ---
-'flex-tools': patch
+"flex-tools": patch
 ---
 
-fix ci
+更新发布
