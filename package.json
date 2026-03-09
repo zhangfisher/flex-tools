@@ -1,6 +1,6 @@
 {
   "name": "flex-tools",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "typescript modular utilities.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -18,7 +18,7 @@
     "sync": "cnpm sync flex-tools",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs" 
+    "docs:preview": "vitepress preview docs"
   },
   "files": [
     "dist",
