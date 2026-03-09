@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.6.2
+
+### Patch Changes
+
+-   566075e: 更新发布
+
 ## 1.6.1
 
 ### Patch Changes
