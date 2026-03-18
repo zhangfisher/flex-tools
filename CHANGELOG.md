@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.6.3
+
+### Patch Changes
+
+-   d282069: 新增加 callProfiler 用于进行函数调用跟踪
+
 ## 1.6.2
 
 ### Patch Changes
