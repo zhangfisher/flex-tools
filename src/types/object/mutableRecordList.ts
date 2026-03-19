@@ -1,13 +1,13 @@
-import { MutableRecord } from "./mutableRecord"
-import { Union } from "./union"
+import { MutableRecord } from "./mutableRecord";
+import { Union } from "../misc/union";
 
 /**
  * 创建一个可变记录数组类型，数组中的每个元素都是一个可变记录，其具体类型由指定的类型字段（默认为'type'）决定。
  * 这个类型是 MutableRecord 的数组版本，常用于处理多态对象的集合。
- * 
+ *
  * @template Items - 包含所有可能类型的映射对象
  * @template KindKey - 用作类型标识符的字段名（默认为'type'）
- * 
+ *
  * @example
  * ```typescript
  * // 基本用法：动物列表
@@ -25,7 +25,7 @@ import { Union } from "./union"
  *     wingspan: number;
  *   };
  * }>;
- * 
+ *
  * // 使用示例
  * const animals: AnimalList = [
  *   {
@@ -44,7 +44,7 @@ import { Union } from "./union"
  *     wingspan: 20
  *   }
  * ];
- * 
+ *
  * // 使用自定义类型字段
  * type ShapeList = MutableRecordList<{
  *   circle: {
@@ -55,7 +55,7 @@ import { Union } from "./union"
  *     height: number;
  *   };
  * }, 'kind'>;
- * 
+ *
  * const shapes: ShapeList = [
  *   {
  *     kind: 'circle',
@@ -67,7 +67,7 @@ import { Union } from "./union"
  *     height: 20
  *   }
  * ];
- * 
+ *
  * // 实际应用：消息历史记录
  * type MessageHistory = MutableRecordList<{
  *   text: {
@@ -84,7 +84,7 @@ import { Union } from "./union"
  *     username: string;
  *   };
  * }>;
- * 
+ *
  * const chatHistory: MessageHistory = [
  *   {
  *     type: 'system',
@@ -103,7 +103,7 @@ import { Union } from "./union"
  *     sender: 'Bob'
  *   }
  * ];
- * 
+ *
  * // 类型安全的数组处理
  * function processMessages(messages: MessageHistory) {
  *   return messages.map(msg => {
@@ -119,36 +119,36 @@ import { Union } from "./union"
  * }
  * ```
  */
- export type MutableRecordList<Items,KindKey extends string='type',Share=unknown,DefaultKind extends keyof Items = never> =
- MutableRecord<Items,KindKey,Share,DefaultKind>[]
-
-
+export type MutableRecordList<
+    Items,
+    KindKey extends string = "type",
+    Share = unknown,
+    DefaultKind extends keyof Items = never,
+> = MutableRecord<Items, KindKey, Share, DefaultKind>[];
 
 // type Animals = MutableRecordList<{
 //     dog:{bark:boolean,wagging:boolean},
 //     cat:{mew:number},
-//     chicken:{egg:number}      
+//     chicken:{egg:number}
 // },'type',{x?:number,y?:boolean,z?:string}>
 // // (
-// //     {type:'dog',bark:boolean,wagging:boolean } 
+// //     {type:'dog',bark:boolean,wagging:boolean }
 // //     | {type: 'cat', mew:number}
 // //     | {type: 'chicken', egg:number}
 // // )[]
 
 // let animals:Animals = [
 //     { type:"dog", bark:true,wagging:true},
-//     { type:"cat", mew:23 } 
+//     { type:"cat", mew:23 }
 // ]
-
-
 
 // type AnimalsDefault = MutableRecordList<{
 //     dog:{bark:boolean,wagging:boolean},
 //     cat:{mew:number},
-//     chicken:{egg:number}      
+//     chicken:{egg:number}
 // },'type',{x?:number,y?:boolean,z?:string},'dog'>
 // // (
-// //     {type:'dog',bark:boolean,wagging:boolean } 
+// //     {type:'dog',bark:boolean,wagging:boolean }
 // //     | {type: 'cat', mew:number}
 // //     | {type: 'chicken', egg:number}
 // // )[]
@@ -156,5 +156,5 @@ import { Union } from "./union"
 // let animals2:AnimalsDefault = [
 //     { type:"dog", bark:true,wagging:true},
 //     { bark:true,wagging:true},
-//     { type:"cat", mew:23 } 
+//     { type:"cat", mew:23 }
 // ]

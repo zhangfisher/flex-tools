@@ -1,4 +1,4 @@
-import { Equal } from "./equal";
+import { Equal } from "../misc/equal";
 
 /**
  * 检查类型数组中是否包含某个特定类型

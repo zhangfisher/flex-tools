@@ -378,6 +378,26 @@ type RequiredExample = DeepRequired<Example>;
 // }
 ```
 
+### Keys
+
+**类型：**`Keys<T extends Record<string,any>>`
+
+获取对象的键名元组
+
+```typescript twoslash
+import { Keys } from "flex-tools/types";
+
+interface Animal {
+    name: string;
+    age: number;
+    address: string;
+}
+
+type KeyType = Keys<Animal>;
+//   ^^^^^^^
+// ['name', 'age', 'address']
+```
+
 ### ObjectKeys
 
 **类型：**`ObjectKeys<T>`
@@ -399,26 +419,6 @@ type name = keyof Animal;
 
 type KeyType = ObjectKeys<Animal>;
 //   ^^^^^^^
-```
-
-### Keys
-
-**类型：**`Keys<T extends Record<string,any>>`
-
-获取对象的键名元组
-
-```typescript twoslash
-import { Keys } from "flex-tools/types";
-
-interface Animal {
-    name: string;
-    age: number;
-    address: string;
-}
-
-type KeyType = Keys<Animal>;
-//   ^^^^^^^
-// ['name', 'age', 'address']
 ```
 
 ### RequiredKeys
@@ -599,30 +599,30 @@ type type7 = GetTypeByPath<typeof obj, "z/0", "/">;
 
 ## Array
 
-### ArrayMember
+### ItemOf
 
 **类型：**`ArrayMember<T> `
 
 提取数组成员的类型。如果传入的类型不是数组，则返回`never`。
 
 ```typescript twoslash
-import type { ArrayMember } from "flex-tools/types";
+import type { ItemOf } from "flex-tools/types";
 // 基本类型数组
 type NumberArray = number[];
-type NumberType = ArrayMember<NumberArray>; // number
+type NumberType = ItemOf<NumberArray>; // number
 //   ^^^^^^^^^^
 // 对象数组
 type User = { id: number; name: string };
 type Users = User[];
-type UserType = ArrayMember<Users>; // { id: number; name: string }
+type UserType = ItemOf<Users>; // { id: number; name: string }
 //   ^^^^^^^^
 // 联合类型数组
 type MixedArray = (string | number)[];
-type MixedType = ArrayMember<MixedArray>; // string | number
+type MixedType = ItemOf<MixedArray>; // string | number
 //   ^^^^^^^^^
 // 非数组类型
 type NotArray = string;
-type Result = ArrayMember<NotArray>; // never
+type Result = ItemOf<NotArray>; // never
 //   ^^^^^^
 ```
 
@@ -790,6 +790,46 @@ type Funs = Overloads<typeof foo>;
 ```
 
 - `Overloads<T>` 只能获取最多 10 个重载的类型。
+
+### GetMatchedOverload
+
+获取与指定参数匹配的重载
+
+```typescript twoslash
+import { Overloads, GetMatchedOverload } from "flex-tools/types";
+
+function foo(a: string): string;
+function foo(a: number, count?: number): number;
+function foo(a: boolean): boolean;
+function foo(): any {}
+
+type F1 = GetMatchedOverload<Overloads<typeof foo>, ["x"]>;
+//   ^^
+type F2 = GetMatchedOverload<Overloads<typeof foo>, [1, 2]>;
+//   ^^
+type F3 = GetMatchedOverload<Overloads<typeof foo>, [true]>;
+//   ^^
+```
+
+### IsMatchingOverload
+
+检查 Args 是否匹配任何一个重载
+
+```typescript twoslash
+import { Overloads, IsMatchingOverload } from "flex-tools/types";
+
+function foo(a: string): string;
+function foo(a: number, count?: number): number;
+function foo(a: boolean): boolean;
+function foo(): any {}
+
+type F1 = IsMatchingOverload<Overloads<typeof foo>, ["x"]>;
+//   ^^
+type F2 = IsMatchingOverload<Overloads<typeof foo>, [1, 2]>;
+//   ^^
+type F3 = IsMatchingOverload<Overloads<typeof foo>, [true]>;
+//   ^^
+```
 
 ## Class
 
@@ -1055,5 +1095,4 @@ type A = Equal<true, true>;
 //=> true
 type B = Equal<"a", "b">;
 //=> false
- 
-``` 
+```
