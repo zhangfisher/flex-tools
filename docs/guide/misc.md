@@ -390,3 +390,121 @@ const profiler = new CallProfiler([
 
 - 测量结果支持`profiler.report`和`profiler.render`两种形式输出。`profiler.report`输出的是一个JSON格式的树，`profiler.render`输出用于终端显示的树。
 - `profiler.attach`和`profiler.detach`方法用于启用或禁用对象函数包装。默认情况下，`new CallProfiler(...)`时会自动执行`attach`。
+
+## callable
+
+`callable` 函数将任意实例包装为可调用对象，使用 Proxy 拦截函数调用，`this` 始终指向原实例，支持对象展开语法。
+
+**基本用法**
+
+```typescript
+import { callable } from "flex-tools";
+
+class Calculator {
+    constructor(private value: number) {}
+
+    call(x: number) {
+        return this.value + x;
+    }
+
+    multiply(x: number) {
+        return this.value * x;
+    }
+}
+
+const calc = new Calculator(10);
+const callableCalc = callable(calc);
+
+// 可以直接调用
+callableCalc(5); // 15
+
+// 可以访问方法，this 自动绑定
+callableCalc.multiply(2); // 20
+```
+
+**自定义调用方法**
+
+```typescript
+class Command {
+    constructor(private prefix: string) {}
+
+    execute(text: string) {
+        return `${this.prefix}: ${text}`;
+    }
+}
+
+const cmd = new Command("INFO");
+const callableCmd = callable(cmd, { callMethod: "execute" });
+
+callableCmd("System started"); // "INFO: System started"
+```
+
+**对象展开**
+
+```typescript
+class DataHandler {
+    data = {
+        name: "flex-tools",
+        version: "1.0.0",
+        description: "TypeScript utilities"
+    };
+
+    public author = "wxzhang";
+
+    call() {
+        return "handler";
+    }
+}
+
+const handler = callable(new DataHandler());
+
+// 对象展开时只包含 data 对象的属性
+const { name, version, description } = handler;
+console.log(name, version, description); // "flex-tools" "1.0.0" "TypeScript utilities"
+
+// 仍然可以调用
+handler(); // "handler"
+
+// 可以访问实例属性
+handler.author; // "wxzhang"
+```
+
+**自定义数据键**
+
+```typescript
+class Config {
+    values = {
+        host: "localhost",
+        port: 3000
+    };
+
+    public name = "default";
+
+    load() {
+        return "loaded";
+    }
+}
+
+const config = callable(new Config(), { 
+    callMethod: "load", 
+    dataKey: "values" 
+});
+
+// 展开时使用 values 对象
+const { host, port } = config;
+```
+
+**参数说明**
+
+- `instance`: 要包装的实例对象
+- `options`:
+    - `callMethod`: 指定被调用的方法名，默认为 `'call'`
+    - `dataKey`: 指定用于对象展开的数据对象属性名，默认为 `'data'`
+
+**特性**
+
+- 可调用对象直接调用时执行 `callMethod` 指定的方法
+- 访问方法时 `this` 自动绑定到原实例
+- 对象展开语法 `{...callableInstance}` 只展开 `dataKey` 指定的对象属性
+- `dataKey` 对象的属性优先于实例属性
+- 支持完整的属性访问、设置、`in` 操作符等功能
