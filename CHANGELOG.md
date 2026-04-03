@@ -1,5 +1,11 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.6.4
+
+### Patch Changes
+
+-   816d356: add misc/callable
+
 ## 1.6.3
 
 ### Patch Changes
