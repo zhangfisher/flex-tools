@@ -228,7 +228,7 @@
     "tsup": "^8.5.1",
     "tsx": "^4.23.0",
     "type-fest": "^5.8.0",
-    "typescript": "^7.0.2",
+    "typescript": "^6.0.0",
     "vitepress": "^1.6.4",
     "vitest": "^4.1.10"
   },

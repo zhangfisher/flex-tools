@@ -508,3 +508,103 @@ const { host, port } = config;
 - 对象展开语法 `{...callableInstance}` 只展开 `dataKey` 指定的对象属性
 - `dataKey` 对象的属性优先于实例属性
 - 支持完整的属性访问、设置、`in` 操作符等功能
+
+## logger
+
+`createLogger` 用于创建一个轻量的日志记录器，支持 **debug / info / warn / error** 四个级别、模板化输出、参数插值与终端彩色高亮。
+
+**基本用法**
+
+```typescript
+import { createLogger } from "flex-tools";
+
+const logger = createLogger();
+
+logger.debug("调试信息");
+logger.info("服务启动");
+logger.warn("内存偏高");
+logger.error("发生错误");
+```
+
+默认输出模板为 `[{level}] {time} - {message}`，输出形如：
+
+```text
+[INFO ] 2026/07/09 21:30:45 123 - 服务启动
+[WARN ] 2026/07/09 21:30:45 124 - 内存偏高
+[ERROR] 2026/07/09 21:30:45 124 - 发生错误
+```
+
+**彩色输出**
+
+默认开启彩色输出（`colorized: true`），终端中各级别会以不同颜色显示，便于快速识别：
+
+- `DEBUG`：暗灰色
+- `INFO`：默认色
+- `WARN`：黄色
+- `ERROR`：红色
+- 消息中的**插值变量**会以青色高亮
+
+如需关闭颜色（例如写入文件或在不支持 ANSI 的环境中），可设置 `colorized: false`：
+
+```typescript
+const logger = createLogger({ colorized: false });
+```
+
+**消息插值**
+
+消息字符串支持使用 `{}` 占位符，通过剩余参数按位置进行插值：
+
+```typescript
+logger.info("用户={},数量={}", "alice", 3);
+// [INFO ] 2026/07/09 21:30:45 123 - 用户=alice,数量=3
+```
+
+也支持直接传入 `Error` 对象，会自动取其 `message` 作为日志内容：
+
+```typescript
+logger.error(new Error("数据库连接失败"));
+// [ERROR] 2026/07/09 21:30:45 123 - 数据库连接失败
+```
+
+**自定义模板**
+
+通过 `template` 自定义输出格式，可用的内置变量包括 `{level}`、`{time}`、`{message}`：
+
+```typescript
+createLogger({ template: "{time} [{level}] {message}" }).info("hi");
+// 2026/07/09 21:30:45 123 [INFO ] hi
+```
+
+**上下文变量 vars**
+
+通过 `vars` 注入自定义变量并在模板中引用，常用于标注应用名、模块名等上下文：
+
+```typescript
+createLogger({
+    template: "[{app}]{level} {message}",
+    vars: { app: "api" },
+}).info("请求完成");
+// [api]INFO  请求完成
+```
+
+> 注意：当 `vars` 中存在与内置变量同名的键（如 `level`、`time`、`message`）时，会覆盖对应的内置值。
+
+**debug 模式**
+
+开启 `debug: true` 后，所有级别的日志都会统一标记为 `DEBUG` 输出，常用于排查问题时临时打开全部日志：
+
+```typescript
+createLogger({ debug: true }).warn("调试信息");
+// [DEBUG] 2026/07/09 21:30:45 123 - 调试信息
+```
+
+**参数说明**
+
+`createLogger(options?: ILoggerOptions)` 接收以下可选参数：
+
+| 参数 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `debug` | `boolean` | `false` | 是否以 DEBUG 级别输出所有日志 |
+| `template` | `string` | `[{level}] {time} - {message}` | 输出模板，支持 `{level}`/`{time}`/`{message}` 及自定义变量 |
+| `vars` | `Record<string, any>` | - | 注入到模板的自定义变量 |
+| `colorized` | `boolean` | `true` | 是否启用终端彩色输出 |
