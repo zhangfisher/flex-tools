@@ -1,241 +1,241 @@
 {
-  "name": "flex-tools",
-  "version": "1.6.4",
-  "description": "typescript modular utilities.",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "homepage": "https://github.com/zhangfisher/flex-tools",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/zhangfisher/flex-tools.git"
-  },
-  "scripts": {
-    "build": "tsup",
-    "publish-packages": "bun run build && changeset version && bun run cpx CHANGELOG.md docs/ && changeset publish",
-    "only-publish-packages": "bun run build && npm publish --workspaces",
-    "changeset": "changeset",
-    "sync": "cnpm sync flex-tools",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs",
-    "publish-versions": "bun run scripts/publish-versions.js"
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/index.d.ts"
-      ]
-    }
-  },
-  "packageManager": "bun@1.3.9",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+    "name": "flex-tools",
+    "version": "1.6.5",
+    "description": "typescript modular utilities.",
+    "keywords": [],
+    "homepage": "https://github.com/zhangfisher/flex-tools",
+    "license": "ISC",
+    "author": "wxzhang",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/zhangfisher/flex-tools.git"
     },
-    "./errors": {
-      "types": "./dist/errors.d.ts",
-      "import": "./dist/errors.mjs",
-      "require": "./dist/errors.js"
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "typesVersions": {
+        "*": {
+            "*": [
+                "./dist/index.d.ts"
+            ]
+        }
     },
-    "./consts": {
-      "types": "./dist/consts.d.ts",
-      "import": "./dist/consts.mjs",
-      "require": "./dist/consts.js"
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        },
+        "./errors": {
+            "types": "./dist/errors.d.ts",
+            "import": "./dist/errors.mjs",
+            "require": "./dist/errors.js"
+        },
+        "./consts": {
+            "types": "./dist/consts.d.ts",
+            "import": "./dist/consts.mjs",
+            "require": "./dist/consts.js"
+        },
+        "./array": {
+            "types": "./dist/array/index.d.ts",
+            "import": "./dist/array/index.mjs",
+            "require": "./dist/array/index.js"
+        },
+        "./array/*": {
+            "types": "./dist/array/*.d.ts",
+            "import": "./dist/array/*.mjs",
+            "require": "./dist/array/*.js"
+        },
+        "./async": {
+            "types": "./dist/async/index.d.ts",
+            "import": "./dist/async/index.mjs",
+            "require": "./dist/async/index.js"
+        },
+        "./async/*": {
+            "types": "./dist/async/*.d.ts",
+            "import": "./dist/async/*.mjs",
+            "require": "./dist/async/*.js"
+        },
+        "./chinese": {
+            "types": "./dist/chinese/index.d.ts",
+            "import": "./dist/chinese/index.mjs",
+            "require": "./dist/chinese/index.js"
+        },
+        "./chinese/*": {
+            "types": "./dist/chinese/*.d.ts",
+            "import": "./dist/chinese/*.mjs",
+            "require": "./dist/chinese/*.js"
+        },
+        "./classs": {
+            "types": "./dist/classs/index.d.ts",
+            "import": "./dist/classs/index.mjs",
+            "require": "./dist/classs/index.js"
+        },
+        "./classs/*": {
+            "types": "./dist/classs/*.d.ts",
+            "import": "./dist/classs/*.mjs",
+            "require": "./dist/classs/*.js"
+        },
+        "./collection": {
+            "types": "./dist/collection/index.d.ts",
+            "import": "./dist/collection/index.mjs",
+            "require": "./dist/collection/index.js"
+        },
+        "./collection/*": {
+            "types": "./dist/collection/*.d.ts",
+            "import": "./dist/collection/*.mjs",
+            "require": "./dist/collection/*.js"
+        },
+        "./events": {
+            "types": "./dist/events/index.d.ts",
+            "import": "./dist/events/index.mjs",
+            "require": "./dist/events/index.js"
+        },
+        "./events/*": {
+            "types": "./dist/events/*.d.ts",
+            "import": "./dist/events/*.mjs",
+            "require": "./dist/events/*.js"
+        },
+        "./fs": {
+            "types": "./dist/fs/index.d.ts",
+            "import": "./dist/fs/index.mjs",
+            "require": "./dist/fs/index.js"
+        },
+        "./fs/*": {
+            "types": "./dist/fs/*.d.ts",
+            "import": "./dist/fs/*.mjs",
+            "require": "./dist/fs/*.js"
+        },
+        "./func": {
+            "types": "./dist/func/index.d.ts",
+            "import": "./dist/func/index.mjs",
+            "require": "./dist/func/index.js"
+        },
+        "./func/*": {
+            "types": "./dist/func/*.d.ts",
+            "import": "./dist/func/*.mjs",
+            "require": "./dist/func/*.js"
+        },
+        "./iterators": {
+            "types": "./dist/iterators/index.d.ts",
+            "import": "./dist/iterators/index.mjs",
+            "require": "./dist/iterators/index.js"
+        },
+        "./iterators/*": {
+            "types": "./dist/iterators/*.d.ts",
+            "import": "./dist/iterators/*.mjs",
+            "require": "./dist/iterators/*.js"
+        },
+        "./misc": {
+            "types": "./dist/misc/index.d.ts",
+            "import": "./dist/misc/index.mjs",
+            "require": "./dist/misc/index.js"
+        },
+        "./misc/*": {
+            "types": "./dist/misc/*.d.ts",
+            "import": "./dist/misc/*.mjs",
+            "require": "./dist/misc/*.js"
+        },
+        "./object": {
+            "types": "./dist/object/index.d.ts",
+            "import": "./dist/object/index.mjs",
+            "require": "./dist/object/index.js"
+        },
+        "./object/*": {
+            "types": "./dist/object/*.d.ts",
+            "import": "./dist/object/*.mjs",
+            "require": "./dist/object/*.js"
+        },
+        "./package": {
+            "types": "./dist/package/index.d.ts",
+            "import": "./dist/package/index.mjs",
+            "require": "./dist/package/index.js"
+        },
+        "./package/*": {
+            "types": "./dist/package/*.d.ts",
+            "import": "./dist/package/*.mjs",
+            "require": "./dist/package/*.js"
+        },
+        "./string": {
+            "types": "./dist/string/index.d.ts",
+            "import": "./dist/string/index.mjs",
+            "require": "./dist/string/index.js"
+        },
+        "./string/*": {
+            "types": "./dist/string/*.d.ts",
+            "import": "./dist/string/*.mjs",
+            "require": "./dist/string/*.js"
+        },
+        "./tree": {
+            "types": "./dist/tree/index.d.ts",
+            "import": "./dist/tree/index.mjs",
+            "require": "./dist/tree/index.js"
+        },
+        "./tree/*": {
+            "types": "./dist/tree/*.d.ts",
+            "import": "./dist/tree/*.mjs",
+            "require": "./dist/tree/*.js"
+        },
+        "./typecheck": {
+            "types": "./dist/typecheck/index.d.ts",
+            "import": "./dist/typecheck/index.mjs",
+            "require": "./dist/typecheck/index.js"
+        },
+        "./typecheck/*": {
+            "types": "./dist/typecheck/*.d.ts",
+            "import": "./dist/typecheck/*.mjs",
+            "require": "./dist/typecheck/*.js"
+        },
+        "./types": {
+            "types": "./dist/types/index.d.ts",
+            "import": "./dist/types/index.mjs",
+            "require": "./dist/types/index.js"
+        }
     },
-    "./array": {
-      "types": "./dist/array/index.d.ts",
-      "import": "./dist/array/index.mjs",
-      "require": "./dist/array/index.js"
+    "scripts": {
+        "build": "tsup",
+        "publish-packages": "bun run build && changeset version && bun run cpx CHANGELOG.md docs/ && changeset publish",
+        "only-publish-packages": "bun run build && npm publish --workspaces",
+        "changeset": "changeset",
+        "sync": "cnpm sync flex-tools",
+        "docs:dev": "vitepress dev docs",
+        "docs:build": "vitepress build docs",
+        "docs:preview": "vitepress preview docs",
+        "publish-versions": "bun run scripts/publish-versions.js"
     },
-    "./array/*": {
-      "types": "./dist/array/*.d.ts",
-      "import": "./dist/array/*.mjs",
-      "require": "./dist/array/*.js"
+    "dependencies": {
+        "art-template": "4.13.4",
+        "fastevent": "^2.6.0",
+        "glob": "^13.0.6",
+        "semver": "^7.8.5"
     },
-    "./async": {
-      "types": "./dist/async/index.d.ts",
-      "import": "./dist/async/index.mjs",
-      "require": "./dist/async/index.js"
+    "devDependencies": {
+        "@changesets/cli": "^2.31.0",
+        "@lite-tree/vue": "^1.1.6",
+        "@shikijs/vitepress-twoslash": "^4.3.1",
+        "@swc/core": "^1.15.43",
+        "@types/bun": "^1.3.14",
+        "@types/fs-extra": "^11.0.1",
+        "@types/node": "^20.19.43",
+        "@types/semver": "^7.7.1",
+        "@types/shelljs": "^0.10.0",
+        "cpx": "^1.5.0",
+        "esbuild-copy-files-plugin": "^1.1.0",
+        "oxfmt": "^0.58.0",
+        "oxlint": "^1.73.0",
+        "oxlint-tsgolint": "^0.24.0",
+        "ts-node": "^10.9.2",
+        "tsup": "^8.5.1",
+        "tsx": "^4.23.0",
+        "type-fest": "^5.8.0",
+        "typescript": "^6.0.0",
+        "vitepress": "^1.6.4",
+        "vitest": "^4.1.10"
     },
-    "./async/*": {
-      "types": "./dist/async/*.d.ts",
-      "import": "./dist/async/*.mjs",
-      "require": "./dist/async/*.js"
-    },
-    "./chinese": {
-      "types": "./dist/chinese/index.d.ts",
-      "import": "./dist/chinese/index.mjs",
-      "require": "./dist/chinese/index.js"
-    },
-    "./chinese/*": {
-      "types": "./dist/chinese/*.d.ts",
-      "import": "./dist/chinese/*.mjs",
-      "require": "./dist/chinese/*.js"
-    },
-    "./classs": {
-      "types": "./dist/classs/index.d.ts",
-      "import": "./dist/classs/index.mjs",
-      "require": "./dist/classs/index.js"
-    },
-    "./classs/*": {
-      "types": "./dist/classs/*.d.ts",
-      "import": "./dist/classs/*.mjs",
-      "require": "./dist/classs/*.js"
-    },
-    "./collection": {
-      "types": "./dist/collection/index.d.ts",
-      "import": "./dist/collection/index.mjs",
-      "require": "./dist/collection/index.js"
-    },
-    "./collection/*": {
-      "types": "./dist/collection/*.d.ts",
-      "import": "./dist/collection/*.mjs",
-      "require": "./dist/collection/*.js"
-    },
-    "./events": {
-      "types": "./dist/events/index.d.ts",
-      "import": "./dist/events/index.mjs",
-      "require": "./dist/events/index.js"
-    },
-    "./events/*": {
-      "types": "./dist/events/*.d.ts",
-      "import": "./dist/events/*.mjs",
-      "require": "./dist/events/*.js"
-    },
-    "./fs": {
-      "types": "./dist/fs/index.d.ts",
-      "import": "./dist/fs/index.mjs",
-      "require": "./dist/fs/index.js"
-    },
-    "./fs/*": {
-      "types": "./dist/fs/*.d.ts",
-      "import": "./dist/fs/*.mjs",
-      "require": "./dist/fs/*.js"
-    },
-    "./func": {
-      "types": "./dist/func/index.d.ts",
-      "import": "./dist/func/index.mjs",
-      "require": "./dist/func/index.js"
-    },
-    "./func/*": {
-      "types": "./dist/func/*.d.ts",
-      "import": "./dist/func/*.mjs",
-      "require": "./dist/func/*.js"
-    },
-    "./iterators": {
-      "types": "./dist/iterators/index.d.ts",
-      "import": "./dist/iterators/index.mjs",
-      "require": "./dist/iterators/index.js"
-    },
-    "./iterators/*": {
-      "types": "./dist/iterators/*.d.ts",
-      "import": "./dist/iterators/*.mjs",
-      "require": "./dist/iterators/*.js"
-    },
-    "./misc": {
-      "types": "./dist/misc/index.d.ts",
-      "import": "./dist/misc/index.mjs",
-      "require": "./dist/misc/index.js"
-    },
-    "./misc/*": {
-      "types": "./dist/misc/*.d.ts",
-      "import": "./dist/misc/*.mjs",
-      "require": "./dist/misc/*.js"
-    },
-    "./object": {
-      "types": "./dist/object/index.d.ts",
-      "import": "./dist/object/index.mjs",
-      "require": "./dist/object/index.js"
-    },
-    "./object/*": {
-      "types": "./dist/object/*.d.ts",
-      "import": "./dist/object/*.mjs",
-      "require": "./dist/object/*.js"
-    },
-    "./package": {
-      "types": "./dist/package/index.d.ts",
-      "import": "./dist/package/index.mjs",
-      "require": "./dist/package/index.js"
-    },
-    "./package/*": {
-      "types": "./dist/package/*.d.ts",
-      "import": "./dist/package/*.mjs",
-      "require": "./dist/package/*.js"
-    },
-    "./string": {
-      "types": "./dist/string/index.d.ts",
-      "import": "./dist/string/index.mjs",
-      "require": "./dist/string/index.js"
-    },
-    "./string/*": {
-      "types": "./dist/string/*.d.ts",
-      "import": "./dist/string/*.mjs",
-      "require": "./dist/string/*.js"
-    },
-    "./tree": {
-      "types": "./dist/tree/index.d.ts",
-      "import": "./dist/tree/index.mjs",
-      "require": "./dist/tree/index.js"
-    },
-    "./tree/*": {
-      "types": "./dist/tree/*.d.ts",
-      "import": "./dist/tree/*.mjs",
-      "require": "./dist/tree/*.js"
-    },
-    "./typecheck": {
-      "types": "./dist/typecheck/index.d.ts",
-      "import": "./dist/typecheck/index.mjs",
-      "require": "./dist/typecheck/index.js"
-    },
-    "./typecheck/*": {
-      "types": "./dist/typecheck/*.d.ts",
-      "import": "./dist/typecheck/*.mjs",
-      "require": "./dist/typecheck/*.js"
-    },
-    "./types": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/types/index.mjs",
-      "require": "./dist/types/index.js"
-    }
-  },
-  "keywords": [],
-  "author": "wxzhang",
-  "license": "ISC",
-  "devDependencies": {
-    "@changesets/cli": "^2.31.0",
-    "@lite-tree/vue": "^1.1.6",
-    "@shikijs/vitepress-twoslash": "^4.3.1",
-    "@swc/core": "^1.15.43",
-    "@types/bun": "^1.3.14",
-    "@types/fs-extra": "^11.0.1",
-    "@types/node": "^20.19.43",
-    "@types/semver": "^7.7.1",
-    "@types/shelljs": "^0.10.0",
-    "cpx": "^1.5.0",
-    "esbuild-copy-files-plugin": "^1.1.0",
-    "oxfmt": "^0.58.0",
-    "oxlint": "^1.73.0",
-    "oxlint-tsgolint": "^0.24.0",
-    "ts-node": "^10.9.2",
-    "tsup": "^8.5.1",
-    "tsx": "^4.23.0",
-    "type-fest": "^5.8.0",
-    "typescript": "^6.0.0",
-    "vitepress": "^1.6.4",
-    "vitest": "^4.1.10"
-  },
-  "dependencies": {
-    "art-template": "4.13.4",
-    "fastevent": "^2.6.0",
-    "glob": "^13.0.6",
-    "semver": "^7.8.5"
-  }
+    "packageManager": "bun@1.3.9"
 }

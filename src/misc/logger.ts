@@ -1,6 +1,9 @@
 import { replaceVars } from "../string/replaceVars";
 import { getNow } from "./getNow";
 
+export type ILoggerMessageArg = string | Error | (() => string | Error);
+
+export type ILoggerMethod = (message: ILoggerMessageArg, ...args: any[]) => void;
 /**
  * 日志记录器接口
  *
@@ -8,10 +11,10 @@ import { getNow } from "./getNow";
  * 每个方法接收一条消息（或 Error）与可变参数列表。
  */
 export type ILogger = {
-    debug: (message: string | Error, ...args: any[]) => void;
-    info: (message: string | Error, ...args: any[]) => void;
-    warn: (message: string | Error, ...args: any[]) => void;
-    error: (message: string | Error, ...args: any[]) => void;
+    debug: ILoggerMethod;
+    info: ILoggerMethod;
+    warn: ILoggerMethod;
+    error: ILoggerMethod;
 };
 
 export type ILoggerOptions = {
@@ -47,12 +50,20 @@ export function createLogger(options?: ILoggerOptions): ILogger {
      * @param output 底层输出函数（对应 console 的某个方法）
      */
     function createLog(levelName: keyof ILogger, output: (message: string) => void) {
-        return (message: string | Error, ...args: any[]) => {
+        return (message: ILoggerMessageArg, ...args: any[]) => {
             let levelIndex = debug ? 0 : levelNames.findIndex((v) => v.toLowerCase() === levelName);
             if (levelIndex < 0) levelIndex = 0;
             if (levelIndex > 3) levelIndex = 3;
             const color = colorized ? levelColors[levelIndex] : "";
-            const msg = replaceVars(message instanceof Error ? message.message : message, args, {
+
+            const msgArg =
+                typeof message === "function"
+                    ? message()
+                    : message instanceof Error
+                      ? message.message
+                      : message;
+
+            const msg = replaceVars(msgArg instanceof Error ? msgArg.message : msgArg, args, {
                 forEach: (_, value) => {
                     if (colorized) {
                         return `\x1b[36m ${value} \x1b[0m${color}`;
