@@ -1,5 +1,12 @@
 ## <small>1.0.58 (2023-02-27)</small>
 
+## 1.6.6
+
+### Patch Changes
+
+-   8bb56d5: fix logger
+-   d2eca76: add logger
+
 ## 1.6.4
 
 ### Patch Changes
